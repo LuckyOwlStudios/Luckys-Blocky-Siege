@@ -1,0 +1,7 @@
+{
+  "parent": "blockysiege:block/template_cannon_ball_four",
+  "textures": {
+    "all": "blockysiege:block/blunderbomb",
+    "particle": "minecraft:block/glass"
+  }
+}

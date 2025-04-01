@@ -1,0 +1,4 @@
+// 1.21.1	2025-03-27T21:36:03.5639475	Tags for minecraft:block mod id blockysiege
+5088d988530a2f630d6f320d4ba819ce69af9ba7 data/minecraft/tags/block/mineable/axe.json
+67e48e5028224a10bfadb7e971f49112582aac81 data/minecraft/tags/block/mineable/pickaxe.json
+67e48e5028224a10bfadb7e971f49112582aac81 data/minecraft/tags/block/needs_iron_tool.json
