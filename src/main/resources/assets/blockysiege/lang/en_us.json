@@ -1,7 +1,10 @@
 {
   "itemGroup.blockysiege": "Siege Weapons",
+
   "block.blockysiege.cannon_ball": "Cannon Ball",
-  "block.blockysiege.explosive_barrel": "Explosive Barrel",
+  "block.blockysiege.keg_of_gunpowder": "Keg of Gunpowder",
   "block.blockysiege.blunderbomb": "Blunderbomb",
-  "block.blockysiege.frost_bomb": "Frost Bomb"
+  "block.blockysiege.frost_bomb": "Frost Bomb",
+
+  "container.blockysiege.cannon": "Cannon"
 }

@@ -1,11 +1,16 @@
 package net.luckystudios;
 
+import net.luckystudios.blocks.ModBlockEntityTypes;
 import net.luckystudios.blocks.ModBlocks;
+import net.luckystudios.blocks.ModMenuTypes;
+import net.luckystudios.blocks.custom.cannon.CannonBlockMenu;
+import net.luckystudios.blocks.custom.cannon.CannonBlockScreen;
 import net.luckystudios.items.ModCreativeModeTabs;
 import net.luckystudios.items.ModItems;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -52,9 +57,10 @@ public class BlockySiege
         NeoForge.EVENT_BUS.register(this);
 
         ModCreativeModeTabs.register(modEventBus);
-
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
+        ModBlockEntityTypes.register(modEventBus);
+        ModMenuTypes.register(modEventBus);
 
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
@@ -98,6 +104,11 @@ public class BlockySiege
         public static void onClientSetup(FMLClientSetupEvent event)
         {
 
+        }
+
+        @SubscribeEvent
+        public static void registerScreens(RegisterMenuScreensEvent event) {
+            event.register(ModMenuTypes.CANNON_BLOCK_MENU.get(), CannonBlockScreen::new);
         }
     }
 }
