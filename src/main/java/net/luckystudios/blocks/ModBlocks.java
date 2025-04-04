@@ -54,7 +54,7 @@ public class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .lightLevel(BlunderbombBlock.LIGHT_EMISSION)
                     .strength(0.3F, 0.3F)
-                    .sound(SoundType.GLASS)
+                    .sound(SoundType.DECORATED_POT)
             ));
     public static final DeferredBlock<Block> FROST_BOMB = registerBlock("frost_bomb",
             () -> new FrostBombBlock(BlockBehaviour.Properties.of()
@@ -62,7 +62,7 @@ public class ModBlocks {
                     .instrument(NoteBlockInstrument.IRON_XYLOPHONE)
                     .requiresCorrectToolForDrops()
                     .strength(0.3F, 0.3F)
-                    .sound(SoundType.GLASS)
+                    .sound(SoundType.DECORATED_POT)
             ));
 
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
