@@ -1,6 +1,6 @@
 {
 	"credit": "Made with Blockbench",
-	"render_type": "cutout",
+	"render_type": "translucent",
 	"texture_size": [32, 32],
 	"textures": {
 		"all": "1"
