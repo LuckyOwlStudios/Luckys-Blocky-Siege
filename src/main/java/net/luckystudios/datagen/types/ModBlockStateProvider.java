@@ -2,7 +2,7 @@ package net.luckystudios.datagen.types;
 
 import net.luckystudios.BlockySiege;
 import net.luckystudios.blocks.ModBlocks;
-import net.luckystudios.blocks.custom.AbstractCannonBallBlock;
+import net.luckystudios.blocks.custom.cannon_ammo.AbstractCannonBallBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -22,18 +22,21 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        cannonBall(ModBlocks.CANNON_BALL.get(), mcLoc("block/iron_block"));
-        cannonBall(ModBlocks.KEG_OF_GUNPOWDER.get(), mcLoc("block/barrel_side"));
-        cannonBall(ModBlocks.BLUNDERBOMB.get(), mcLoc("block/glass"));
-        cannonBall(ModBlocks.FROST_BOMB.get(), mcLoc("block/ice"));
+        simpleBlockWithItem(ModBlocks.EXPLOSIVE_BARREL.get(), models().cubeBottomTop("explosive_barrel", modLoc("block/explosive_barrel_side"), mcLoc("block/barrel_bottom"), modLoc("block/explosive_barrel_top")));
+        generateCannonBallBlockState(ModBlocks.CANNON_BALL.get(), mcLoc("block/iron_block"), "cutout");
+        generateCannonBallBlockState(ModBlocks.EXPLOSIVE_KEG.get(), mcLoc("block/barrel_side"), "cutout");
+        generateCannonBallBlockState(ModBlocks.FIRE_BOMB.get(), mcLoc("block/glass"), "translucent");
+        generateCannonBallBlockState(ModBlocks.FROST_BOMB.get(), mcLoc("block/ice"), "translucent");
+        generateCannonBallBlockState(ModBlocks.WIND_BOMB.get(), modLoc("block/projectile/wind_bomb"), "translucent");
     }
 
-    private void cannonBall(Block block, ResourceLocation breakParticle) {
+    private void generateCannonBallBlockState(Block block, ResourceLocation breakParticle, String renderType) {
         String name = BuiltInRegistries.BLOCK.getKey(block).getPath();
-        ModelFile ballOne = models().withExistingParent(name + "_one", modLoc("block/template_cannon_ball_one")).texture("all", modLoc("block/" + name)).texture("particle", breakParticle);
-        ModelFile ballTwo = models().withExistingParent(name + "_two", modLoc("block/template_cannon_ball_two")).texture("all", modLoc("block/" + name)).texture("particle", breakParticle);
-        ModelFile ballThree = models().withExistingParent(name + "_three", modLoc("block/template_cannon_ball_three")).texture("all", modLoc("block/" + name)).texture("particle", breakParticle);
-        ModelFile ballFour = models().withExistingParent(name + "_four", modLoc("block/template_cannon_ball_four")).texture("all", modLoc("block/" + name)).texture("particle", breakParticle);
+        ResourceLocation texture = modLoc("block/projectile/" + name);
+        ModelFile ballOne = models().withExistingParent(name + "_one", modLoc("block/template_cannon_ball_one")).texture("all", texture).texture("particle", breakParticle).renderType(renderType);
+        ModelFile ballTwo = models().withExistingParent(name + "_two", modLoc("block/template_cannon_ball_two")).texture("all", texture).texture("particle", breakParticle).renderType(renderType);
+        ModelFile ballThree = models().withExistingParent(name + "_three", modLoc("block/template_cannon_ball_three")).texture("all", texture).texture("particle", breakParticle).renderType(renderType);
+        ModelFile ballFour = models().withExistingParent(name + "_four", modLoc("block/template_cannon_ball_four")).texture("all", texture).texture("particle", breakParticle).renderType(renderType);
 
         simpleBlockItem(block, ballOne);
 

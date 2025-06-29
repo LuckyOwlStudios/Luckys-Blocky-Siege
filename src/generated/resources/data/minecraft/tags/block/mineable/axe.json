@@ -1,5 +1,7 @@
 {
   "values": [
-    "blockysiege:keg_of_gunpowder"
+    "blockysiege:cannon",
+    "blockysiege:explosive_keg",
+    "blockysiege:explosive_barrel"
   ]
 }

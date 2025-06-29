@@ -1,5 +1,8 @@
-// 1.21.1	2025-03-27T21:36:03.5619245	Loot Tables
-8168cc87d9934b8363c18f6504a882e2a36c1383 data/blockysiege/loot_table/blocks/blunderbomb.json
-c1c909578e49161090396d9ae8f8c63e06f81ae0 data/blockysiege/loot_table/blocks/cannon_ball.json
-59d7bc0d7360c5c63fba97566e7128273a372250 data/blockysiege/loot_table/blocks/frost_bomb.json
-f57001a20ea49453648fabe75e4b854173364f9e data/blockysiege/loot_table/blocks/keg_of_gunpowder.json
+// 1.21.1	2025-06-20T16:44:52.9919271	Loot Tables
+3ebcf42a828ff29f1487163e0de816efbcb18ca3 data/blockysiege/loot_table/blocks/cannon.json
+5ff369fe3433b3919ab597091c741748d4475ae1 data/blockysiege/loot_table/blocks/cannon_ball.json
+9d67231fb21fdbded87d2a8804e3a3817390fbb0 data/blockysiege/loot_table/blocks/explosive_barrel.json
+9ec0ea74f18cb16aa8b95ef58a800215ad1548c2 data/blockysiege/loot_table/blocks/explosive_keg.json
+77718935ab9b10a83393c6dad1822523237b2f03 data/blockysiege/loot_table/blocks/fire_bomb.json
+0633255893d8df78c459eba8695b6d5a6764898d data/blockysiege/loot_table/blocks/frost_bomb.json
+56031bf3694516eecb87fa9bb0aa7e697d065d49 data/blockysiege/loot_table/blocks/wind_bomb.json

@@ -1,15 +1,14 @@
 package net.luckystudios.blocks;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.blocks.custom.BlunderbombBlock;
-import net.luckystudios.blocks.custom.CannonBallBlock;
-import net.luckystudios.blocks.custom.KegOfGunpowderBlock;
-import net.luckystudios.blocks.custom.FrostBombBlock;
 import net.luckystudios.blocks.custom.cannon.CannonBlock;
+import net.luckystudios.blocks.custom.cannon_ammo.*;
+import net.luckystudios.blocks.custom.explosive_barrel.ExplosiveBarrelBlock;
 import net.luckystudios.items.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
@@ -27,43 +26,46 @@ public class ModBlocks {
     public static final DeferredBlock<Block> CANNON = registerBlock("cannon",
             () -> new CannonBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)
-                    .instrument(NoteBlockInstrument.IRON_XYLOPHONE)
+                    .dynamicShape()
                     .requiresCorrectToolForDrops()
                     .strength(5.0F, 6.0F)
                     .sound(SoundType.METAL)
             ));
-
     public static final DeferredBlock<Block> CANNON_BALL = registerBlock("cannon_ball",
             () -> new CannonBallBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)
-                    .instrument(NoteBlockInstrument.IRON_XYLOPHONE)
                     .requiresCorrectToolForDrops()
                     .strength(5.0F, 6.0F)
                     .sound(SoundType.METAL)
             ));
-    public static final DeferredBlock<Block> KEG_OF_GUNPOWDER = registerBlock("keg_of_gunpowder",
-            () -> new KegOfGunpowderBlock(BlockBehaviour.Properties.of()
+    public static final DeferredBlock<Block> EXPLOSIVE_KEG = registerBlock("explosive_keg",
+            () -> new ExplosiveKegBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.WOOD)
                     .strength(2.0F, 2.0F)
                     .sound(SoundType.WOOD)
             ));
-    public static final DeferredBlock<Block> BLUNDERBOMB = registerBlock("blunderbomb",
-            () -> new BlunderbombBlock(BlockBehaviour.Properties.of()
+    public static final DeferredBlock<Block> FIRE_BOMB = registerBlock("fire_bomb",
+            () -> new FireBombBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.FIRE)
-                    .instrument(NoteBlockInstrument.IRON_XYLOPHONE)
-                    .requiresCorrectToolForDrops()
-                    .lightLevel(BlunderbombBlock.LIGHT_EMISSION)
+                    .lightLevel(FireBombBlock.LIGHT_EMISSION)
                     .strength(0.3F, 0.3F)
                     .sound(SoundType.DECORATED_POT)
             ));
     public static final DeferredBlock<Block> FROST_BOMB = registerBlock("frost_bomb",
             () -> new FrostBombBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.ICE)
-                    .instrument(NoteBlockInstrument.IRON_XYLOPHONE)
-                    .requiresCorrectToolForDrops()
                     .strength(0.3F, 0.3F)
                     .sound(SoundType.DECORATED_POT)
             ));
+    public static final DeferredBlock<Block> WIND_BOMB = registerBlock("wind_bomb",
+            () -> new WindBombBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.TERRACOTTA_WHITE)
+                    .strength(0.3F, 0.3F)
+                    .sound(SoundType.DECORATED_POT)
+            ));
+
+    public static final DeferredBlock<Block> EXPLOSIVE_BARREL = registerBlock("explosive_barrel",
+            () -> new ExplosiveBarrelBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SPRUCE_PLANKS)));
 
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
         DeferredBlock<T> toReturn = BLOCKS.register(name, block);

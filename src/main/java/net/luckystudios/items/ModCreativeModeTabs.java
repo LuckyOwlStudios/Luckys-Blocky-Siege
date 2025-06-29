@@ -6,6 +6,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
@@ -19,10 +21,15 @@ public class ModCreativeModeTabs {
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModBlocks.CANNON_BALL.get()))
                     .title(Component.translatable("itemGroup.blockysiege"))
                     .displayItems((itemDisplayParameters, output) -> {
+                        output.accept(ModBlocks.CANNON);
+                        output.accept(Items.GUNPOWDER);
                         output.accept(ModBlocks.CANNON_BALL);
-                        output.accept(ModBlocks.KEG_OF_GUNPOWDER);
-                        output.accept(ModBlocks.BLUNDERBOMB);
+                        output.accept(ModBlocks.EXPLOSIVE_KEG);
+                        output.accept(ModBlocks.FIRE_BOMB);
                         output.accept(ModBlocks.FROST_BOMB);
+                        output.accept(ModBlocks.WIND_BOMB);
+                        output.accept(ModBlocks.EXPLOSIVE_BARREL);
+                        output.accept(Blocks.TNT);
                     }).build());
 
     public static void register(IEventBus eventBus) {

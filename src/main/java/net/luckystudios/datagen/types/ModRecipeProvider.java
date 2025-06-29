@@ -26,14 +26,14 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .define('#', Items.IRON_INGOT)
                 .unlockedBy("has_iron", has(Items.IRON_BLOCK)).save(recipeOutput);
 
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.KEG_OF_GUNPOWDER.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.EXPLOSIVE_KEG.get())
                 .pattern(" # ")
                 .pattern("#@#")
                 .pattern(" # ")
                 .define('@', Items.GUNPOWDER)
                 .define('#', ItemTags.PLANKS)
                 .unlockedBy("has_iron", has(Items.GUNPOWDER)).save(recipeOutput);
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.BLUNDERBOMB.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.FIRE_BOMB.get())
                 .pattern(" # ")
                 .pattern("#@#")
                 .pattern(" # ")

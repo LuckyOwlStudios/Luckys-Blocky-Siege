@@ -1,10 +1,29 @@
 {
   "itemGroup.blockysiege": "Siege Weapons",
 
+  "block.blockysiege.cannon": "Cannon",
   "block.blockysiege.cannon_ball": "Cannon Ball",
-  "block.blockysiege.keg_of_gunpowder": "Keg of Gunpowder",
-  "block.blockysiege.blunderbomb": "Blunderbomb",
+  "block.blockysiege.explosive_keg": "Explosive Keg",
+  "block.blockysiege.fire_bomb": "Fire Bomb",
   "block.blockysiege.frost_bomb": "Frost Bomb",
+  "block.blockysiege.wind_bomb": "Wind Bomb",
+  "block.blockysiege.explosive_barrel": "Explosive Barrel",
 
-  "container.blockysiege.cannon": "Cannon"
+  "container.blockysiege.cannon": "Cannon",
+  "container.blockysiege.cannon.aim": "Click to Aim Cannon",
+
+  "entity.blockysiege.cannon_ball": "Cannon Ball",
+  "entity.blockysiege.explosive_keg": "Explosive Keg",
+  "entity.blockysiege.fire_bomb": "Fire Bomb",
+  "entity.blockysiege.frost_bomb": "Frost Bomb",
+  "entity.blockysiege.wind_bomb": "Wind Bomb",
+
+  "sounds.blockysiege.cannon_fire": "CANNON FIRED!",
+  "sounds.blockysiege.hit_metal": "Metal Hit",
+  "sounds.blockysiege.bottle_pop_small": "Small Bottle Popped",
+  "sounds.blockysiege.bottle_pop_large": "Large Bottle Popped",
+  "sounds.blockysiege.impact_fiery": "Fiery Impact!",
+  "sounds.blockysiege.impact_icy": "Icy Impact!",
+
+  "death.attack.cannon": "%1$s was blasted by a cannon!"
 }

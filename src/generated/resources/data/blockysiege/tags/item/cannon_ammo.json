@@ -1,8 +1,9 @@
 {
   "values": [
     "blockysiege:cannon_ball",
-    "blockysiege:keg_of_gunpowder",
-    "blockysiege:blunderbomb",
-    "blockysiege:frost_bomb"
+    "blockysiege:explosive_keg",
+    "blockysiege:fire_bomb",
+    "blockysiege:frost_bomb",
+    "blockysiege:wind_bomb"
   ]
 }

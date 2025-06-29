@@ -1,7 +1,0 @@
-{
-  "parent": "blockysiege:block/template_cannon_ball_one",
-  "textures": {
-    "all": "blockysiege:block/blunderbomb",
-    "particle": "minecraft:block/glass"
-  }
-}

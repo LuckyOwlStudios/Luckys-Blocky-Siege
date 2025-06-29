@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "facing=east,stack=1": {
+      "model": "blockysiege:block/wind_bomb_one",
+      "y": 90
+    },
+    "facing=east,stack=2": {
+      "model": "blockysiege:block/wind_bomb_two",
+      "y": 90
+    },
+    "facing=east,stack=3": {
+      "model": "blockysiege:block/wind_bomb_three",
+      "y": 90
+    },
+    "facing=east,stack=4": {
+      "model": "blockysiege:block/wind_bomb_four",
+      "y": 90
+    },
+    "facing=north,stack=1": {
+      "model": "blockysiege:block/wind_bomb_one"
+    },
+    "facing=north,stack=2": {
+      "model": "blockysiege:block/wind_bomb_two"
+    },
+    "facing=north,stack=3": {
+      "model": "blockysiege:block/wind_bomb_three"
+    },
+    "facing=north,stack=4": {
+      "model": "blockysiege:block/wind_bomb_four"
+    },
+    "facing=south,stack=1": {
+      "model": "blockysiege:block/wind_bomb_one",
+      "y": 180
+    },
+    "facing=south,stack=2": {
+      "model": "blockysiege:block/wind_bomb_two",
+      "y": 180
+    },
+    "facing=south,stack=3": {
+      "model": "blockysiege:block/wind_bomb_three",
+      "y": 180
+    },
+    "facing=south,stack=4": {
+      "model": "blockysiege:block/wind_bomb_four",
+      "y": 180
+    },
+    "facing=west,stack=1": {
+      "model": "blockysiege:block/wind_bomb_one",
+      "y": 270
+    },
+    "facing=west,stack=2": {
+      "model": "blockysiege:block/wind_bomb_two",
+      "y": 270
+    },
+    "facing=west,stack=3": {
+      "model": "blockysiege:block/wind_bomb_three",
+      "y": 270
+    },
+    "facing=west,stack=4": {
+      "model": "blockysiege:block/wind_bomb_four",
+      "y": 270
+    }
+  }
+}

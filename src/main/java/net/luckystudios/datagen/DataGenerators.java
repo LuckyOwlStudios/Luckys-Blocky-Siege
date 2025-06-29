@@ -1,6 +1,9 @@
 package net.luckystudios.datagen;
 
 import net.luckystudios.BlockySiege;
+import net.luckystudios.damage_types.ModDamageTypeTagsProvider;
+import net.luckystudios.datagen.blocks.ModBlockTagProvider;
+import net.luckystudios.datagen.items.ModItemTagProvider;
 import net.luckystudios.datagen.types.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -39,5 +42,8 @@ public class DataGenerators {
 
         generator.addProvider(event.includeClient(), new ModItemModelProvider(packOutput, existingFileHelper));
         generator.addProvider(event.includeClient(), new ModBlockStateProvider(packOutput, existingFileHelper));
+
+        generator.addProvider(event.includeServer(), new ModDamageTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
+        generator.addProvider(event.includeServer(), new ModDataPackProvider(packOutput, lookupProvider));
     }
 }

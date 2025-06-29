@@ -1,0 +1,8 @@
+{
+  "parent": "blockysiege:block/template_cannon_ball_three",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "all": "blockysiege:block/projectile/wind_bomb",
+    "particle": "blockysiege:block/projectile/wind_bomb"
+  }
+}

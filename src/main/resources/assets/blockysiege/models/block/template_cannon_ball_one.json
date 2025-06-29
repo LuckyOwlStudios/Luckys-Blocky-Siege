@@ -1,13 +1,27 @@
 {
+	"format_version": "1.21.6",
 	"credit": "Made with Blockbench",
-	"render_type": "translucent",
 	"texture_size": [32, 32],
 	"textures": {
-		"all": "1"
+		"all": "blockysiege:block/projectile/wind_bomb"
 	},
 	"elements": [
 		{
-			"name": "1-inner",
+			"name": "inner",
+			"from": [6, 2, 6],
+			"to": [10, 6, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [8, 4, 8]},
+			"faces": {
+				"north": {"uv": [1, 9, 3, 11], "texture": "#all"},
+				"east": {"uv": [1, 9, 3, 11], "texture": "#all"},
+				"south": {"uv": [1, 9, 3, 11], "texture": "#all"},
+				"west": {"uv": [1, 9, 3, 11], "texture": "#all"},
+				"up": {"uv": [1, 9, 3, 11], "texture": "#all"},
+				"down": {"uv": [1, 9, 3, 11], "texture": "#all"}
+			}
+		},
+		{
+			"name": "middle",
 			"from": [4.25, 0.25, 4.25],
 			"to": [11.75, 7.75, 11.75],
 			"rotation": {"angle": 0, "axis": "y", "origin": [-2, 0, 4]},
@@ -21,7 +35,7 @@
 			}
 		},
 		{
-			"name": "1",
+			"name": "outer",
 			"from": [4, 0, 4],
 			"to": [12, 8, 12],
 			"rotation": {"angle": 0, "axis": "y", "origin": [-2, 0, 4]},
@@ -35,6 +49,7 @@
 			}
 		},
 		{
+			"name": "cap",
 			"from": [6.5, 8, 6.5],
 			"to": [9.5, 10, 9.5],
 			"rotation": {"angle": 0, "axis": "y", "origin": [7, 8, 7]},
@@ -65,7 +80,7 @@
 			"scale": [0.4, 0.4, 0.4]
 		},
 		"firstperson_lefthand": {
-			"rotation": [0, 225, 0],
+			"rotation": [0, -135, 0],
 			"translation": [0, 2.5, 0],
 			"scale": [0.4, 0.4, 0.4]
 		},
@@ -74,7 +89,7 @@
 			"scale": [0.75, 0.75, 0.75]
 		},
 		"gui": {
-			"rotation": [30, 225, 0],
+			"rotation": [30, -135, 0],
 			"translation": [0, 1, 0],
 			"scale": [0.75, 0.75, 0.75]
 		},

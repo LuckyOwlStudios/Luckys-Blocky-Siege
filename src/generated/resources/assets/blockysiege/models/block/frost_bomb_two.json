@@ -1,7 +1,8 @@
 {
   "parent": "blockysiege:block/template_cannon_ball_two",
+  "render_type": "minecraft:translucent",
   "textures": {
-    "all": "blockysiege:block/frost_bomb",
+    "all": "blockysiege:block/projectile/frost_bomb",
     "particle": "minecraft:block/ice"
   }
 }

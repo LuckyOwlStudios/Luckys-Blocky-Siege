@@ -1,6 +1,7 @@
 package net.luckystudios.datagen.types;
 
 import net.luckystudios.BlockySiege;
+import net.luckystudios.items.ModItems;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -12,6 +13,6 @@ public class ModItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-//        basicItem(ModItems.BISMUTH.get());
+        this.basicItem(ModItems.WOODEN_SHRAPNEL.asItem());
     }
 }

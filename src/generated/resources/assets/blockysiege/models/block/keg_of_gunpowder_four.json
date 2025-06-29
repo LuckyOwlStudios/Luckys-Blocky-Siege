@@ -1,7 +1,0 @@
-{
-  "parent": "blockysiege:block/template_cannon_ball_four",
-  "textures": {
-    "all": "blockysiege:block/keg_of_gunpowder",
-    "particle": "minecraft:block/barrel_side"
-  }
-}
