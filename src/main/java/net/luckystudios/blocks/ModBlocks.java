@@ -1,9 +1,11 @@
 package net.luckystudios.blocks;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.blocks.custom.cannon.CannonBlock;
+import net.luckystudios.blocks.custom.cannon.types.generic.CannonBlock;
+import net.luckystudios.blocks.custom.cannon.types.multi.MultiCannonBlock;
 import net.luckystudios.blocks.custom.cannon_ammo.*;
 import net.luckystudios.blocks.custom.explosive_barrel.ExplosiveBarrelBlock;
+import net.luckystudios.blocks.custom.iron_gate.IronGateBlock;
 import net.luckystudios.items.ModItems;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -11,7 +13,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -31,6 +32,26 @@ public class ModBlocks {
                     .strength(5.0F, 6.0F)
                     .sound(SoundType.METAL)
             ));
+
+    public static final DeferredBlock<Block> MULTI_CANNON = registerBlock("multi_cannon",
+            () -> new MultiCannonBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .dynamicShape()
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F, 6.0F)
+                    .sound(SoundType.METAL)
+            ));
+
+    public static final DeferredBlock<Block> IRON_GATE = registerBlock("iron_gate",
+            () -> new IronGateBlock(3, 5, BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .dynamicShape()
+                    .noOcclusion()
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F, 6.0F)
+                    .sound(SoundType.METAL)
+            ));
+
     public static final DeferredBlock<Block> CANNON_BALL = registerBlock("cannon_ball",
             () -> new CannonBallBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)

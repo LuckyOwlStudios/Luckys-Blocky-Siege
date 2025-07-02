@@ -1,6 +1,7 @@
 package net.luckystudios.datagen.types;
 
 import net.luckystudios.blocks.ModBlocks;
+import net.luckystudios.items.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
@@ -18,6 +19,8 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
 
     @Override
     protected void buildRecipes(RecipeOutput recipeOutput) {
+
+        // Cannon Stuff
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.CANNON_BALL.get())
                 .pattern(" # ")
                 .pattern("#@#")
@@ -46,6 +49,15 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .pattern(" # ")
                 .define('@', Blocks.BLUE_ICE)
                 .define('#', Blocks.GLASS)
-                .unlockedBy("has_iron", has(Items.MAGMA_BLOCK)).save(recipeOutput);
+                .unlockedBy("has_blue_ice", has(Items.BLUE_ICE)).save(recipeOutput);
+
+        // Multi-Cannon Stuff
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModItems.BULLET.get())
+                .pattern(" # ")
+                .pattern("#@#")
+                .pattern(" # ")
+                .define('@', Items.GUNPOWDER)
+                .define('#', Items.IRON_INGOT)
+                .unlockedBy("has_iron", has(Items.GUNPOWDER)).save(recipeOutput);
     }
 }

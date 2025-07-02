@@ -1,7 +1,10 @@
 {
   "itemGroup.blockysiege": "Siege Weapons",
 
+  "item.blockysiege.bullet": "Bullet",
+
   "block.blockysiege.cannon": "Cannon",
+  "block.blockysiege.multi_cannon": "Multi-Cannon",
   "block.blockysiege.cannon_ball": "Cannon Ball",
   "block.blockysiege.explosive_keg": "Explosive Keg",
   "block.blockysiege.fire_bomb": "Fire Bomb",
@@ -10,6 +13,7 @@
   "block.blockysiege.explosive_barrel": "Explosive Barrel",
 
   "container.blockysiege.cannon": "Cannon",
+  "container.blockysiege.multi_cannon": "Multi-Cannon",
   "container.blockysiege.cannon.aim": "Click to Aim Cannon",
 
   "entity.blockysiege.cannon_ball": "Cannon Ball",
@@ -19,6 +23,7 @@
   "entity.blockysiege.wind_bomb": "Wind Bomb",
 
   "sounds.blockysiege.cannon_fire": "CANNON FIRED!",
+  "block.blockysiege.shoot": "SHOOT!",
   "sounds.blockysiege.hit_metal": "Metal Hit",
   "sounds.blockysiege.bottle_pop_small": "Small Bottle Popped",
   "sounds.blockysiege.bottle_pop_large": "Large Bottle Popped",

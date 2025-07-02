@@ -12,6 +12,9 @@ public class ModItems {
     public static final DeferredItem<Item> WOODEN_SHRAPNEL = ITEMS.register("wooden_shrapnel",
             () -> new Item(new Item.Properties()));
 
+    public static final DeferredItem<Item> BULLET = ITEMS.register("bullet",
+            () -> new Item(new Item.Properties()));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

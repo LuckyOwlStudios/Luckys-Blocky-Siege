@@ -1,13 +1,12 @@
 package net.luckystudios.entity.custom.seat;
 
-import net.luckystudios.blocks.custom.cannon.CannonBlockEntity;
+import net.luckystudios.blocks.custom.cannon.AbstractAimableBlockEntity;
+import net.luckystudios.blocks.custom.cannon.types.generic.CannonBlock;
 import net.luckystudios.entity.ModEntityTypes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
@@ -15,6 +14,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -45,16 +45,21 @@ public class Seat extends Entity {
     public void tick() {
         super.tick();
         Level level = this.level();
+        BlockState blockState = level.getBlockState(blockPosition());
         if (this.getControllingPassenger() == null) return;
         if (!(this.getControllingPassenger() instanceof LivingEntity livingEntity)) return;
         this.setRot(livingEntity.getYRot(), livingEntity.getXRot() * 0.5F);
-        if (!(level.getBlockEntity(blockPosition()) instanceof CannonBlockEntity cannonBlockEntity)) return;
+        if (!(level.getBlockEntity(blockPosition()) instanceof AbstractAimableBlockEntity aimableBlockEntity)) return;
         float playerYaw = livingEntity.getYRot();
         float playerPitch = livingEntity.getXRot();
         float normalizedYaw = (playerYaw % 360 + 360) % 360;
         float flippedPitch = -playerPitch;
-        cannonBlockEntity.setYaw(normalizedYaw);
-        cannonBlockEntity.setPitch(flippedPitch);
+        if (livingEntity instanceof Player player) {
+
+        }
+        aimableBlockEntity.setYaw(normalizedYaw);
+        aimableBlockEntity.setPitch(flippedPitch);
+        aimableBlockEntity.setChanged();
     }
 
     @Override

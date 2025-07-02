@@ -4,6 +4,8 @@ import net.luckystudios.blocks.custom.cannon.inventory.CannonScreenPacket;
 import net.luckystudios.blocks.util.ModBlockEntityTypes;
 import net.luckystudios.blocks.ModBlocks;
 import net.luckystudios.entity.ModEntityTypes;
+import net.luckystudios.keybinds.ControllingCannonPacket;
+import net.luckystudios.particles.ModParticleTypes;
 import net.luckystudios.screens.ModMenuTypes;
 import net.luckystudios.items.ModCreativeModeTabs;
 import net.luckystudios.items.ModItems;
@@ -19,10 +21,8 @@ import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.level.block.Blocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -63,6 +63,10 @@ public class BlockySiege
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
 
+        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
+        modContainer.registerConfig(ModConfig.Type.COMMON, BlockySiegeConfig.COMMON_CONFIG);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, BlockySiegeConfig.CLIENT_CONFIG);
+
         ModCreativeModeTabs.register(modEventBus);
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
@@ -70,14 +74,13 @@ public class BlockySiege
         ModMenuTypes.register(modEventBus);
         ModEntityTypes.register(modEventBus);
         ModSoundEvents.register(modEventBus);
+        ModParticleTypes.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
 
         // Register the item to a creative tab
         modEventBus.addListener(this::addCreative);
 
-        // Register our mod's ModConfigSpec so that FML can create and load the config file for us
-        modContainer.registerConfig(ModConfig.Type.COMMON, BlockySiegeConfig.SPEC);
         modEventBus.addListener(this::registerNetworking);
     }
 
@@ -103,6 +106,7 @@ public class BlockySiege
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
+        BlockySiege.addNetworkMessage(ControllingCannonPacket.TYPE, ControllingCannonPacket.STREAM_CODEC, ControllingCannonPacket::handleData);
         BlockySiege.addNetworkMessage(CannonScreenPacket.TYPE, CannonScreenPacket.STREAM_CODEC, CannonScreenPacket::handleData);
     }
 

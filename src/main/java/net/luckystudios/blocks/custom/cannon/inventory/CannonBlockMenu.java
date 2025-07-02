@@ -1,7 +1,9 @@
 package net.luckystudios.blocks.custom.cannon.inventory;
 
 import net.luckystudios.blocks.ModBlocks;
-import net.luckystudios.blocks.custom.cannon.CannonBlockEntity;
+import net.luckystudios.blocks.custom.cannon.AbstractShootingAimableBlockEntity;
+import net.luckystudios.blocks.custom.cannon.types.generic.CannonBlockEntity;
+import net.luckystudios.blocks.custom.cannon.types.multi.MultiCannonBlockEntity;
 import net.luckystudios.screens.CannonAmmoSlotItemHandler;
 import net.luckystudios.screens.FuseSlotItemHandler;
 import net.luckystudios.screens.ModMenuTypes;
@@ -17,7 +19,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class CannonBlockMenu extends AbstractContainerMenu {
-    public final CannonBlockEntity blockEntity;
+    public final AbstractShootingAimableBlockEntity blockEntity;
     private final Level level;
 
     public CannonBlockMenu(int containerId, Inventory inv, FriendlyByteBuf extraData) {
@@ -26,13 +28,17 @@ public class CannonBlockMenu extends AbstractContainerMenu {
 
     public CannonBlockMenu(int containerId, Inventory inv, BlockEntity blockEntity) {
         super(ModMenuTypes.CANNON_BLOCK_MENU.get(), containerId);
-        this.blockEntity = ((CannonBlockEntity) blockEntity);
+        this.blockEntity = ((AbstractShootingAimableBlockEntity) blockEntity);
         this.level = inv.player.level();
 
         addPlayerInventory(inv);
         addPlayerHotbar(inv);
-
-        this.addSlot(new CannonAmmoSlotItemHandler(this.blockEntity.inventory, 0, 80, 35));
+        if (blockEntity instanceof CannonBlockEntity) {
+            this.addSlot(new CannonAmmoSlotItemHandler(this.blockEntity.inventory, 0, 80, 35));
+        }
+        if (blockEntity instanceof MultiCannonBlockEntity) {
+            this.addSlot(new CannonAmmoSlotItemHandler(this.blockEntity.inventory, 0, 80, 35));
+        }
         this.addSlot(new FuseSlotItemHandler(this.blockEntity.inventory, 1, 40, 26));
     }
 
@@ -90,7 +96,8 @@ public class CannonBlockMenu extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player player) {
         return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
-                player, ModBlocks.CANNON.get());
+                player, ModBlocks.CANNON.get()) || stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
+                player, ModBlocks.MULTI_CANNON.get());
     }
 
     private void addPlayerInventory(Inventory playerInventory) {

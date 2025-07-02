@@ -26,5 +26,11 @@ public class ModItemTagProvider extends ItemTagsProvider {
                 .add(ModBlocks.FROST_BOMB.get().asItem())
                 .add(ModBlocks.WIND_BOMB.get().asItem())
         ;
+
+        tag(ModItemTags.BOTTLED_AMMO)
+                .add(ModBlocks.FIRE_BOMB.get().asItem())
+                .add(ModBlocks.FROST_BOMB.get().asItem())
+                .add(ModBlocks.WIND_BOMB.get().asItem())
+        ;
     }
 }

@@ -2,6 +2,7 @@ package net.luckystudios.entity;
 
 import net.luckystudios.BlockySiege;
 import net.luckystudios.entity.custom.ballista.Ballista;
+import net.luckystudios.entity.custom.bullet.Bullet;
 import net.luckystudios.entity.custom.cannon_ball.explosive_barrel.ExplosiveKeg;
 import net.luckystudios.entity.custom.cannon_ball.fire_bomb.FireBomb;
 import net.luckystudios.entity.custom.cannon_ball.frost_bomb.FrostBomb;
@@ -83,6 +84,14 @@ public class ModEntityTypes {
             ENTITY_TYPES.register("wooden_shrapnel", () -> EntityType.Builder.<WoodenShrapnel>of(WoodenShrapnel::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .build("wooden_shrapnel"));
+
+    public static final Supplier<EntityType<Bullet>> BULLET =
+            ENTITY_TYPES.register("bullet", () -> EntityType.Builder.<Bullet>of(Bullet::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .eyeHeight(0.125F)
+                    .clientTrackingRange(6)
+                    .updateInterval(1)
+                    .build("bullet"));
 
     public static final Supplier<EntityType<Ballista>> BALLISTA =
             ENTITY_TYPES.register("ballista", () -> EntityType.Builder.of(Ballista::new, MobCategory.MISC)

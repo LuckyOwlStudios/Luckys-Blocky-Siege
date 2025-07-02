@@ -45,8 +45,7 @@ public class CannonBall extends AbstractCannonBall {
 
     @Override
     protected List<ParticleOptions> getTrailParticles() {
-        ParticleOptions smokeParticle = ParticleTypes.CAMPFIRE_COSY_SMOKE;
-        return List.of(smokeParticle);
+        return List.of();
     }
 
     @Override

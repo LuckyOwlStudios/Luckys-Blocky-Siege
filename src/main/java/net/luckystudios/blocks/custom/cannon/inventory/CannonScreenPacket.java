@@ -1,7 +1,7 @@
 package net.luckystudios.blocks.custom.cannon.inventory;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.blocks.custom.cannon.CannonBlockEntity;
+import net.luckystudios.blocks.custom.cannon.AbstractShootingAimableBlockEntity;
 import net.luckystudios.entity.custom.seat.Seat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -72,7 +72,7 @@ public class CannonScreenPacket implements CustomPacketPayload {
         Level level = player.level();
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (!(blockEntity instanceof CannonBlockEntity cannonBlockEntity)) return;
+        if (!(blockEntity instanceof AbstractShootingAimableBlockEntity shootingAimableBlockEntity)) return;
 
         switch (type) {
             case AIM_BUTTON -> {
@@ -83,18 +83,18 @@ public class CannonScreenPacket implements CustomPacketPayload {
             }
             case SET_POWER_1 -> {
                 // Example logic
-                cannonBlockEntity.firePower = 1;
+                shootingAimableBlockEntity.firePower = 1;
             }
             case SET_POWER_2 -> {
                 // Example logic
-                cannonBlockEntity.firePower = 2;
+                shootingAimableBlockEntity.firePower = 2;
             }
             case SET_POWER_3 -> {
                 // Example logic
-                cannonBlockEntity.firePower = 3;
+                shootingAimableBlockEntity.firePower = 3;
             }
             case SET_POWER_4 -> {
-                cannonBlockEntity.firePower = 4;
+                shootingAimableBlockEntity.firePower = 4;
             }
         }
     }

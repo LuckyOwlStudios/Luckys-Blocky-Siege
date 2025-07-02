@@ -14,6 +14,7 @@ public class ModSoundEvents {
             DeferredRegister.create(BuiltInRegistries.SOUND_EVENT, BlockySiege.MOD_ID);
 
     public static final Supplier<SoundEvent> CANNON_FIRE = registerSoundEvent("cannon_fire");
+    public static final Supplier<SoundEvent> SHOOT = registerSoundEvent("shoot");
     public static final Supplier<SoundEvent> METAL_HIT = registerSoundEvent("metal_hit");
     public static final Supplier<SoundEvent> BOTTLE_POP_SMALL = registerSoundEvent("bottle_pop_small");
     public static final Supplier<SoundEvent> BOTTLE_POP_LARGE = registerSoundEvent("bottle_pop_large");

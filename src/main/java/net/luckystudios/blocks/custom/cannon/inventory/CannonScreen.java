@@ -2,7 +2,7 @@ package net.luckystudios.blocks.custom.cannon.inventory;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.luckystudios.BlockySiege;
-import net.luckystudios.blocks.custom.cannon.CannonBlockEntity;
+import net.luckystudios.blocks.custom.cannon.AbstractShootingAimableBlockEntity;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;
@@ -23,7 +23,7 @@ public class CannonScreen extends AbstractContainerScreen<CannonBlockMenu> {
     Level level;
     BlockPos blockPos;
     Player player;
-    CannonBlockEntity cannonBlockEntity;
+    AbstractShootingAimableBlockEntity cannonBlockEntity;
 
     ImageButton targetButton;
     ImageButton power1Button;

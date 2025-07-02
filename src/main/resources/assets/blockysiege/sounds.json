@@ -5,6 +5,14 @@
       "blockysiege:cannon_fire_01"
     ]
   },
+  "shoot": {
+  "subtitle": "block.blockysiege.shoot",
+  "sounds": [
+    "blockysiege:gun_shoot_01",
+    "blockysiege:gun_shoot_02",
+    "blockysiege:gun_shoot_03"
+  ]
+},
   "hit_metal": {
     "subtitle": "sounds.blockysiege.hit_metal",
     "sounds": [

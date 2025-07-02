@@ -1,4 +1,4 @@
-package net.luckystudios.blocks.custom.cannon;
+package net.luckystudios.blocks.custom.cannon.types.generic;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -18,7 +18,7 @@ import net.minecraft.world.phys.AABB;
 
 public class CannonRenderer implements BlockEntityRenderer<CannonBlockEntity> {
 
-	private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/entity/cannon.png");
+	private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/block/cannon.png");
 
 	private final ModelPart yaw;
 	private final ModelPart pitch;
