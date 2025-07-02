@@ -1,6 +1,6 @@
 package net.luckystudios.screens;
 
-import net.luckystudios.datagen.items.ModItemTags;
+import net.luckystudios.items.ModItems;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.items.IItemHandler;
 import net.neoforged.neoforge.items.SlotItemHandler;
@@ -12,6 +12,6 @@ public class MultiCannonAmmoSlotItemHandler extends SlotItemHandler {
 
     @Override
     public boolean mayPlace(ItemStack stack) {
-        return stack.is(ModItemTags.CANNON_AMMO);
+        return stack.is(ModItems.BULLET.asItem());
     }
 }

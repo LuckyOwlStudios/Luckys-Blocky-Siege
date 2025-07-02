@@ -7,6 +7,7 @@ import net.luckystudios.blocks.custom.cannon.types.multi.MultiCannonBlockEntity;
 import net.luckystudios.screens.CannonAmmoSlotItemHandler;
 import net.luckystudios.screens.FuseSlotItemHandler;
 import net.luckystudios.screens.ModMenuTypes;
+import net.luckystudios.screens.MultiCannonAmmoSlotItemHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -37,7 +38,7 @@ public class CannonBlockMenu extends AbstractContainerMenu {
             this.addSlot(new CannonAmmoSlotItemHandler(this.blockEntity.inventory, 0, 80, 35));
         }
         if (blockEntity instanceof MultiCannonBlockEntity) {
-            this.addSlot(new CannonAmmoSlotItemHandler(this.blockEntity.inventory, 0, 80, 35));
+            this.addSlot(new MultiCannonAmmoSlotItemHandler(this.blockEntity.inventory, 0, 80, 35));
         }
         this.addSlot(new FuseSlotItemHandler(this.blockEntity.inventory, 1, 40, 26));
     }

@@ -3,6 +3,8 @@ package net.luckystudios;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.luckystudios.blocks.custom.cannon.inventory.CannonScreen;
+import net.luckystudios.blocks.custom.cannon.types.generic.CannonModel;
+import net.luckystudios.blocks.custom.cannon.types.multi.MultiCannonModel;
 import net.luckystudios.blocks.custom.cannon.types.multi.MultiCannonRenderer;
 import net.luckystudios.blocks.custom.iron_gate.IronGateRenderer;
 import net.luckystudios.blocks.util.ModBlockEntityTypes;
@@ -59,8 +61,8 @@ public class BlockySiegeClient {
 
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition(ModModelLayers.CANNON, CannonRenderer::createBodyLayer);
-        event.registerLayerDefinition(ModModelLayers.MULTI_CANNON, MultiCannonRenderer::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.CANNON, CannonModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.MULTI_CANNON, MultiCannonModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.IRON_GATE, IronGateRenderer::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.CANNON_BALL, CannonBallModel::createBodyLayer);
     }

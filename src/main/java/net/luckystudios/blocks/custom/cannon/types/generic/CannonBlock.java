@@ -35,14 +35,12 @@ public class CannonBlock extends AbstractAimableBlock {
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (!level.isClientSide()) {
-            if (level.getBlockEntity(pos) instanceof CannonBlockEntity cannonBlockEntity) {
-                if (stack.is(Items.FLINT_AND_STEEL)) {
-                    triggerBlock(state, level, pos);
-                } else {
-                    player.openMenu(new SimpleMenuProvider(cannonBlockEntity, Component.translatable("container.blockysiege.cannon")), pos);
-                    return ItemInteractionResult.SUCCESS;
-                }
+        if (level.getBlockEntity(pos) instanceof CannonBlockEntity cannonBlockEntity) {
+            if (stack.is(Items.FLINT_AND_STEEL)) {
+                triggerBlock(state, level, pos);
+            } else {
+                player.openMenu(new SimpleMenuProvider(cannonBlockEntity, Component.translatable("container.blockysiege.cannon")), pos);
+                return ItemInteractionResult.SUCCESS;
             }
         }
         return ItemInteractionResult.SUCCESS;
@@ -71,9 +69,7 @@ public class CannonBlock extends AbstractAimableBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide() ?
-                createTickerHelper(blockEntityType, ModBlockEntityTypes.CANNON_BLOCK_ENTITY.get(), CannonBlockEntity::clientTick) :
-                createTickerHelper(blockEntityType, ModBlockEntityTypes.CANNON_BLOCK_ENTITY.get(), CannonBlockEntity::tick);
+        return createTickerHelper(blockEntityType, ModBlockEntityTypes.CANNON_BLOCK_ENTITY.get(), CannonBlockEntity::tick);
     }
 
     @Override
@@ -94,7 +90,7 @@ public class CannonBlock extends AbstractAimableBlock {
         level.playSound(null, pos, SoundEvents.TNT_PRIMED, SoundSource.BLOCKS, 1.0f, 1.0f);
         if (level.getBlockEntity(pos) instanceof CannonBlockEntity cannonBlockEntity) {
             if (cannonBlockEntity.cooldown != 0) return;
-            cannonBlockEntity.cooldown = 60; // Set fuse time for the cannon
+            cannonBlockEntity.cooldown = cannonBlockEntity.maxCooldown; // Set fuse time for the cannon
             cannonBlockEntity.setChanged();
         }
     }

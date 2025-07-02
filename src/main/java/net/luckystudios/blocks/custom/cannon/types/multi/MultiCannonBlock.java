@@ -5,8 +5,6 @@ import net.luckystudios.blocks.custom.cannon.AbstractAimableBlock;
 import net.luckystudios.blocks.util.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
@@ -37,14 +35,12 @@ public class MultiCannonBlock extends AbstractAimableBlock {
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (!level.isClientSide()) {
-            if (level.getBlockEntity(pos) instanceof MultiCannonBlockEntity multiCannonBlockEntity) {
-                if (stack.is(Items.FLINT_AND_STEEL)) {
-                    triggerBlock(state, level, pos);
-                } else {
-                    player.openMenu(new SimpleMenuProvider(multiCannonBlockEntity, Component.translatable("container.blockysiege.multi_cannon")), pos);
-                    return ItemInteractionResult.SUCCESS;
-                }
+        if (level.getBlockEntity(pos) instanceof MultiCannonBlockEntity multiCannonBlockEntity) {
+            if (stack.is(Items.FLINT_AND_STEEL)) {
+                triggerBlock(state, level, pos);
+            } else {
+                player.openMenu(new SimpleMenuProvider(multiCannonBlockEntity, Component.translatable("container.blockysiege.multi_cannon")), pos);
+                return ItemInteractionResult.SUCCESS;
             }
         }
         return ItemInteractionResult.SUCCESS;
@@ -65,10 +61,11 @@ public class MultiCannonBlock extends AbstractAimableBlock {
 
     @Override
     public void triggerBlock(BlockState state, Level level, BlockPos pos) {
-        if (level.getBlockEntity(pos) instanceof MultiCannonBlockEntity cannonBlockEntity) {
-            if (cannonBlockEntity.cooldown != 0) return;
-            cannonBlockEntity.cooldown = MultiCannonBlockEntity.maxCooldown; // Set fuse time for the cannon
-            cannonBlockEntity.setChanged();
+        if (level.getBlockEntity(pos) instanceof MultiCannonBlockEntity multiCannonBlockEntity) {
+            if (multiCannonBlockEntity.cooldown != 0) return;
+            multiCannonBlockEntity.cooldown = multiCannonBlockEntity.maxCooldown; // Set fuse time for the cannon
+            multiCannonBlockEntity.animationTime = multiCannonBlockEntity.animationLength;
+            multiCannonBlockEntity.setChanged();
         }
     }
 
@@ -86,8 +83,6 @@ public class MultiCannonBlock extends AbstractAimableBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return level.isClientSide() ?
-                createTickerHelper(blockEntityType, ModBlockEntityTypes.MULTI_CANNON_BLOCK_ENTITY.get(), MultiCannonBlockEntity::clientTick) :
-                createTickerHelper(blockEntityType, ModBlockEntityTypes.MULTI_CANNON_BLOCK_ENTITY.get(), MultiCannonBlockEntity::tick);
+        return createTickerHelper(blockEntityType, ModBlockEntityTypes.MULTI_CANNON_BLOCK_ENTITY.get(), MultiCannonBlockEntity::tick);
     }
 }
