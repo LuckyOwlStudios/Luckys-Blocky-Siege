@@ -2,18 +2,22 @@ package net.luckystudios.keybinds;
 
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.platform.InputConstants;
+import net.luckystudios.blocks.custom.cannon.AbstractShootingAimableBlockEntity;
+import net.luckystudios.entity.custom.seat.Seat;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.options.controls.KeyBindsList;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
@@ -21,7 +25,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.function.Supplier;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = {Dist.CLIENT})
-public class TestModKeyMappings {
+public class ModKeyMappings {
     public static final Supplier<KeyMapping> FIRE_CANNON = Suppliers.memoize( () -> new KeyMapping(
             "key.blockysiege.fire_cannon",
             InputConstants.Type.KEYSYM,
@@ -34,28 +38,38 @@ public class TestModKeyMappings {
         event.register(FIRE_CANNON.get());
     }
 
-    public static String getKeyName(Supplier<KeyMapping> keyMappingSupplier) {
-        KeyMapping keyMapping = keyMappingSupplier.get();
-        return keyMapping.getKey().getDisplayName().getString();
-    }
-
     @EventBusSubscriber({Dist.CLIENT})
     public static class KeyEventListener {
+
         @SubscribeEvent
-        public static void onClientTick(ClientTickEvent.Post event) {
+        public static void onClientTick(ClientTickEvent.Pre event) {
             Minecraft mc = Minecraft.getInstance();
-            if (mc.player == null) return;
-            BlockPos blockPos = mc.player.blockPosition();
-            if (mc.options.keyInventory.isDown()) {
-                if (playerIsControllingCannon(mc.player)) {
-                    PacketDistributor.sendToServer(new ControllingCannonPacket(blockPos,0, 0));
-                }
+            Player player = mc.player;
+            if (player == null) return;
+
+            Entity vehicle = player.getVehicle();
+            if (!(vehicle instanceof Seat seat)) return;
+
+            BlockPos seatPos = seat.blockPosition();
+            Level level = player.level();
+
+            BlockEntity blockEntity = level.getBlockEntity(seatPos);
+            if (!(blockEntity instanceof AbstractShootingAimableBlockEntity)) return;
+
+            KeyMapping inventoryKey = mc.options.keyInventory;
+            KeyMapping fireCannonKey = mc.options.keyUse;
+
+            if (inventoryKey.consumeClick()) {
+                PacketDistributor.sendToServer(new ControllingCannonPacket(seatPos, 0, 0));
+            } else if (fireCannonKey.consumeClick()) {
+                PacketDistributor.sendToServer(new ControllingCannonPacket(seatPos, 3, 0));
             }
         }
 
-        private static boolean playerIsControllingCannon(Player player) {
-            // Your logic here – e.g. wearing a helmet, riding a block, etc.
-            return true;
+
+        @SubscribeEvent
+        public static void onKeyInput(InputEvent.Key event) {
+
         }
     }
 }

@@ -17,9 +17,9 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
-public class CannonScreenPacket implements CustomPacketPayload {
+public class ShooingBlockScreenPacket implements CustomPacketPayload {
 
-    public static final Type<CannonScreenPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "cannon_screen_packet"));
+    public static final Type<ShooingBlockScreenPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "cannon_screen_packet"));
 
     public static final int AIM_BUTTON = 0;
     public static final int SET_POWER_1 = 1;
@@ -27,17 +27,17 @@ public class CannonScreenPacket implements CustomPacketPayload {
     public static final int SET_POWER_3 = 3;
     public static final int SET_POWER_4 = 4;
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, CannonScreenPacket> STREAM_CODEC = StreamCodec.of((RegistryFriendlyByteBuf buffer, CannonScreenPacket message) -> {
+    public static final StreamCodec<RegistryFriendlyByteBuf, ShooingBlockScreenPacket> STREAM_CODEC = StreamCodec.of((RegistryFriendlyByteBuf buffer, ShooingBlockScreenPacket message) -> {
         buffer.writeBlockPos(message.blockPos);
         buffer.writeInt(message.eventType);
         buffer.writeInt(message.pressed);
-    }, (RegistryFriendlyByteBuf buffer) -> new CannonScreenPacket(buffer.readBlockPos(), buffer.readInt(), buffer.readInt()));
+    }, (RegistryFriendlyByteBuf buffer) -> new ShooingBlockScreenPacket(buffer.readBlockPos(), buffer.readInt(), buffer.readInt()));
 
     BlockPos blockPos;
     public final int eventType;
     public final int pressed;
 
-    public CannonScreenPacket(BlockPos pos, int eventType, int pressedms) {
+    public ShooingBlockScreenPacket(BlockPos pos, int eventType, int pressedms) {
         this.blockPos = pos;
         this.eventType = eventType;
         this.pressed = pressedms;
@@ -48,7 +48,7 @@ public class CannonScreenPacket implements CustomPacketPayload {
         return TYPE;
     }
 
-    public static void handleData(final CannonScreenPacket message, final IPayloadContext context) {
+    public static void handleData(final ShooingBlockScreenPacket message, final IPayloadContext context) {
         if (context.flow() == PacketFlow.SERVERBOUND) {
             context.enqueueWork(() -> {
                 pressAction(context.player(), message.blockPos, message.eventType, message.pressed);

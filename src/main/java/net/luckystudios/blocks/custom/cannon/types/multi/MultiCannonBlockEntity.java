@@ -3,6 +3,7 @@ package net.luckystudios.blocks.custom.cannon.types.multi;
 import net.luckystudios.blocks.custom.cannon.AbstractShootingAimableBlockEntity;
 import net.luckystudios.blocks.util.ModBlockEntityTypes;
 import net.luckystudios.entity.custom.bullet.Bullet;
+import net.luckystudios.items.ModItems;
 import net.luckystudios.sounds.ModSoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -15,9 +16,11 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,10 +39,10 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
     public static void tick(Level level, BlockPos pos, BlockState state, MultiCannonBlockEntity multiCannonBlockEntity) {
         extraTick(level, pos, state, multiCannonBlockEntity);
-        Vec3 particlePos = getParticleLocation(multiCannonBlockEntity, new Vec3(0, 0.0625, 0), 0.5f, 0.3f);
+        Vec3 particlePos = getRelativeLocationWithOffset(multiCannonBlockEntity, new Vec3(0, 0.0625, 0), 0.5f, 0.3f, 0.0F);
         if (multiCannonBlockEntity.cooldown > 0) {
             if (multiCannonBlockEntity.cooldown > multiCannonBlockEntity.maxCooldown - 15) {
-                if (multiCannonBlockEntity.cooldown % 3 == 0) {
+                if (multiCannonBlockEntity.cooldown % 3 == 0 && multiCannonBlockEntity.canShoot(multiCannonBlockEntity)) {
                     fireCannon(level, pos, multiCannonBlockEntity);
                 }
             } else {
@@ -62,6 +65,23 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean canShoot(AbstractShootingAimableBlockEntity aimableBlockEntity) {
+        ItemStack fuseStack = aimableBlockEntity.inventory.getStackInSlot(0);
+        ItemStack bulletStack = aimableBlockEntity.inventory.getStackInSlot(1);
+        return !fuseStack.isEmpty() && bulletStack.is(ModItems.BULLET);
+    }
+
+    @Override
+    public boolean hasFuse(ItemStack fuseStack) {
+        return fuseStack.is(Tags.Items.GUNPOWDERS);
+    }
+
+    @Override
+    public boolean hasAmmo(ItemStack ammoStack) {
+        return ammoStack.is(ModItems.BULLET);
     }
 
     public static void fireCannon(Level level, BlockPos pos, MultiCannonBlockEntity multiCannonBlockEntity) {
@@ -87,11 +107,12 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
         if (multiCannonBlockEntity.barrelIndex > 3) multiCannonBlockEntity.barrelIndex = 0; // Reset if out of bounds
     }
 
+    // We use this to get the multiple barrel positions on the multi-cannon
     private static List<Vec3> getBarrelPositions(MultiCannonBlockEntity cannonBlockEntity) {
-        Vec3 topLeftBarrel = getRelativeLocation(cannonBlockEntity, new Vec3(0, 0.0625, 0), 0.125F, -1.0F, 0.1875F);
-        Vec3 topRightBarrel = getRelativeLocation(cannonBlockEntity, new Vec3(0, 0.0625, 0), 0.125F, -1.0F, -0.1875F);
-        Vec3 bottomLeftBarrel = getRelativeLocation(cannonBlockEntity, new Vec3(0, 0.0625, 0), -0.125F, -1.0F, 0.1875F);
-        Vec3 bottomRightBarrel = getRelativeLocation(cannonBlockEntity, new Vec3(0, 0.0625, 0), -0.125F, -1.0F, -0.1875F);
+        Vec3 topLeftBarrel = getRelativeLocationWithOffset(cannonBlockEntity, new Vec3(0, 0.0625, 0), 0.125F, -1.0F, 0.1875F);
+        Vec3 topRightBarrel = getRelativeLocationWithOffset(cannonBlockEntity, new Vec3(0, 0.0625, 0), 0.125F, -1.0F, -0.1875F);
+        Vec3 bottomLeftBarrel = getRelativeLocationWithOffset(cannonBlockEntity, new Vec3(0, 0.0625, 0), -0.125F, -1.0F, 0.1875F);
+        Vec3 bottomRightBarrel = getRelativeLocationWithOffset(cannonBlockEntity, new Vec3(0, 0.0625, 0), -0.125F, -1.0F, -0.1875F);
         return List.of(topLeftBarrel, topRightBarrel, bottomLeftBarrel, bottomRightBarrel);
     }
 

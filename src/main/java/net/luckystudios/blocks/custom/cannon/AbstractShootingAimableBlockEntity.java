@@ -1,10 +1,12 @@
 package net.luckystudios.blocks.custom.cannon;
 
-import net.luckystudios.blocks.custom.cannon.inventory.CannonBlockMenu;
+import net.luckystudios.blocks.custom.cannon.inventory.ShootingBlockMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -85,37 +87,10 @@ public abstract class AbstractShootingAimableBlockEntity extends AbstractAimable
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        return new CannonBlockMenu(containerId, playerInventory, this);
+        return new ShootingBlockMenu(containerId, playerInventory, this);
     }
 
-    public static Vec3 getParticleLocation(AbstractAimableBlockEntity aimableBlockEntity, Vec3 rotationPointOffset, float upOffset, float forwardOffset) {
-        // Absolute center of rotation (block center + pivot offset)
-        Vec3 centerOfRotation = Vec3.atCenterOf(aimableBlockEntity.getBlockPos()).add(rotationPointOffset);
-
-        // Yaw and pitch in radians
-        float yawRad = (float) -Math.toRadians(aimableBlockEntity.yaw);
-        float pitchRad = (float) -Math.toRadians(aimableBlockEntity.pitch);
-
-        // Forward vector from yaw and pitch
-        Vec3 forward = new Vec3(
-                -Math.sin(yawRad) * Math.cos(pitchRad),
-                Math.sin(pitchRad),
-                -Math.cos(yawRad) * Math.cos(pitchRad)  // negative Z to match MC forward
-        ).normalize();
-
-        // Compute right and local up vectors
-        Vec3 globalUp = new Vec3(0, 1, 0);
-        Vec3 right = globalUp.cross(forward).normalize();
-        Vec3 up = forward.cross(right).normalize();
-
-        // Offset from rotation point in local space
-        Vec3 offset = forward.scale(forwardOffset).add(up.scale(upOffset));
-
-        // Final world position
-        return centerOfRotation.add(offset);
-    }
-
-    public static Vec3 getRelativeLocation(AbstractAimableBlockEntity aimableBlockEntity, Vec3 rotationPointOffset, float upOffset, float forwardOffset, float leftOffset) {
+    public static Vec3 getRelativeLocationWithOffset(AbstractAimableBlockEntity aimableBlockEntity, Vec3 rotationPointOffset, float upOffset, float forwardOffset, float leftOffset) {
         // Absolute center of rotation (block center + pivot offset)
         Vec3 centerOfRotation = Vec3.atCenterOf(aimableBlockEntity.getBlockPos()).add(rotationPointOffset);
 
@@ -143,4 +118,23 @@ public abstract class AbstractShootingAimableBlockEntity extends AbstractAimable
         return centerOfRotation.add(offset);
     }
 
+    public void drops() {
+        SimpleContainer inv = new SimpleContainer(inventory.getSlots());
+        for(int i = 0; i < inventory.getSlots(); i++) {
+            inv.setItem(i, inventory.getStackInSlot(i));
+        }
+        Containers.dropContents(this.level, this.worldPosition, inv);
+    }
+
+    public boolean canShoot(AbstractShootingAimableBlockEntity aimableBlockEntity) {
+        ItemStack fuseStack = aimableBlockEntity.inventory.getStackInSlot(0);
+        ItemStack ammoStack = aimableBlockEntity.inventory.getStackInSlot(1);
+        return hasFuse(fuseStack) && hasAmmo(ammoStack) && aimableBlockEntity.cooldown <= 0;
+    }
+
+    // Abstract method to be implemented by subclasses
+    public abstract boolean hasFuse(ItemStack fuseStack);
+
+    // Abstract method to be implemented by subclasses
+    public abstract boolean hasAmmo(ItemStack ammoStack);
 }

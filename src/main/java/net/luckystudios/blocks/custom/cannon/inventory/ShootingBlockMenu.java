@@ -19,28 +19,27 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
 
-public class CannonBlockMenu extends AbstractContainerMenu {
+public class ShootingBlockMenu extends AbstractContainerMenu {
     public final AbstractShootingAimableBlockEntity blockEntity;
     private final Level level;
 
-    public CannonBlockMenu(int containerId, Inventory inv, FriendlyByteBuf extraData) {
+    public ShootingBlockMenu(int containerId, Inventory inv, FriendlyByteBuf extraData) {
         this(containerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()));
     }
 
-    public CannonBlockMenu(int containerId, Inventory inv, BlockEntity blockEntity) {
+    public ShootingBlockMenu(int containerId, Inventory inv, BlockEntity blockEntity) {
         super(ModMenuTypes.CANNON_BLOCK_MENU.get(), containerId);
         this.blockEntity = ((AbstractShootingAimableBlockEntity) blockEntity);
         this.level = inv.player.level();
 
+        // Slots for the player
         addPlayerInventory(inv);
         addPlayerHotbar(inv);
-        if (blockEntity instanceof CannonBlockEntity) {
-            this.addSlot(new CannonAmmoSlotItemHandler(this.blockEntity.inventory, 0, 80, 35));
-        }
-        if (blockEntity instanceof MultiCannonBlockEntity) {
-            this.addSlot(new MultiCannonAmmoSlotItemHandler(this.blockEntity.inventory, 0, 80, 35));
-        }
-        this.addSlot(new FuseSlotItemHandler(this.blockEntity.inventory, 1, 40, 26));
+
+        // Slots for the cannon or multi-cannon
+        this.addSlot(new FuseSlotItemHandler(this.blockEntity.inventory, 0, 40, 26));
+        if (blockEntity instanceof CannonBlockEntity) this.addSlot(new CannonAmmoSlotItemHandler(this.blockEntity.inventory, 1, 80, 35));
+        if (blockEntity instanceof MultiCannonBlockEntity) this.addSlot(new MultiCannonAmmoSlotItemHandler(this.blockEntity.inventory, 1, 80, 35));
     }
 
     // CREDIT GOES TO: diesieben07 | https://github.com/diesieben07/SevenCommons

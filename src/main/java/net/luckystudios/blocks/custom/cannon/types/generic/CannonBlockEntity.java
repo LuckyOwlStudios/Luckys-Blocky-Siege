@@ -26,6 +26,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -42,49 +43,49 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         return this.firePower;
     }
 
+    @Override
+    public boolean hasFuse(ItemStack fuseStack) {
+        return fuseStack.is(Tags.Items.GUNPOWDERS);
+    }
+
+    @Override
+    public boolean hasAmmo(ItemStack ammoStack) {
+        return ammoStack.is(ModItemTags.CANNON_AMMO);
+    }
+
     public static void tick(Level level, BlockPos pos, BlockState state, CannonBlockEntity cannonBlockEntity) {
         extraTick(level, pos, state, cannonBlockEntity);
-        ItemStack cannonBall = cannonBlockEntity.inventory.getStackInSlot(0);
-        if (cannonBlockEntity.cooldown > 0) {
-            Vec3 particlePos = getParticleLocation(cannonBlockEntity, new Vec3(0, 0.0625, 0), 0.75f, 0.3f);
-            if (level instanceof ServerLevel serverLevel) {
-                serverLevel.sendParticles(
-                        ParticleTypes.FLAME,
-                        particlePos.x, particlePos.y, particlePos.z,
-                        1,  // count
-                        0.0, 0.0, 0.0,  // xOffset/yOffset/zOffset for random spread
-                        0.0  // speed
-                );
-                serverLevel.sendParticles(
-                        ParticleTypes.SMOKE,
-                        particlePos.x, particlePos.y, particlePos.z,
-                        1,  // count
-                        0.0, 0.0, 0.0,  // xOffset/yOffset/zOffset for random spread
-                        0.0  // speed
-                );
-            }
 
+        if (cannonBlockEntity.cooldown <= 0) return;
+
+        ItemStack cannonBall = cannonBlockEntity.inventory.getStackInSlot(1);
+
+        // Visual effects: flame & smoke while cooling down
+        if (level instanceof ServerLevel serverLevel) {
+            Vec3 particlePos = getRelativeLocationWithOffset(cannonBlockEntity, new Vec3(0, 0.0625, 0), 0.75f, 0.3f, 0.0f);
+
+            serverLevel.sendParticles(ParticleTypes.FLAME, particlePos.x, particlePos.y, particlePos.z, 1, 0.0, 0.0, 0.0, 0.0);
+            serverLevel.sendParticles(ParticleTypes.SMOKE, particlePos.x, particlePos.y, particlePos.z, 1, 0.0, 0.0, 0.0, 0.0);
+
+            // Bottle pop effect when cooldown hits 20
             if (cannonBlockEntity.cooldown == 20 && cannonBall.is(ModItemTags.BOTTLED_AMMO)) {
                 Vec3 direction = getAimVector(cannonBlockEntity);
                 Vec3 spawnPos = Vec3.atCenterOf(pos).add(direction.scale(1.25));
-                if (level instanceof ServerLevel serverLevel) {
-                    serverLevel.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z,
-                            ModSoundEvents.BOTTLE_POP_SMALL.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
-                    serverLevel.sendParticles(
-                            ModParticleTypes.BOTTLE_CAP.get(),
-                            spawnPos.x, spawnPos.y, spawnPos.z,
-                            0,  // count
-                            direction.x, direction.y, direction.z,  // xOffset/yOffset/zOffset for random spread
-                            0.25  // speed
-                    );
-                }
+
+                serverLevel.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z,
+                        ModSoundEvents.BOTTLE_POP_SMALL.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
+
+                serverLevel.sendParticles(
+                        ModParticleTypes.BOTTLE_CAP.get(),
+                        spawnPos.x, spawnPos.y, spawnPos.z,
+                        0, direction.x, direction.y, direction.z, 0.25
+                );
             }
-            if (cannonBlockEntity.cooldown == 1) {
-                // Fire the cannon
-                if (cannonBall.is(ModItemTags.CANNON_AMMO)) {
-                    fireCannon(level, pos, cannonBlockEntity);
-                }
-            }
+        }
+
+        // Fire cannon when cooldown finishes
+        if (cannonBlockEntity.cooldown == 1 && cannonBlockEntity.canShoot(cannonBlockEntity)) {
+            fireCannon(level, pos, cannonBlockEntity);
         }
     }
 
@@ -149,7 +150,7 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
     }
 
     private static AbstractCannonBall getCannonBall(Level level, Vec3 spawnPos, CannonBlockEntity cannonBlockEntity) {
-        ItemStack cannonBallStack = cannonBlockEntity.inventory.getStackInSlot(0);
+        ItemStack cannonBallStack = cannonBlockEntity.inventory.getStackInSlot(1);
         Item cannonBallItem = cannonBallStack.getItem();
         if (!(cannonBallItem instanceof BlockItem blockItem)) return null;
         if (blockItem.getBlock() instanceof CannonBallProjectileBlock ballProjectileBlock) {

@@ -18,7 +18,7 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 
 // This is the image
-public class CannonScreen extends AbstractContainerScreen<CannonBlockMenu> {
+public class ShootingBlockScreen extends AbstractContainerScreen<ShootingBlockMenu> {
 
     Level level;
     BlockPos blockPos;
@@ -41,7 +41,7 @@ public class CannonScreen extends AbstractContainerScreen<CannonBlockMenu> {
 
     private static final ResourceLocation POWER_SLOT_SPRITE = BlockySiege.id("textures/gui/container/cannon/power.png");
     private static final ResourceLocation MISSING_SLOT_SPRITE = BlockySiege.id("textures/gui/container/cannon/missing_power.png");
-    public CannonScreen(CannonBlockMenu menu, Inventory playerInventory, Component title) {
+    public ShootingBlockScreen(ShootingBlockMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
         this.player = playerInventory.player;
         this.level = player.level();
@@ -111,7 +111,7 @@ public class CannonScreen extends AbstractContainerScreen<CannonBlockMenu> {
 
         // Initialize the button
         targetButton = new ImageButton(this.leftPos + 156, this.topPos + 6, 14, 14, BUTTON_SPRITES, button ->
-                PacketDistributor.sendToServer(new CannonScreenPacket(blockPos, 0, 0))) {
+                PacketDistributor.sendToServer(new ShooingBlockScreenPacket(blockPos, 0, 0))) {
             @Override
             public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
                 guiGraphics.blit(sprites.get(isActive(), isHoveredOrFocused()), getX(), getY(), 0, 0, width, height, width, height);
@@ -122,7 +122,7 @@ public class CannonScreen extends AbstractContainerScreen<CannonBlockMenu> {
         int powerX = this.leftPos + 16;
 
         power1Button = new ImageButton(powerX, this.topPos + 50, 16, 8, BUTTON_SPRITES, button ->
-                PacketDistributor.sendToServer(new CannonScreenPacket(blockPos, 1, 0))) {
+                PacketDistributor.sendToServer(new ShooingBlockScreenPacket(blockPos, 1, 0))) {
             @Override
             public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 
@@ -131,7 +131,7 @@ public class CannonScreen extends AbstractContainerScreen<CannonBlockMenu> {
         this.addRenderableWidget(power1Button);
 
         power2Button = new ImageButton(powerX, this.topPos + 42, 16, 8, BUTTON_SPRITES, button ->
-                PacketDistributor.sendToServer(new CannonScreenPacket(blockPos, 2, 0))) {
+                PacketDistributor.sendToServer(new ShooingBlockScreenPacket(blockPos, 2, 0))) {
             @Override
             public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 
@@ -140,7 +140,7 @@ public class CannonScreen extends AbstractContainerScreen<CannonBlockMenu> {
         this.addRenderableWidget(power2Button);
 
         power3Button = new ImageButton(powerX, this.topPos + 34, 16, 8, BUTTON_SPRITES, button ->
-                PacketDistributor.sendToServer(new CannonScreenPacket(blockPos, 3, 0))) {
+                PacketDistributor.sendToServer(new ShooingBlockScreenPacket(blockPos, 3, 0))) {
             @Override
             public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 
@@ -149,7 +149,7 @@ public class CannonScreen extends AbstractContainerScreen<CannonBlockMenu> {
         this.addRenderableWidget(power3Button);
 
         power4Button = new ImageButton(powerX, this.topPos + 26, 16, 8, BUTTON_SPRITES, button ->
-                PacketDistributor.sendToServer(new CannonScreenPacket(blockPos, 4, 0))) {
+                PacketDistributor.sendToServer(new ShooingBlockScreenPacket(blockPos, 4, 0))) {
             @Override
             public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 

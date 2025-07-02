@@ -2,7 +2,6 @@ package net.luckystudios.keybinds;
 
 import net.luckystudios.BlockySiege;
 import net.luckystudios.blocks.custom.cannon.AbstractAimableBlock;
-import net.luckystudios.blocks.custom.cannon.AbstractShootingAimableBlockEntity;
 import net.luckystudios.blocks.custom.cannon.types.generic.CannonBlockEntity;
 import net.luckystudios.blocks.custom.cannon.types.multi.MultiCannonBlockEntity;
 import net.minecraft.core.BlockPos;

@@ -58,7 +58,7 @@ public class Seat extends Entity {
 
         }
         aimableBlockEntity.setYaw(normalizedYaw);
-        aimableBlockEntity.setPitch(flippedPitch);
+        aimableBlockEntity.setPitch(flippedPitch + 2.5F);
         aimableBlockEntity.setChanged();
     }
 

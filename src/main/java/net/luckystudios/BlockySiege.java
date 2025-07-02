@@ -1,6 +1,6 @@
 package net.luckystudios;
 
-import net.luckystudios.blocks.custom.cannon.inventory.CannonScreenPacket;
+import net.luckystudios.blocks.custom.cannon.inventory.ShooingBlockScreenPacket;
 import net.luckystudios.blocks.util.ModBlockEntityTypes;
 import net.luckystudios.blocks.ModBlocks;
 import net.luckystudios.entity.ModEntityTypes;
@@ -107,7 +107,7 @@ public class BlockySiege
     private void commonSetup(final FMLCommonSetupEvent event)
     {
         BlockySiege.addNetworkMessage(ControllingCannonPacket.TYPE, ControllingCannonPacket.STREAM_CODEC, ControllingCannonPacket::handleData);
-        BlockySiege.addNetworkMessage(CannonScreenPacket.TYPE, CannonScreenPacket.STREAM_CODEC, CannonScreenPacket::handleData);
+        BlockySiege.addNetworkMessage(ShooingBlockScreenPacket.TYPE, ShooingBlockScreenPacket.STREAM_CODEC, ShooingBlockScreenPacket::handleData);
     }
 
     // Add the example block item to the building blocks tab

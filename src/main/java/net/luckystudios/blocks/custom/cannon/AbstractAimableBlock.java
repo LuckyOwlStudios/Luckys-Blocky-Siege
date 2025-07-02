@@ -1,9 +1,16 @@
 package net.luckystudios.blocks.custom.cannon;
 
+import net.luckystudios.entity.custom.seat.Seat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -15,6 +22,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractAimableBlock extends BaseEntityBlock {
@@ -42,6 +50,22 @@ public abstract class AbstractAimableBlock extends BaseEntityBlock {
     }
 
     @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    @Override
+    public boolean isSignalSource(BlockState state) {
+        return true;
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(BlockState blockState, Level level, BlockPos pos) {
+        if (!(level.getBlockEntity(pos) instanceof AbstractAimableBlockEntity)) return 0;
+        return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(level.getBlockEntity(pos));
+    }
+
+    @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState()
                 .setValue(FACING, context.getHorizontalDirection());
@@ -57,9 +81,45 @@ public abstract class AbstractAimableBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected boolean hasAnalogOutputSignal(BlockState state) {
-        return true;
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (level.getBlockEntity(pos) instanceof AbstractShootingAimableBlockEntity shootingAimableBlockEntity) {
+            boolean flag = stack.is(Items.FLINT_AND_STEEL);
+            boolean flag1 = shootingAimableBlockEntity.canShoot(shootingAimableBlockEntity);
+            if (flag && flag1) {
+                triggerBlock(state, level, pos);
+            } else if (!(player.getVehicle() instanceof Seat)) {
+                player.openMenu(new SimpleMenuProvider(shootingAimableBlockEntity, shootingAimableBlockEntity.getDisplayName()), pos);
+                return ItemInteractionResult.SUCCESS;
+            }
+        }
+        return ItemInteractionResult.SUCCESS;
+    }
+
+    @Override
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
+        boolean flag = level.hasNeighborSignal(pos) || level.hasNeighborSignal(pos.above());
+        boolean flag1 = state.getValue(POWERED);
+        if (!(level.getBlockEntity(pos) instanceof AbstractShootingAimableBlockEntity shootingAimableBlockEntity)) return;
+        boolean flag2 = shootingAimableBlockEntity.canShoot(shootingAimableBlockEntity);
+        System.out.println("Neighbor changed: " + flag + ", Powered: " + flag1 + ", Can shoot: " + flag2);
+        if (flag && flag2 && !flag1) {
+            triggerBlock(state, level, pos);
+            level.setBlock(pos, state.setValue(POWERED, true), 3);
+        } else if (!flag && flag1) {
+            level.setBlock(pos, state.setValue(POWERED, false), 3);
+        }
     }
 
     public abstract void triggerBlock(BlockState state, Level level, BlockPos pos);
+
+    @Override
+    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+        if(state.getBlock() != newState.getBlock()) {
+            if(level.getBlockEntity(pos) instanceof AbstractShootingAimableBlockEntity shootingAimableBlockEntity) {
+                shootingAimableBlockEntity.drops();
+                level.updateNeighbourForOutputSignal(pos, this);
+            }
+        }
+        super.onRemove(state, level, pos, newState, movedByPiston);
+    }
 }
