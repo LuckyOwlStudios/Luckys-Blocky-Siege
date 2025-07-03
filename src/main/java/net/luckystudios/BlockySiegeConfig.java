@@ -21,7 +21,6 @@ public class BlockySiegeConfig {
     // === CLIENT CONFIGURATION ===
     public static String CATEGORY_CLIENT = "client";
     public static ModConfigSpec.DoubleValue TREMOR_VOLUME;
-    public static ModConfigSpec.DoubleValue TREMOR_PARTICLE_INTENSITY;
 
     static {
         ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();

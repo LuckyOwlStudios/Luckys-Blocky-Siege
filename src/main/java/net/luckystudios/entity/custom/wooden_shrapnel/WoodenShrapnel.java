@@ -1,7 +1,7 @@
 package net.luckystudios.entity.custom.wooden_shrapnel;
 
 import net.luckystudios.entity.ModEntityTypes;
-import net.luckystudios.items.ModItems;
+import net.luckystudios.init.ModItems;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;

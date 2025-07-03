@@ -1,7 +1,7 @@
 package net.luckystudios.datagen.types;
 
-import net.luckystudios.blocks.ModBlocks;
-import net.luckystudios.items.ModItems;
+import net.luckystudios.init.ModBlocks;
+import net.luckystudios.init.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;

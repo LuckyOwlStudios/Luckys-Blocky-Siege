@@ -1,7 +1,7 @@
 package net.luckystudios.datagen.types;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.blocks.ModBlocks;
+import net.luckystudios.init.ModBlocks;
 import net.luckystudios.blocks.custom.cannon_ammo.AbstractCannonBallBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;

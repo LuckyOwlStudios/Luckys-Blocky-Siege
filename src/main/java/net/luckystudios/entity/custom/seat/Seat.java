@@ -1,11 +1,9 @@
 package net.luckystudios.entity.custom.seat;
 
 import net.luckystudios.blocks.custom.cannon.AbstractAimableBlockEntity;
-import net.luckystudios.blocks.custom.cannon.types.generic.CannonBlock;
 import net.luckystudios.entity.ModEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -45,18 +43,17 @@ public class Seat extends Entity {
     public void tick() {
         super.tick();
         Level level = this.level();
-        BlockState blockState = level.getBlockState(blockPosition());
         if (this.getControllingPassenger() == null) return;
         if (!(this.getControllingPassenger() instanceof LivingEntity livingEntity)) return;
         this.setRot(livingEntity.getYRot(), livingEntity.getXRot() * 0.5F);
-        if (!(level.getBlockEntity(blockPosition()) instanceof AbstractAimableBlockEntity aimableBlockEntity)) return;
+        if (!(level.getBlockEntity(blockPosition()) instanceof AbstractAimableBlockEntity aimableBlockEntity)) {
+            this.discard();
+            return;
+        }
         float playerYaw = livingEntity.getYRot();
         float playerPitch = livingEntity.getXRot();
         float normalizedYaw = (playerYaw % 360 + 360) % 360;
         float flippedPitch = -playerPitch;
-        if (livingEntity instanceof Player player) {
-
-        }
         aimableBlockEntity.setYaw(normalizedYaw);
         aimableBlockEntity.setPitch(flippedPitch + 2.5F);
         aimableBlockEntity.setChanged();

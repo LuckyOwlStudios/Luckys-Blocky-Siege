@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_iron": {
+    "has_blue_ice": {
       "conditions": {
         "items": [
           {
-            "items": "minecraft:magma_block"
+            "items": "minecraft:blue_ice"
           }
         ]
       },
@@ -21,7 +21,7 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_iron"
+      "has_blue_ice"
     ]
   ],
   "rewards": {

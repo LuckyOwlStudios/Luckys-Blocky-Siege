@@ -1,9 +1,9 @@
 package net.luckystudios.datagen;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.damage_types.ModDamageTypeTagsProvider;
-import net.luckystudios.datagen.blocks.ModBlockTagProvider;
-import net.luckystudios.datagen.items.ModItemTagProvider;
+import net.luckystudios.datagen.types.ModDamageTypeTagsProvider;
+import net.luckystudios.datagen.types.ModBlockTagProvider;
+import net.luckystudios.datagen.types.ModItemTagProvider;
 import net.luckystudios.datagen.types.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
@@ -27,23 +27,27 @@ public class DataGenerators {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
-        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+        CompletableFuture<HolderLookup.Provider> baseLookupProvider = event.getLookupProvider();
 
+        // ✅ Register ModDataPackProvider FIRST
+        ModDataPackProvider datapackProvider = new ModDataPackProvider(packOutput, baseLookupProvider);
+        generator.addProvider(event.includeServer(), datapackProvider);
+
+        // ✅ Then use its enriched provider for tag-related things
+        CompletableFuture<HolderLookup.Provider> enrichedLookupProvider = datapackProvider.getRegistryProvider();
+
+        generator.addProvider(event.includeServer(), new ModDamageTypeTagsProvider(packOutput, enrichedLookupProvider, existingFileHelper));
+        generator.addProvider(event.includeServer(), new ModDataMapProvider(packOutput, enrichedLookupProvider));
+
+        // All your other providers
         generator.addProvider(event.includeServer(), new LootTableProvider(packOutput, Collections.emptySet(),
-                List.of(new LootTableProvider.SubProviderEntry(ModBlockLootTableProvider::new, LootContextParamSets.BLOCK)), lookupProvider));
-        generator.addProvider(event.includeServer(), new ModRecipeProvider(packOutput, lookupProvider));
-
-        BlockTagsProvider blockTagsProvider = new ModBlockTagProvider(packOutput, lookupProvider, existingFileHelper);
+                List.of(new LootTableProvider.SubProviderEntry(ModBlockLootTableProvider::new, LootContextParamSets.BLOCK)), baseLookupProvider));
+        generator.addProvider(event.includeServer(), new ModRecipeProvider(packOutput, baseLookupProvider));
+        BlockTagsProvider blockTagsProvider = new ModBlockTagProvider(packOutput, baseLookupProvider, existingFileHelper);
         generator.addProvider(event.includeServer(), blockTagsProvider);
-        generator.addProvider(event.includeServer(), new ModItemTagProvider(packOutput, lookupProvider, blockTagsProvider.contentsGetter(), existingFileHelper));
-
-        generator.addProvider(event.includeServer(), new ModDataMapProvider(packOutput, lookupProvider));
-
+        generator.addProvider(event.includeServer(), new ModItemTagProvider(packOutput, baseLookupProvider, blockTagsProvider.contentsGetter(), existingFileHelper));
 
         generator.addProvider(event.includeClient(), new ModItemModelProvider(packOutput, existingFileHelper));
         generator.addProvider(event.includeClient(), new ModBlockStateProvider(packOutput, existingFileHelper));
-
-        generator.addProvider(event.includeServer(), new ModDamageTypeTagsProvider(packOutput, lookupProvider, existingFileHelper));
-        generator.addProvider(event.includeServer(), new ModDataPackProvider(packOutput, lookupProvider));
     }
 }

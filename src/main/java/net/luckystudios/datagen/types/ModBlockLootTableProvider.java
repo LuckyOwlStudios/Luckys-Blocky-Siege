@@ -1,6 +1,6 @@
 package net.luckystudios.datagen.types;
 
-import net.luckystudios.blocks.ModBlocks;
+import net.luckystudios.init.ModBlocks;
 import net.luckystudios.blocks.custom.cannon_ammo.AbstractCannonBallBlock;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
 import net.minecraft.core.Holder;
@@ -29,6 +29,7 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         // Needs to add ModBlocks.CANNON_BARREL.get() to the loot table
         dropSelf(ModBlocks.CANNON.get());
         dropSelf(ModBlocks.MULTI_CANNON.get());
+        dropSelf(ModBlocks.SPEWER_CANNON.get());
         dropSelf(ModBlocks.IRON_GATE.get());
         this.add(ModBlocks.CANNON_BALL.get(), createCannonAmmoStack(ModBlocks.CANNON_BALL.get()));
         this.add(ModBlocks.EXPLOSIVE_KEG.get(), createCannonAmmoStack(ModBlocks.EXPLOSIVE_KEG.get()));

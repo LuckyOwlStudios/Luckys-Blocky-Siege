@@ -1,7 +1,7 @@
 package net.luckystudios.datagen.types;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.items.ModItems;
+import net.luckystudios.init.ModItems;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;

@@ -1,12 +1,10 @@
 package net.luckystudios.blocks.custom.cannon;
 
-import net.luckystudios.blocks.custom.cannon.inventory.ShootingBlockMenu;
+import net.luckystudios.gui.cannons.ShootingBlockMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.Containers;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.*;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -126,10 +124,11 @@ public abstract class AbstractShootingAimableBlockEntity extends AbstractAimable
         Containers.dropContents(this.level, this.worldPosition, inv);
     }
 
-    public boolean canShoot(AbstractShootingAimableBlockEntity aimableBlockEntity) {
+    public boolean canShoot(AbstractShootingAimableBlockEntity aimableBlockEntity, boolean checkCooldown) {
         ItemStack fuseStack = aimableBlockEntity.inventory.getStackInSlot(0);
         ItemStack ammoStack = aimableBlockEntity.inventory.getStackInSlot(1);
-        return hasFuse(fuseStack) && hasAmmo(ammoStack) && aimableBlockEntity.cooldown <= 0;
+        boolean cooldownCheck = !checkCooldown || aimableBlockEntity.cooldown <= 0;
+        return hasFuse(fuseStack) && hasAmmo(ammoStack) && cooldownCheck;
     }
 
     // Abstract method to be implemented by subclasses

@@ -1,7 +1,7 @@
 package net.luckystudios.datagen.types;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.damage_types.ModDamageTypes;
+import net.luckystudios.init.ModDamageTypes;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;

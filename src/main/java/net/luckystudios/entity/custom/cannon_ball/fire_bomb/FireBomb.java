@@ -1,10 +1,10 @@
 package net.luckystudios.entity.custom.cannon_ball.fire_bomb;
 
-import net.luckystudios.blocks.ModBlocks;
+import net.luckystudios.init.ModBlocks;
 import net.luckystudios.entity.ModEntityTypes;
 import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
 import net.luckystudios.entity.custom.cannon_ball.AbstractNewProjectile;
-import net.luckystudios.sounds.ModSoundEvents;
+import net.luckystudios.init.ModSoundEvents;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;

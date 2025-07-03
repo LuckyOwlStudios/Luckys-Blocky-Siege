@@ -11,6 +11,7 @@ public class ModModelLayers {
     private static final Set<ModelLayerLocation> ALL_MODELS = Sets.newHashSet();
     public static final ModelLayerLocation CANNON = register("cannon");
     public static final ModelLayerLocation MULTI_CANNON = register("multi_cannon");
+    public static final ModelLayerLocation SPEWER_CANNON = register("spewer_cannon");
     public static final ModelLayerLocation CANNON_BALL = register("cannon_ball");
     public static final ModelLayerLocation IRON_GATE = register("iron_gate");
 

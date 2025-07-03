@@ -1,7 +1,7 @@
 package net.luckystudios.entity;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.entity.custom.ballista.Ballista;
+import net.luckystudios.entity.custom.turrets.ballista.Ballista;
 import net.luckystudios.entity.custom.bullet.Bullet;
 import net.luckystudios.entity.custom.cannon_ball.explosive_barrel.ExplosiveKeg;
 import net.luckystudios.entity.custom.cannon_ball.fire_bomb.FireBomb;
@@ -28,8 +28,6 @@ public class ModEntityTypes {
                     .clientTrackingRange(4)
                     .build("seat"));
 
-    // We need to add <CannonBall> when we are making an abstract class that extends from something!
-    // We found this out when we looked at ARROW in EntityType.java
     public static final Supplier<EntityType<CannonBall>> CANNON_BALL =
             ENTITY_TYPES.register("cannon_ball", () -> EntityType.Builder.<CannonBall>of(CannonBall::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
@@ -94,7 +92,7 @@ public class ModEntityTypes {
                     .build("bullet"));
 
     public static final Supplier<EntityType<Ballista>> BALLISTA =
-            ENTITY_TYPES.register("ballista", () -> EntityType.Builder.of(Ballista::new, MobCategory.MISC)
+            ENTITY_TYPES.register("ballista", () -> EntityType.Builder.<Ballista>of(Ballista::new, MobCategory.MISC)
                     .sized(1.0F, 1.0F)
                     .noSummon()
                     .build("ballista"));

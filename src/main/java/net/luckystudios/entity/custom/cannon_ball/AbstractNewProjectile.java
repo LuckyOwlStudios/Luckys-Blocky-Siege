@@ -2,7 +2,7 @@ package net.luckystudios.entity.custom.cannon_ball;
 
 import com.google.common.collect.Lists;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import net.luckystudios.damage_types.ModDamageTypes;
+import net.luckystudios.init.ModDamageTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;

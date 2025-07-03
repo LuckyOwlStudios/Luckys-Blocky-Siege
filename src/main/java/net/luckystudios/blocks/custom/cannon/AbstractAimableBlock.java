@@ -84,7 +84,7 @@ public abstract class AbstractAimableBlock extends BaseEntityBlock {
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (level.getBlockEntity(pos) instanceof AbstractShootingAimableBlockEntity shootingAimableBlockEntity) {
             boolean flag = stack.is(Items.FLINT_AND_STEEL);
-            boolean flag1 = shootingAimableBlockEntity.canShoot(shootingAimableBlockEntity);
+            boolean flag1 = shootingAimableBlockEntity.canShoot(shootingAimableBlockEntity, true);
             if (flag && flag1) {
                 triggerBlock(state, level, pos);
             } else if (!(player.getVehicle() instanceof Seat)) {
@@ -100,8 +100,7 @@ public abstract class AbstractAimableBlock extends BaseEntityBlock {
         boolean flag = level.hasNeighborSignal(pos) || level.hasNeighborSignal(pos.above());
         boolean flag1 = state.getValue(POWERED);
         if (!(level.getBlockEntity(pos) instanceof AbstractShootingAimableBlockEntity shootingAimableBlockEntity)) return;
-        boolean flag2 = shootingAimableBlockEntity.canShoot(shootingAimableBlockEntity);
-        System.out.println("Neighbor changed: " + flag + ", Powered: " + flag1 + ", Can shoot: " + flag2);
+        boolean flag2 = shootingAimableBlockEntity.canShoot(shootingAimableBlockEntity, true);
         if (flag && flag2 && !flag1) {
             triggerBlock(state, level, pos);
             level.setBlock(pos, state.setValue(POWERED, true), 3);

@@ -3,11 +3,12 @@ package net.luckystudios.blocks.custom.cannon.types.generic;
 import net.luckystudios.blocks.custom.cannon.AbstractShootingAimableBlockEntity;
 import net.luckystudios.blocks.custom.cannon_ammo.CannonBallProjectileBlock;
 import net.luckystudios.blocks.util.ModBlockEntityTypes;
-import net.luckystudios.datagen.items.ModItemTags;
 import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
-import net.luckystudios.particles.ModParticleTypes;
-import net.luckystudios.sounds.ModSoundEvents;
+import net.luckystudios.init.ModParticleTypes;
+import net.luckystudios.init.ModSoundEvents;
+import net.luckystudios.init.ModTags;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -50,7 +51,7 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
     @Override
     public boolean hasAmmo(ItemStack ammoStack) {
-        return ammoStack.is(ModItemTags.CANNON_AMMO);
+        return ammoStack.is(ModTags.CANNON_AMMO);
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, CannonBlockEntity cannonBlockEntity) {
@@ -68,7 +69,7 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
             serverLevel.sendParticles(ParticleTypes.SMOKE, particlePos.x, particlePos.y, particlePos.z, 1, 0.0, 0.0, 0.0, 0.0);
 
             // Bottle pop effect when cooldown hits 20
-            if (cannonBlockEntity.cooldown == 20 && cannonBall.is(ModItemTags.BOTTLED_AMMO)) {
+            if (cannonBlockEntity.cooldown == 20 && cannonBall.is(ModTags.BOTTLED_AMMO)) {
                 Vec3 direction = getAimVector(cannonBlockEntity);
                 Vec3 spawnPos = Vec3.atCenterOf(pos).add(direction.scale(1.25));
 
@@ -84,7 +85,7 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         }
 
         // Fire cannon when cooldown finishes
-        if (cannonBlockEntity.cooldown == 1 && cannonBlockEntity.canShoot(cannonBlockEntity)) {
+        if (cannonBlockEntity.cooldown == 1 && cannonBlockEntity.canShoot(cannonBlockEntity, false)) {
             fireCannon(level, pos, cannonBlockEntity);
         }
     }

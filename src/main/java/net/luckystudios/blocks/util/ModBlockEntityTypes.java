@@ -1,7 +1,8 @@
 package net.luckystudios.blocks.util;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.blocks.ModBlocks;
+import net.luckystudios.blocks.custom.cannon.types.spewer.SpewerCannonBlockEntity;
+import net.luckystudios.init.ModBlocks;
 import net.luckystudios.blocks.custom.cannon.types.generic.CannonBlockEntity;
 import net.luckystudios.blocks.custom.cannon.types.multi.MultiCannonBlockEntity;
 import net.luckystudios.blocks.custom.iron_gate.IronGateBlockEntity;
@@ -23,6 +24,10 @@ public class ModBlockEntityTypes {
     public static final Supplier<BlockEntityType<MultiCannonBlockEntity>> MULTI_CANNON_BLOCK_ENTITY =
             BLOCK_ENTITIES.register("multi_cannon_block_entity", () -> BlockEntityType.Builder.of(
                     MultiCannonBlockEntity::new, ModBlocks.MULTI_CANNON.get()).build(null));
+
+    public static final Supplier<BlockEntityType<SpewerCannonBlockEntity>> SPEWER_CANNON_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("spewer_cannon_block_entity", () -> BlockEntityType.Builder.of(
+                    SpewerCannonBlockEntity::new, ModBlocks.SPEWER_CANNON.get()).build(null));
 
     public static final Supplier<BlockEntityType<IronGateBlockEntity>> IRON_GATE =
             BLOCK_ENTITIES.register("iron_gate", () -> BlockEntityType.Builder.of(

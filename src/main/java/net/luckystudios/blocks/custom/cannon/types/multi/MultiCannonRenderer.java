@@ -78,7 +78,7 @@ public class MultiCannonRenderer implements BlockEntityRenderer<MultiCannonBlock
 		return 128;
 	}
 
-	private static final class CustomHierarchicalModel extends MultiCannonModel {
+	private static final class CustomHierarchicalModel extends MultiCannonModel<Entity> {
 		private final ModelPart root;
 		private final MultiCannonRenderer.CustomHierarchicalModel.BlockEntityHierarchicalModel animator = new MultiCannonRenderer.CustomHierarchicalModel.BlockEntityHierarchicalModel();
 

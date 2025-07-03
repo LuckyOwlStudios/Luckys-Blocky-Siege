@@ -1,4 +1,4 @@
-// 1.21.1	2025-06-30T20:21:44.4636637	Loot Tables
+// 1.21.1	2025-07-02T19:12:31.7437797	Loot Tables
 3ebcf42a828ff29f1487163e0de816efbcb18ca3 data/blockysiege/loot_table/blocks/cannon.json
 5ff369fe3433b3919ab597091c741748d4475ae1 data/blockysiege/loot_table/blocks/cannon_ball.json
 9d67231fb21fdbded87d2a8804e3a3817390fbb0 data/blockysiege/loot_table/blocks/explosive_barrel.json
@@ -7,4 +7,5 @@
 0633255893d8df78c459eba8695b6d5a6764898d data/blockysiege/loot_table/blocks/frost_bomb.json
 324103024007b01c769ce9b70ac6e545d193718b data/blockysiege/loot_table/blocks/iron_gate.json
 d580e89ede7c790114984a0e4f63821b511f5366 data/blockysiege/loot_table/blocks/multi_cannon.json
+0968967927efe64737620b30f72dc5d3521c1a7a data/blockysiege/loot_table/blocks/spewer_cannon.json
 56031bf3694516eecb87fa9bb0aa7e697d065d49 data/blockysiege/loot_table/blocks/wind_bomb.json

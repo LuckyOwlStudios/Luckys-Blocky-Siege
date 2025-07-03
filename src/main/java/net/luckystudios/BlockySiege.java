@@ -1,15 +1,15 @@
 package net.luckystudios;
 
-import net.luckystudios.blocks.custom.cannon.inventory.ShooingBlockScreenPacket;
+import net.luckystudios.networking.ShooingBlockScreenPacket;
 import net.luckystudios.blocks.util.ModBlockEntityTypes;
-import net.luckystudios.blocks.ModBlocks;
+import net.luckystudios.init.ModBlocks;
 import net.luckystudios.entity.ModEntityTypes;
-import net.luckystudios.keybinds.ControllingCannonPacket;
-import net.luckystudios.particles.ModParticleTypes;
-import net.luckystudios.screens.ModMenuTypes;
-import net.luckystudios.items.ModCreativeModeTabs;
-import net.luckystudios.items.ModItems;
-import net.luckystudios.sounds.ModSoundEvents;
+import net.luckystudios.networking.ControllingCannonPacket;
+import net.luckystudios.init.ModParticleTypes;
+import net.luckystudios.init.ModMenuTypes;
+import net.luckystudios.init.ModCreativeModeTabs;
+import net.luckystudios.init.ModItems;
+import net.luckystudios.init.ModSoundEvents;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

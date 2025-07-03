@@ -3,8 +3,8 @@ package net.luckystudios.blocks.custom.cannon.types.multi;
 import net.luckystudios.blocks.custom.cannon.AbstractShootingAimableBlockEntity;
 import net.luckystudios.blocks.util.ModBlockEntityTypes;
 import net.luckystudios.entity.custom.bullet.Bullet;
-import net.luckystudios.items.ModItems;
-import net.luckystudios.sounds.ModSoundEvents;
+import net.luckystudios.init.ModItems;
+import net.luckystudios.init.ModSoundEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
@@ -42,7 +42,7 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
         Vec3 particlePos = getRelativeLocationWithOffset(multiCannonBlockEntity, new Vec3(0, 0.0625, 0), 0.5f, 0.3f, 0.0F);
         if (multiCannonBlockEntity.cooldown > 0) {
             if (multiCannonBlockEntity.cooldown > multiCannonBlockEntity.maxCooldown - 15) {
-                if (multiCannonBlockEntity.cooldown % 3 == 0 && multiCannonBlockEntity.canShoot(multiCannonBlockEntity)) {
+                if (multiCannonBlockEntity.cooldown % 3 == 0 && multiCannonBlockEntity.canShoot(multiCannonBlockEntity, false)) {
                     fireCannon(level, pos, multiCannonBlockEntity);
                 }
             } else {
@@ -68,13 +68,6 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
     }
 
     @Override
-    public boolean canShoot(AbstractShootingAimableBlockEntity aimableBlockEntity) {
-        ItemStack fuseStack = aimableBlockEntity.inventory.getStackInSlot(0);
-        ItemStack bulletStack = aimableBlockEntity.inventory.getStackInSlot(1);
-        return !fuseStack.isEmpty() && bulletStack.is(ModItems.BULLET);
-    }
-
-    @Override
     public boolean hasFuse(ItemStack fuseStack) {
         return fuseStack.is(Tags.Items.GUNPOWDERS);
     }
@@ -86,17 +79,17 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
     public static void fireCannon(Level level, BlockPos pos, MultiCannonBlockEntity multiCannonBlockEntity) {
         if (level.isClientSide) return;
+        System.out.println("FIRE");
         level.playSound(null, pos, ModSoundEvents.SHOOT.get(), SoundSource.BLOCKS, 1.0f, 1.0f);
 
         // Normalize direction
         Vec3 direction = getAimVector(multiCannonBlockEntity);
 
         // Offset to spawn in front of the cannon
-        double offsetDistance = 1.25;
-//        Vec3 spawnPos = Vec3.atCenterOf(pos).add(getAimVector(cannonBlockEntity).scale(offsetDistance));
         Vec3 spawnPos = getBarrelPositions(multiCannonBlockEntity).get(multiCannonBlockEntity.barrelIndex);
 
         multiCannonBlockEntity.inventory.extractItem(0, 1, false);
+        multiCannonBlockEntity.inventory.extractItem(1, 1, false);
 
         // Create and launch the projectile
         Bullet bullet = new Bullet(level, spawnPos.x, spawnPos.y, spawnPos.z);

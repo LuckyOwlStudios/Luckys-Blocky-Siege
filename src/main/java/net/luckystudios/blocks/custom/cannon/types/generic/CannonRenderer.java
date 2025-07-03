@@ -79,7 +79,7 @@ public class CannonRenderer implements BlockEntityRenderer<CannonBlockEntity> {
 		return 128;
 	}
 
-	private static final class CustomHierarchicalModel extends CannonModel {
+	private static final class CustomHierarchicalModel extends CannonModel<Entity> {
 		private final ModelPart root;
 		private final BlockEntityHierarchicalModel animator = new BlockEntityHierarchicalModel();
 

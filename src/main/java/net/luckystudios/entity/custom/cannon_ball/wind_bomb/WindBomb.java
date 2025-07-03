@@ -1,6 +1,6 @@
 package net.luckystudios.entity.custom.cannon_ball.wind_bomb;
 
-import net.luckystudios.blocks.ModBlocks;
+import net.luckystudios.init.ModBlocks;
 import net.luckystudios.entity.ModEntityTypes;
 import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
 import net.luckystudios.entity.custom.cannon_ball.AbstractNewProjectile;

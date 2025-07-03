@@ -1,8 +1,10 @@
-// 1.21.1	2025-06-20T16:44:52.9929551	Recipes
+// 1.21.1	2025-07-02T19:12:31.7459019	Recipes
+1e8f46c16d262930b79d039b7de5b1ea93b96c63 data/blockysiege/advancement/recipes/misc/bullet.json
 624d6e0f923e41f02b07070bbfefaa027830be95 data/blockysiege/advancement/recipes/misc/cannon_ball.json
 98cdda1be54f22b8484f786a6d4f87784ee66b28 data/blockysiege/advancement/recipes/misc/explosive_keg.json
 34571e2f2ceeaf803c23c11f9d7471e17640e1f5 data/blockysiege/advancement/recipes/misc/fire_bomb.json
-b1c8996335f33ae98a9c2814cafa67c7af33bf7e data/blockysiege/advancement/recipes/misc/frost_bomb.json
+df5541fd093a01f72597fb78d2ed5ff8298384fa data/blockysiege/advancement/recipes/misc/frost_bomb.json
+eb93187a48e6f0fd0c964413d8bafe48cc985314 data/blockysiege/recipe/bullet.json
 323942afb191428105a6f8a63e23a23cb442275b data/blockysiege/recipe/cannon_ball.json
 f96d57e4b15f2c2addaf0c61443bec4bb1b29174 data/blockysiege/recipe/explosive_keg.json
 3b023e18e4f90fcb8bb4f79300f964c9281058e8 data/blockysiege/recipe/fire_bomb.json

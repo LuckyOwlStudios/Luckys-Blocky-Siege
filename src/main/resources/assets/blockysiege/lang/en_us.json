@@ -5,6 +5,7 @@
 
   "block.blockysiege.cannon": "Cannon",
   "block.blockysiege.multi_cannon": "Multi-Cannon",
+  "block.blockysiege.spewer_cannon": " Spewer Cannon",
   "block.blockysiege.cannon_ball": "Cannon Ball",
   "block.blockysiege.explosive_keg": "Explosive Keg",
   "block.blockysiege.fire_bomb": "Fire Bomb",
@@ -14,7 +15,9 @@
 
   "container.blockysiege.cannon": "Cannon",
   "container.blockysiege.multi_cannon": "Multi-Cannon",
+  "container.blockysiege.spewer_cannon": "Spewer Cannon",
   "container.blockysiege.cannon.aim": "Click to Aim Cannon",
+  "container.blockysiege.cannon.set_power": "Set Power",
 
   "entity.blockysiege.cannon_ball": "Cannon Ball",
   "entity.blockysiege.explosive_keg": "Explosive Keg",
