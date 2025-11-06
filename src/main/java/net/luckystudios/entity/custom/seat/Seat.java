@@ -96,4 +96,10 @@ public class Seat extends Entity {
                 ? livingEntity
                 : super.getControllingPassenger();
     }
+
+    @Override
+    protected void removePassenger(Entity passenger) {
+        super.removePassenger(passenger);
+        this.discard();
+    }
 }

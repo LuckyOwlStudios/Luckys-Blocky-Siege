@@ -4,6 +4,7 @@ import net.luckystudios.blocks.custom.cannon.types.spewer.SpewerCannonModel;
 import net.luckystudios.blocks.custom.cannon.types.spewer.SpewerCannonRenderer;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaGolemModel;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaRenderer;
+import net.luckystudios.gui.ballista.BallistaScreen;
 import net.luckystudios.gui.cannons.ShootingBlockScreen;
 import net.luckystudios.blocks.custom.cannon.types.generic.CannonModel;
 import net.luckystudios.blocks.custom.cannon.types.multi.MultiCannonModel;
@@ -81,6 +82,7 @@ public class BlockySiegeClient {
     public static void registerScreens(RegisterMenuScreensEvent event) {
         event.register(ModMenuTypes.CANNON_BLOCK_MENU.get(), ShootingBlockScreen::new);
         event.register(ModMenuTypes.SPEWER_BLOCK_MENU.get(), SpewerCannonBlockScreen::new);
+        event.register(ModMenuTypes.BALLISTA_BLOCK_MENU.get(), BallistaScreen::new);
     }
 
     @SubscribeEvent
