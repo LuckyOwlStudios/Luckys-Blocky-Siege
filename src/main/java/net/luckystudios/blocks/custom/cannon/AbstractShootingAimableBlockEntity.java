@@ -18,7 +18,7 @@ import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractShootingAimableBlockEntity extends AbstractAimableBlockEntity implements MenuProvider {
-    public final ItemStackHandler inventory = new ItemStackHandler(2) {
+    public final ItemStackHandler inventory = new ItemStackHandler(inventorySize()) {
         @Override
         protected int getStackLimit(int slot, ItemStack stack) {
             return 64;
@@ -42,6 +42,8 @@ public abstract class AbstractShootingAimableBlockEntity extends AbstractAimable
         this.firePower = 1; // Default firepower
         this.cooldown = 0; // Default cooldown
     }
+
+    public abstract int inventorySize();
 
     public int getFirePower() {
         return this.firePower;

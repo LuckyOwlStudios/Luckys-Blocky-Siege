@@ -1,7 +1,7 @@
 package net.luckystudios;
 
 import net.luckystudios.networking.ShooingBlockScreenPacket;
-import net.luckystudios.blocks.util.ModBlockEntityTypes;
+import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.init.ModBlocks;
 import net.luckystudios.entity.ModEntityTypes;
 import net.luckystudios.networking.ControllingCannonPacket;

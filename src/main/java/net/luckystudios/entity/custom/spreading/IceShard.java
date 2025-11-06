@@ -1,0 +1,53 @@
+package net.luckystudios.entity.custom.spreading;
+
+import net.luckystudios.entity.ModEntityTypes;
+import net.luckystudios.init.ModBlocks;
+import net.luckystudios.init.ModItems;
+import net.luckystudios.init.ModSoundEvents;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+
+public class IceShard extends AbstractSpreadingProjectile {
+
+    public IceShard(EntityType<? extends ThrowableItemProjectile> entityType, Level level) {
+        super(entityType, level);
+    }
+
+    public IceShard(Level level, double x, double y, double z) {
+        super(ModEntityTypes.ICE_SHARD.get(), level, x, y, z);
+    }
+
+    public IceShard(LivingEntity shooter, Level level) {
+        super(ModEntityTypes.ICE_SHARD.get(), shooter, level);
+    }
+
+    @Override
+    protected @NotNull Item getDefaultItem() {
+        return ModItems.WOODEN_SHRAPNEL.asItem();
+    }
+
+    @Override
+    protected List<ParticleOptions> getTrailParticles() {
+        return List.of(ParticleTypes.CLOUD, ParticleTypes.SNOWFLAKE);
+    }
+
+    @Override
+    protected SoundEvent impactSound() {
+        return ModSoundEvents.IMPACT_ICY.get();
+    }
+
+    @Override
+    protected Block blockToPlace() {
+        return ModBlocks.FROST_PILE.get();
+    }
+}

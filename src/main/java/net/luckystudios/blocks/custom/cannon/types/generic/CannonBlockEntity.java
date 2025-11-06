@@ -2,13 +2,12 @@ package net.luckystudios.blocks.custom.cannon.types.generic;
 
 import net.luckystudios.blocks.custom.cannon.AbstractShootingAimableBlockEntity;
 import net.luckystudios.blocks.custom.cannon_ammo.CannonBallProjectileBlock;
-import net.luckystudios.blocks.util.ModBlockEntityTypes;
+import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
 import net.luckystudios.init.ModParticleTypes;
 import net.luckystudios.init.ModSoundEvents;
 import net.luckystudios.init.ModTags;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -38,6 +37,11 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         super(ModBlockEntityTypes.CANNON_BLOCK_ENTITY.get(), pos, blockState);
         this.maxCooldown = 60;
         this.animationLength = 0.25F;
+    }
+
+    @Override
+    public int inventorySize() {
+        return 2;
     }
 
     public int getFirePower() {
@@ -121,7 +125,7 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
             double yOffset = (random.nextDouble() - 0.5) * 0.5;
             double zOffset = (random.nextDouble() - 0.5) * 0.5;
             if (level instanceof ServerLevel serverLevel) {
-                ((ServerLevel) level).sendParticles(
+                serverLevel.sendParticles(
                         ParticleTypes.LARGE_SMOKE,
                         spawnPos.x + xOffset, spawnPos.y + yOffset, spawnPos.z + zOffset,
                         0,  // count
@@ -146,7 +150,8 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         AbstractCannonBall cannonBall = getCannonBall(level, spawnPos, cannonBlockEntity);
         if (cannonBall == null) return;
         cannonBall.shoot(direction.x, direction.y, direction.z, actualPower, 0); // power * speed factor
-        cannonBlockEntity.inventory.extractItem(0, 1, false);
+        cannonBlockEntity.inventory.extractItem(0, actualPower, false);
+        cannonBlockEntity.inventory.extractItem(1, 1, false);
         level.addFreshEntity(cannonBall);
     }
 
@@ -176,6 +181,7 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         return Component.translatable("container.blockysiege.cannon");
     }
 
+
     @Nullable
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
@@ -190,5 +196,20 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
     @Override
     public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         super.handleUpdateTag(tag, lookupProvider);
+    }
+
+    @Override
+    public float maxPitch() {
+        return 45;
+    }
+
+    @Override
+    public float minPitch() {
+        return -45;
+    }
+
+    @Override
+    public float pitchOffset() {
+        return 4.0F;
     }
 }

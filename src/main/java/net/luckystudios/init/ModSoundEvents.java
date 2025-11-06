@@ -15,7 +15,7 @@ public class ModSoundEvents {
 
     public static final Supplier<SoundEvent> CANNON_FIRE = registerSoundEvent("cannon_fire");
     public static final Supplier<SoundEvent> SHOOT = registerSoundEvent("shoot");
-    public static final Supplier<SoundEvent> METAL_HIT = registerSoundEvent("metal_hit");
+    public static final Supplier<SoundEvent> METAL_HIT = registerSoundEvent("hit_metal");
     public static final Supplier<SoundEvent> BOTTLE_POP_SMALL = registerSoundEvent("bottle_pop_small");
     public static final Supplier<SoundEvent> BOTTLE_POP_LARGE = registerSoundEvent("bottle_pop_large");
     public static final Supplier<SoundEvent> IMPACT_FIERY = registerSoundEvent("impact_fiery");

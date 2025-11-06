@@ -13,7 +13,7 @@ public class ModModelLayers {
     public static final ModelLayerLocation MULTI_CANNON = register("multi_cannon");
     public static final ModelLayerLocation SPEWER_CANNON = register("spewer_cannon");
     public static final ModelLayerLocation CANNON_BALL = register("cannon_ball");
-    public static final ModelLayerLocation IRON_GATE = register("iron_gate");
+    public static final ModelLayerLocation BALLISTA = register("ballista");
 
     private static ModelLayerLocation register(String path) {
         return register(path, "main");

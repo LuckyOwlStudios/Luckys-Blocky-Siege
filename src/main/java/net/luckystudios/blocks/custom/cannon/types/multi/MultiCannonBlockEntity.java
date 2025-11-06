@@ -1,7 +1,7 @@
 package net.luckystudios.blocks.custom.cannon.types.multi;
 
 import net.luckystudios.blocks.custom.cannon.AbstractShootingAimableBlockEntity;
-import net.luckystudios.blocks.util.ModBlockEntityTypes;
+import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.entity.custom.bullet.Bullet;
 import net.luckystudios.init.ModItems;
 import net.luckystudios.init.ModSoundEvents;
@@ -128,5 +128,25 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
     @Override
     public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         super.handleUpdateTag(tag, lookupProvider);
+    }
+
+    @Override
+    public float maxPitch() {
+        return 45;
+    }
+
+    @Override
+    public float minPitch() {
+        return -45;
+    }
+
+    @Override
+    public float pitchOffset() {
+        return 2.5F;
+    }
+
+    @Override
+    public int inventorySize() {
+        return 2;
     }
 }

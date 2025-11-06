@@ -1,14 +1,16 @@
 package net.luckystudios.entity;
 
 import net.luckystudios.BlockySiege;
+import net.luckystudios.entity.custom.spreading.IceShard;
 import net.luckystudios.entity.custom.turrets.ballista.Ballista;
 import net.luckystudios.entity.custom.bullet.Bullet;
-import net.luckystudios.entity.custom.cannon_ball.explosive_barrel.ExplosiveKeg;
-import net.luckystudios.entity.custom.cannon_ball.fire_bomb.FireBomb;
-import net.luckystudios.entity.custom.cannon_ball.frost_bomb.FrostBomb;
-import net.luckystudios.entity.custom.cannon_ball.normal.CannonBall;
+import net.luckystudios.entity.custom.cannon_ball.types.explosive_barrel.ExplosiveKeg;
+import net.luckystudios.entity.custom.cannon_ball.types.spreading.fire_bomb.FireBomb;
+import net.luckystudios.entity.custom.cannon_ball.types.spreading.frost_bomb.FrostBomb;
+import net.luckystudios.entity.custom.cannon_ball.types.normal.CannonBall;
 import net.luckystudios.entity.custom.explosive_barrel.PrimedExplosiveBarrel;
 import net.luckystudios.entity.custom.seat.Seat;
+import net.luckystudios.entity.custom.spreading.Ember;
 import net.luckystudios.entity.custom.wooden_shrapnel.WoodenShrapnel;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -83,6 +85,16 @@ public class ModEntityTypes {
                     .sized(0.5F, 0.5F)
                     .build("wooden_shrapnel"));
 
+    public static final Supplier<EntityType<Ember>> EMBER =
+            ENTITY_TYPES.register("ember", () -> EntityType.Builder.<Ember>of(Ember::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .build("ember"));
+
+    public static final Supplier<EntityType<IceShard>> ICE_SHARD =
+            ENTITY_TYPES.register("ice_shard", () -> EntityType.Builder.<IceShard>of(IceShard::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .build("ice_shard"));
+
     public static final Supplier<EntityType<Bullet>> BULLET =
             ENTITY_TYPES.register("bullet", () -> EntityType.Builder.<Bullet>of(Bullet::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F)
@@ -94,7 +106,7 @@ public class ModEntityTypes {
     public static final Supplier<EntityType<Ballista>> BALLISTA =
             ENTITY_TYPES.register("ballista", () -> EntityType.Builder.<Ballista>of(Ballista::new, MobCategory.MISC)
                     .sized(1.0F, 1.0F)
-                    .noSummon()
+                    .eyeHeight(0.5F).clientTrackingRange(10)
                     .build("ballista"));
 
     public static void register(IEventBus eventBus) {

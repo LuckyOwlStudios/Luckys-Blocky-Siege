@@ -2,7 +2,7 @@ package net.luckystudios.blocks.custom.cannon.types.multi;
 
 import com.mojang.serialization.MapCodec;
 import net.luckystudios.blocks.custom.cannon.AbstractAimableBlock;
-import net.luckystudios.blocks.util.ModBlockEntityTypes;
+import net.luckystudios.init.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;

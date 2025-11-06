@@ -1,12 +1,13 @@
 package net.luckystudios.init;
 
 import net.luckystudios.BlockySiege;
+import net.luckystudios.blocks.custom.PileBlock;
 import net.luckystudios.blocks.custom.cannon.types.generic.CannonBlock;
 import net.luckystudios.blocks.custom.cannon.types.multi.MultiCannonBlock;
 import net.luckystudios.blocks.custom.cannon.types.spewer.SpewerCannon;
 import net.luckystudios.blocks.custom.cannon_ammo.*;
 import net.luckystudios.blocks.custom.explosive_barrel.ExplosiveBarrelBlock;
-import net.luckystudios.blocks.custom.iron_gate.IronGateBlock;
+import net.luckystudios.blocks.custom.turret.ballista.BallistaBlock;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -51,16 +52,6 @@ public class ModBlocks {
                     .sound(SoundType.METAL)
             ));
 
-    public static final DeferredBlock<Block> IRON_GATE = registerBlock("iron_gate",
-            () -> new IronGateBlock(3, 5, BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.METAL)
-                    .dynamicShape()
-                    .noOcclusion()
-                    .requiresCorrectToolForDrops()
-                    .strength(5.0F, 6.0F)
-                    .sound(SoundType.METAL)
-            ));
-
     public static final DeferredBlock<Block> CANNON_BALL = registerBlock("cannon_ball",
             () -> new CannonBallBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)
@@ -94,8 +85,31 @@ public class ModBlocks {
                     .sound(SoundType.DECORATED_POT)
             ));
 
+    public static final DeferredBlock<Block> EMBER_PILE = registerBlock("ember_pile",
+            () -> new PileBlock(PileBlock.PileType.FIRE, BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.FIRE)
+                    .lightLevel(blockState -> 8)
+                    .sound(SoundType.STONE)
+            ));
+
+    public static final DeferredBlock<Block> FROST_PILE = registerBlock("frost_pile",
+            () -> new PileBlock(PileBlock.PileType.FROST, BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.ICE)
+                    .instabreak()
+                    .sound(SoundType.POWDER_SNOW)
+            ));
+
     public static final DeferredBlock<Block> EXPLOSIVE_BARREL = registerBlock("explosive_barrel",
             () -> new ExplosiveBarrelBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.SPRUCE_PLANKS)));
+
+    public static final DeferredBlock<Block> BALLISTA_BLOCK = registerBlock("ballista_block",
+            () -> new BallistaBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .dynamicShape()
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F, 6.0F)
+                    .sound(SoundType.METAL)
+            ));
 
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
         DeferredBlock<T> toReturn = BLOCKS.register(name, block);

@@ -2,7 +2,7 @@ package net.luckystudios.blocks.custom.cannon_ammo;
 
 import com.mojang.serialization.MapCodec;
 import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
-import net.luckystudios.entity.custom.cannon_ball.frost_bomb.FrostBomb;
+import net.luckystudios.entity.custom.cannon_ball.types.spreading.frost_bomb.FrostBomb;
 import net.minecraft.world.level.Level;
 
 public class FrostBombBlock extends AbstractCannonBallBlock {

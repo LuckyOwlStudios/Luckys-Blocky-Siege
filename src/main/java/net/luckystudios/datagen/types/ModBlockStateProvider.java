@@ -23,6 +23,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
         simpleBlockWithItem(ModBlocks.EXPLOSIVE_BARREL.get(), models().cubeBottomTop("explosive_barrel", modLoc("block/explosive_barrel_side"), mcLoc("block/barrel_bottom"), modLoc("block/explosive_barrel_top")));
+        simpleBlockWithItem(ModBlocks.EMBER_PILE.get(), models().carpet("ember_pile", mcLoc("block/magma")));
+        simpleBlockWithItem(ModBlocks.FROST_PILE.get(), models().carpet("frost_pile", mcLoc("block/powder_snow")));
         generateCannonBallBlockState(ModBlocks.CANNON_BALL.get(), mcLoc("block/iron_block"), "cutout");
         generateCannonBallBlockState(ModBlocks.EXPLOSIVE_KEG.get(), mcLoc("block/barrel_side"), "cutout");
         generateCannonBallBlockState(ModBlocks.FIRE_BOMB.get(), mcLoc("block/glass"), "translucent");

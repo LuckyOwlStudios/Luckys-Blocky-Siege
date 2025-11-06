@@ -2,9 +2,8 @@ package net.luckystudios.blocks.custom.cannon.types.spewer;
 
 import net.luckystudios.blocks.custom.cannon.AbstractShootingAimableBlockEntity;
 import net.luckystudios.blocks.custom.cannon_ammo.CannonBallProjectileBlock;
-import net.luckystudios.blocks.util.ModBlockEntityTypes;
+import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
-import net.luckystudios.gui.cannons.ShootingBlockMenu;
 import net.luckystudios.gui.spewer_cannon.SpewerCannonBlockBlockMenu;
 import net.luckystudios.init.ModParticleTypes;
 import net.luckystudios.init.ModSoundEvents;
@@ -35,9 +34,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 
 public class SpewerCannonBlockEntity extends AbstractShootingAimableBlockEntity {
-
-    public float chargeUpTime, maxChargeUpTime;
-
     public SpewerCannonBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntityTypes.SPEWER_CANNON_BLOCK_ENTITY.get(), pos, blockState);
         this.maxCooldown = 60;
@@ -199,5 +195,25 @@ public class SpewerCannonBlockEntity extends AbstractShootingAimableBlockEntity 
     @Override
     public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         super.handleUpdateTag(tag, lookupProvider);
+    }
+
+    @Override
+    public float maxPitch() {
+        return 30;
+    }
+
+    @Override
+    public float minPitch() {
+        return 0;
+    }
+
+    @Override
+    public float pitchOffset() {
+        return 30.0F;
+    }
+
+    @Override
+    public int inventorySize() {
+        return 1;
     }
 }

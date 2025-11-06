@@ -29,6 +29,9 @@ import java.util.Optional;
 import java.util.Random;
 
 public class PrimedExplosiveBarrel extends Entity implements TraceableEntity {
+
+    private static int projectileCount = 32;
+
     private static final EntityDataAccessor<Integer> DATA_FUSE_ID = SynchedEntityData.defineId(PrimedExplosiveBarrel.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<BlockState> DATA_BLOCK_STATE_ID = SynchedEntityData.defineId(PrimedExplosiveBarrel.class, EntityDataSerializers.BLOCK_STATE);
     private static final ExplosionDamageCalculator USED_PORTAL_DAMAGE_CALCULATOR = new ExplosionDamageCalculator() {
@@ -103,7 +106,8 @@ public class PrimedExplosiveBarrel extends Entity implements TraceableEntity {
         if (i <= 0) {
             this.discard();
             if (!this.level().isClientSide) {
-                explode(this.level(), this.getOwner(), this.position());
+                // Pass the current velocity to the explosion for directional spread
+                explode(this.level(), this.getOwner(), this.position(), this.getDeltaMovement());
             }
         } else {
             this.updateInWaterStateAndDoFluidPushing();
@@ -113,36 +117,116 @@ public class PrimedExplosiveBarrel extends Entity implements TraceableEntity {
         }
     }
 
-    public static void explode(Level level, Entity owner, Vec3 position) {
-//        this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
-//                SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, SoundSource.BLOCKS, 4.0F, 1.5F);
+    public static void explode(Level level, Entity owner, Vec3 position, Vec3 velocity) {
         level.playSound(null, position.x, position.y, position.z,
                 SoundEvents.ZOMBIE_BREAK_WOODEN_DOOR, SoundSource.BLOCKS, 4.0F, 0.75F);
-        // Spread Shrapnel Projectiles all around the explosion
+
         if (!level.isClientSide()) {
-            int shrapnelCount = 24; // Number of projectiles
+            Random random = new Random();
             double centerX = position.x;
-            double centerY = position.y; // Slightly above ground
+            double centerY = position.y;
             double centerZ = position.z;
 
-            for (int i = 0; i < shrapnelCount; i++) {
-                // Random angle in radians around the circle
-                Random random = new Random();
-                double angle = (2 * Math.PI / shrapnelCount) * i;
-                double speed = 0.5 + random.nextDouble() * 0.3; // Slight randomness to speed
+            // Calculate movement speed to determine spread pattern
+            double movementSpeed = velocity.length();
+            boolean isMoving = velocity.x > 0.1 || velocity.z > 0.1; // Threshold for considering the barrel "moving"
 
-                double dx = Math.cos(angle) * speed;
-                double dz = Math.sin(angle) * speed;
-                double dy = (random.nextDouble() - 0.5) * 0.4; // Slight up/down variation
-
-                WoodenShrapnel shrapnel = new WoodenShrapnel(level, centerX, centerY, centerZ);
-                shrapnel.setDeltaMovement(dx, dy, dz);
-                if (owner instanceof LivingEntity livingOwner) {
-                    shrapnel.setOwner(livingOwner);
-                }
-                level.addFreshEntity(shrapnel);
+            if (isMoving) {
+                // Create a cone spread in the direction of movement
+                createConeSpread(level, owner, centerX, centerY, centerZ, velocity, movementSpeed, random);
+            } else {
+                // Create a full circle spread for stationary barrels
+                createCircleSpread(level, owner, centerX, centerY, centerZ, random);
             }
         }
+    }
+
+    private static void createConeSpread(Level level, Entity owner, double centerX, double centerY, double centerZ,
+                                         Vec3 velocity, double movementSpeed, Random random) {
+        int shrapnelCount = PrimedExplosiveBarrel.projectileCount; // More projectiles for dramatic effect
+        double coneAngle = Math.PI / 3; // 60-degree cone (30 degrees each side)
+
+        // Normalize the velocity to get direction
+        Vec3 direction = velocity.normalize();
+        double baseAngle = Math.atan2(direction.z, direction.x);
+
+        // Main cone spread
+        for (int i = 0; i < shrapnelCount; i++) {
+            // Spread angles within the cone
+            double spreadAngle = (random.nextDouble() - 0.5) * coneAngle;
+            double finalAngle = baseAngle + spreadAngle;
+
+            // Variable speed with bias toward movement direction
+            double baseSpeed = 0.6 + random.nextDouble() * 0.4;
+            double speedMultiplier = 1.0 + Math.cos(spreadAngle) * 0.5; // Faster in center of cone
+            double speed = baseSpeed * speedMultiplier;
+
+            // Calculate projectile velocity
+            double dx = Math.cos(finalAngle) * speed;
+            double dz = Math.sin(finalAngle) * speed;
+            double dy = (random.nextDouble() - 0.3) * 0.6; // Slight upward bias
+
+            // Add some inheritance from the barrel's momentum
+            dx += direction.x * movementSpeed * 0.3;
+            dy += direction.y * movementSpeed * 0.3;
+            dz += direction.z * movementSpeed * 0.3;
+
+            WoodenShrapnel shrapnel = new WoodenShrapnel(level, centerX, centerY, centerZ);
+            shrapnel.setDeltaMovement(dx, dy, dz);
+            if (owner instanceof LivingEntity livingOwner) {
+                shrapnel.setOwner(livingOwner);
+            }
+            level.addFreshEntity(shrapnel);
+        }
+
+        // Add some backward projectiles for realism (but fewer and slower)
+        int backwardCount = 8;
+        for (int i = 0; i < backwardCount; i++) {
+            double backwardAngle = baseAngle + Math.PI + (random.nextDouble() - 0.5) * Math.PI / 2;
+            double speed = 0.2 + random.nextDouble() * 0.2; // Slower backward projectiles
+
+            double dx = Math.cos(backwardAngle) * speed;
+            double dz = Math.sin(backwardAngle) * speed;
+            double dy = random.nextDouble() * 0.3;
+
+            WoodenShrapnel shrapnel = new WoodenShrapnel(level, centerX, centerY, centerZ);
+            shrapnel.setDeltaMovement(dx, dy, dz);
+            if (owner instanceof LivingEntity livingOwner) {
+                shrapnel.setOwner(livingOwner);
+            }
+            level.addFreshEntity(shrapnel);
+        }
+    }
+
+    private static void createCircleSpread(Level level, Entity owner, double centerX, double centerY, double centerZ,
+                                           Random random) {
+        int shrapnelCount = 28; // Even distribution around circle
+
+        for (int i = 0; i < shrapnelCount; i++) {
+            // Evenly distributed angles with some randomness
+            double baseAngle = (2 * Math.PI / shrapnelCount) * i;
+            double angleVariation = (random.nextDouble() - 0.5) * 0.2; // Small random variation
+            double angle = baseAngle + angleVariation;
+
+            // Variable speed for more natural look
+            double speed = 0.4 + random.nextDouble() * 0.5;
+
+            double dx = Math.cos(angle) * speed;
+            double dz = Math.sin(angle) * speed;
+            double dy = (random.nextDouble() - 0.4) * 0.5; // Slight upward bias
+
+            WoodenShrapnel shrapnel = new WoodenShrapnel(level, centerX, centerY, centerZ);
+            shrapnel.setDeltaMovement(dx, dy, dz);
+            if (owner instanceof LivingEntity livingOwner) {
+                shrapnel.setOwner(livingOwner);
+            }
+            level.addFreshEntity(shrapnel);
+        }
+    }
+
+    // Legacy method for backward compatibility
+    public static void explode(Level level, Entity owner, Vec3 position) {
+        explode(level, owner, position, Vec3.ZERO);
     }
 
     @Override

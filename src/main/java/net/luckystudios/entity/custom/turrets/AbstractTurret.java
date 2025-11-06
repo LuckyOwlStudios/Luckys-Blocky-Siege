@@ -4,10 +4,14 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
+
+import java.util.Set;
 
 public abstract class AbstractTurret extends Mob {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -23,21 +27,21 @@ public abstract class AbstractTurret extends Mob {
         this.pos = pos;
     }
 
-    @Override
-    public void tick() {
-        if (!this.level().isClientSide) {
-            this.checkBelowWorld();
-            if (this.checkInterval++ == 100) {
-                this.checkInterval = 0;
-                if (!this.isRemoved() && !this.survives()) {
-                    this.discard();
-                    this.level().addAlwaysVisibleParticle(breakParticle(), true,
-                        this.getX(), this.getY(), this.getZ(),
-                        0.0D, 0.0D, 0.0D);
-                }
-            }
-        }
-    }
+//    @Override
+//    public void tick() {
+//        if (!this.level().isClientSide) {
+//            this.checkBelowWorld();
+//            if (this.checkInterval++ == 100) {
+//                this.checkInterval = 0;
+//                if (!this.isRemoved() && !this.survives()) {
+//                    this.discard();
+//                    this.level().addAlwaysVisibleParticle(breakParticle(), true,
+//                        this.getX(), this.getY(), this.getZ(),
+//                        0.0D, 0.0D, 0.0D);
+//                }
+//            }
+//        }
+//    }
 
     public boolean survives() {
         return this.level().getBlockState(pos.below()).is(this.attachedBlockState().getBlock());
@@ -68,16 +72,41 @@ public abstract class AbstractTurret extends Mob {
 
     public abstract ParticleOptions breakParticle();
 
-    /**
-     * Sets the x,y,z of the entity from the given parameters. Also seems to set up a bounding box.
-     */
-    @Override
-    public void setPos(double x, double y, double z) {
-        this.pos = BlockPos.containing(x, y, z);
-        this.hasImpulse = true;
-    }
+//    /**
+//     * Sets the x,y,z of the entity from the given parameters. Also seems to set up a bounding box.
+//     */
+//    @Override
+//    public void setPos(double x, double y, double z) {
+//        this.pos = BlockPos.containing(x, y, z);
+//        this.hasImpulse = true;
+//    }
 
     public BlockPos getPos() {
         return this.pos;
+    }
+
+    @Override
+    protected MovementEmission getMovementEmission() {
+        return MovementEmission.NONE;
+    }
+
+    @Override
+    public Vec3 getDeltaMovement() {
+        return Vec3.ZERO;
+    }
+
+    @Override
+    public void setDeltaMovement(Vec3 deltaMovement) {
+
+    }
+
+    @Override
+    public boolean canBeCollidedWith() {
+        return this.isAlive();
+    }
+
+    @Override
+    public boolean teleportTo(ServerLevel level, double x, double y, double z, Set<RelativeMovement> relativeMovements, float yRot, float xRot) {
+        return false;
     }
 }

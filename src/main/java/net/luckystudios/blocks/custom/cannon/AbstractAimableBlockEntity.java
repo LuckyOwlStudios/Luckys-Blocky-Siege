@@ -46,9 +46,15 @@ public abstract class AbstractAimableBlockEntity extends BlockEntity {
 
     public void setPitch(float pitch) {
         // Clamp pitch to -90 to 90 degrees
-        this.pitch = Math.clamp(pitch, -45, 45);
+        this.pitch = Math.clamp(pitch, minPitch(), maxPitch());
         this.setChanged();
     }
+
+    public abstract float maxPitch();
+
+    public abstract float minPitch();
+
+    public abstract float pitchOffset();
 
     public static Vec3 getAimVector(AbstractAimableBlockEntity aimableBlockEntity) {
         // Direction vector from yaw and pitch

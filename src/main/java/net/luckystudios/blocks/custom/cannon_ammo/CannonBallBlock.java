@@ -2,7 +2,7 @@ package net.luckystudios.blocks.custom.cannon_ammo;
 
 import com.mojang.serialization.MapCodec;
 import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
-import net.luckystudios.entity.custom.cannon_ball.normal.CannonBall;
+import net.luckystudios.entity.custom.cannon_ball.types.normal.CannonBall;
 import net.minecraft.world.level.Level;
 
 public class CannonBallBlock extends AbstractCannonBallBlock {

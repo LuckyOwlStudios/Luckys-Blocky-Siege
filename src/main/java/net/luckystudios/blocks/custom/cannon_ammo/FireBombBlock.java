@@ -2,7 +2,7 @@ package net.luckystudios.blocks.custom.cannon_ammo;
 
 import com.mojang.serialization.MapCodec;
 import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
-import net.luckystudios.entity.custom.cannon_ball.fire_bomb.FireBomb;
+import net.luckystudios.entity.custom.cannon_ball.types.spreading.fire_bomb.FireBomb;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 

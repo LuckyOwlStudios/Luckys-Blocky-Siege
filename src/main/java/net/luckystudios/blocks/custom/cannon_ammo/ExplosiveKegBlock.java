@@ -2,7 +2,7 @@ package net.luckystudios.blocks.custom.cannon_ammo;
 
 import com.mojang.serialization.MapCodec;
 import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
-import net.luckystudios.entity.custom.cannon_ball.explosive_barrel.ExplosiveKeg;
+import net.luckystudios.entity.custom.cannon_ball.types.explosive_barrel.ExplosiveKeg;
 import net.minecraft.world.level.Level;
 
 public class ExplosiveKegBlock extends AbstractCannonBallBlock {

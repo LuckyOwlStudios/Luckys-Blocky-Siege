@@ -2,7 +2,7 @@ package net.luckystudios.blocks.custom.cannon.types.spewer;
 
 import com.mojang.serialization.MapCodec;
 import net.luckystudios.blocks.custom.cannon.AbstractAimableBlock;
-import net.luckystudios.blocks.util.ModBlockEntityTypes;
+import net.luckystudios.init.ModBlockEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;

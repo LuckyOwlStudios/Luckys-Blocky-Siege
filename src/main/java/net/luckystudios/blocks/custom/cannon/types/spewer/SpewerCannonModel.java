@@ -36,6 +36,9 @@ public class SpewerCannonModel<T extends Entity> extends EntityModel<T> {
                 .texOffs(64, 0).mirror().addBox(-8.0F, -16.0F, -8.0F, 2.0F, 14.0F, 16.0F, new CubeDeformation(0.0F)).mirror(false)
                 .texOffs(64, 0).addBox(6.0F, -16.0F, -8.0F, 2.0F, 14.0F, 16.0F, new CubeDeformation(0.0F))
                 .texOffs(0, 34).addBox(-6.0F, -16.0F, -10.0F, 12.0F, 14.0F, 20.0F, new CubeDeformation(0.0F))
+                .texOffs(58, 96).addBox(-8.0F, -14.0F, 11.0F, 16.0F, 2.0F, 2.0F, new CubeDeformation(0.0F))
+                .texOffs(59, 97).addBox(3.0F, -14.0F, 10.0F, 2.0F, 2.0F, 1.0F, new CubeDeformation(0.0F))
+                .texOffs(59, 97).addBox(-5.0F, -14.0F, 10.0F, 2.0F, 2.0F, 1.0F, new CubeDeformation(0.0F))
                 .texOffs(38, 78).addBox(-7.0F, -18.0F, -3.0F, 14.0F, 2.0F, 14.0F, new CubeDeformation(0.0F))
                 .texOffs(64, 44).addBox(-5.0F, -18.0F, -1.0F, 10.0F, 14.0F, 10.0F, new CubeDeformation(0.0F)), PartPose.offset(0.0F, 0.0F, 0.0F));
 
