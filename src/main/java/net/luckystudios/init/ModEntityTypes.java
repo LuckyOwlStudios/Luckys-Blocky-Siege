@@ -4,10 +4,10 @@ import net.luckystudios.BlockySiege;
 import net.luckystudios.entity.custom.spreading.IceShard;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaEntity;
 import net.luckystudios.entity.custom.bullet.FireworkStarProjectile;
-import net.luckystudios.entity.custom.cannon_ball.types.explosive_barrel.ExplosiveKeg;
-import net.luckystudios.entity.custom.cannon_ball.types.spreading.fire_bomb.FireBomb;
-import net.luckystudios.entity.custom.cannon_ball.types.spreading.frost_bomb.FrostBomb;
-import net.luckystudios.entity.custom.cannon_ball.types.normal.CannonBall;
+import net.luckystudios.entity.custom.cannonball.types.explosive_barrel.ExplosiveKeg;
+import net.luckystudios.entity.custom.cannonball.types.spreading.fire_bomb.FireBomb;
+import net.luckystudios.entity.custom.cannonball.types.spreading.frost_bomb.FrostBomb;
+import net.luckystudios.entity.custom.cannonball.types.normal.CannonBall;
 import net.luckystudios.entity.custom.explosive_barrel.PrimedExplosiveBarrel;
 import net.luckystudios.entity.custom.seat.Seat;
 import net.luckystudios.entity.custom.spreading.Ember;
@@ -30,13 +30,13 @@ public class ModEntityTypes {
                     .clientTrackingRange(4)
                     .build("seat"));
 
-    public static final Supplier<EntityType<CannonBall>> CANNON_BALL =
-            ENTITY_TYPES.register("cannon_ball", () -> EntityType.Builder.<CannonBall>of(CannonBall::new, MobCategory.MISC)
+    public static final Supplier<EntityType<CannonBall>> CANNONBALL =
+            ENTITY_TYPES.register("cannonball", () -> EntityType.Builder.<CannonBall>of(CannonBall::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .eyeHeight(0.25F)
                     .clientTrackingRange(6)
                     .updateInterval(1)
-                    .build("cannon_ball"));
+                    .build("cannonball"));
 
     public static final Supplier<EntityType<ExplosiveKeg>> EXPLOSIVE_KEG =
             ENTITY_TYPES.register("explosive_keg", () -> EntityType.Builder.<ExplosiveKeg>of(ExplosiveKeg::new, MobCategory.MISC)

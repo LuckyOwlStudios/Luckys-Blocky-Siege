@@ -26,23 +26,35 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.List;
 
+// For some reason, we can only use textures directly inside the container folder.
+// Can't make sub-folders, can't use any other directory.
+// Nothing else.
+
 public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCannonBlockBlockMenu> {
 
     private final Level level;
     private final BlockPos blockPos;
     private final SpewerCannonBlockEntity spewerBlockEntity;
     private ImageButton targetButton;
+    private ImageButton infoButton;
     private final ModCyclingSlotBackground ammoIcon = new ModCyclingSlotBackground();
 
     // GUI Resources
     private static final ResourceLocation GUI_TEXTURE = BlockySiege.id("textures/gui/container/spewer_cannon_gui.png");
-    private static final ResourceLocation LAVA_TANK_TEXTURE = BlockySiege.id("textures/gui/container/lava_tank.png");
-    private static final ResourceLocation WATER_TANK_TEXTURE = BlockySiege.id("textures/gui/container/water_tank.png");
-    private static final ResourceLocation POTION_TANK_TEXTURE = BlockySiege.id("textures/gui/container/potion_tank.png");
+    private static final ResourceLocation LAVA_FRAME_TEXTURE = BlockySiege.id("textures/gui/container/lava_frame.png");
+    private static final ResourceLocation LAVA_LIQUID_TEXTURE = BlockySiege.id("textures/gui/container/lava.png");
+    private static final ResourceLocation WATER_FRAME_TEXTURE = BlockySiege.id("textures/gui/container/water_frame.png");
+    private static final ResourceLocation WATER_LIQUID_TEXTURE = BlockySiege.id("textures/gui/container/water.png");
+    private static final ResourceLocation POTION_TANK_TEXTURE = BlockySiege.id("textures/gui/container/potion.png");
 
     private static final WidgetSprites TARGET_BUTTON_SPRITES = new WidgetSprites(
             BlockySiege.id("textures/gui/container/target.png"),
             BlockySiege.id("textures/gui/container/target_highlighted.png")
+    );
+
+    private static final WidgetSprites INFO_BUTTON_SPRITES = new WidgetSprites(
+            BlockySiege.id("textures/gui/container/info.png"),
+            BlockySiege.id("textures/gui/container/info_highlighted.png")
     );
 
     private static final List<ResourceLocation> SLOT_SPRITES = List.of(
@@ -51,14 +63,15 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
     );
 
     // GUI Layout Constants
-    private static final int TANK_X = 40;
-    private static final int TANK_Y = 17;
-    private static final int TANK_WIDTH = 16;
-    private static final int TANK_HEIGHT = 50;
+    private static final int TANK_X = 43;
+    private static final int TANK_Y = 20;
+    private static final int TANK_WIDTH = 12;
+    private static final int TANK_HEIGHT = 44;
     private static final int SLOT_ICON_X = 80;
     private static final int SLOT_ICON_Y = 35;
-    private static final int TARGET_BUTTON_X = 156;
-    private static final int TARGET_BUTTON_Y = 6;
+    private static final int BUTTONS_X = 152;
+    private static final int TARGET_BUTTON_Y = 10;
+    private static final int INFO_BUTTON_Y = 26;
 
     public SpewerCannonBlockScreen(SpewerCannonBlockBlockMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -72,7 +85,7 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
     protected void init() {
         super.init();
         this.targetButton = new ImageButton(
-                this.leftPos + TARGET_BUTTON_X,
+                this.leftPos + BUTTONS_X,
                 this.topPos + TARGET_BUTTON_Y,
                 14, 14,
                 TARGET_BUTTON_SPRITES,
@@ -84,6 +97,19 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
             }
         };
         this.addRenderableWidget(targetButton);
+        this.infoButton = new ImageButton(
+                this.leftPos + BUTTONS_X,
+                this.topPos + INFO_BUTTON_Y,
+                14, 14,
+                INFO_BUTTON_SPRITES,
+                button -> PacketDistributor.sendToServer(new SpewerCannonBlockScreenPacket(blockPos, 0, 0))
+        ) {
+            @Override
+            public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                guiGraphics.blit(sprites.get(isActive(), isHoveredOrFocused()), getX(), getY(), 0, 0, width, height, width, height);
+            }
+        };
+        this.addRenderableWidget(infoButton);
     }
 
     @Override
@@ -96,6 +122,8 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
 
         // Render fluid tank
         renderFluidTank(guiGraphics, x, y);
+
+        RenderSystem.enableBlend();
 
         // Render slot icons if slot is empty
         if (spewerBlockEntity.getItem(0).isEmpty()) {
@@ -135,8 +163,51 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
                 guiX + TANK_X, guiY + TANK_Y + emptyHeight,
                 TANK_WIDTH, fillHeight, textureOffset);
 
+        // Reset color before rendering frame
+//        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+        // Render static frame overlay
+        ResourceLocation frameTexture = getFrameTexture(fluid, fluidStack);
+        renderStaticFrame(guiGraphics, frameTexture,
+                guiX + TANK_X, guiY + TANK_Y + emptyHeight,
+                TANK_WIDTH, fillHeight);
+
         // Reset rendering state
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    private ResourceLocation getFrameTexture(Fluid fluid, FluidStack fluidStack) {
+        if (fluid == Fluids.LAVA) {
+            return LAVA_FRAME_TEXTURE;
+        } else {
+            // For both water and potions, use water frame
+            // You could add a separate potion frame texture if desired
+            return WATER_FRAME_TEXTURE;
+        }
+    }
+
+    private void renderStaticFrame(GuiGraphics guiGraphics, ResourceLocation frameTexture,
+                                   int x, int y, int width, int height) {
+        // Render frame at the same position and size as the liquid, but without animation
+        int textureHeight = TANK_HEIGHT; // Frame texture height should match liquid texture height
+
+        // If the fill height is less than the full texture height, we need to clip the frame
+        if (height < textureHeight) {
+            // Calculate which part of the frame texture to show (bottom portion)
+            int vOffset = textureHeight - height;
+            guiGraphics.blit(frameTexture,
+                    x, y,                      // screen position
+                    0, vOffset,                // texture u,v (start from bottom part of texture)
+                    width, height,             // render size
+                    width, textureHeight);     // texture size
+        } else {
+            // Full height - render normally
+            guiGraphics.blit(frameTexture,
+                    x, y,
+                    0, 0,
+                    width, height,
+                    width, textureHeight);
+        }
     }
 
     private void renderAnimatedFluid(GuiGraphics guiGraphics, ResourceLocation texture,
@@ -176,11 +247,11 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
 
     private ResourceLocation getTankTexture(Fluid fluid, FluidStack fluidStack) {
         if (fluid == Fluids.LAVA) {
-            return LAVA_TANK_TEXTURE;
+            return LAVA_LIQUID_TEXTURE;
         } else if (fluidStack.has(DataComponents.POTION_CONTENTS)) {
             return POTION_TANK_TEXTURE;
         } else {
-            return WATER_TANK_TEXTURE;
+            return WATER_LIQUID_TEXTURE;
         }
     }
 
@@ -217,6 +288,9 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
         if (targetButton.isHovered()) {
             guiGraphics.renderTooltip(font, Component.translatable("container.blockysiege.aim"), pMouseX, pMouseY);
         }
+        if (infoButton.isHovered()) {
+            guiGraphics.renderTooltip(font, Component.translatable("container.blockysiege.info"), pMouseX, pMouseY);
+        }
 
         renderTankTooltip(guiGraphics, pMouseX, pMouseY);
     }
@@ -230,13 +304,32 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
 
         if (mouseX >= tankLeft && mouseX <= tankRight && mouseY >= tankTop && mouseY <= tankBottom) {
             int fluidAmount = spewerBlockEntity.getFluidTank().getFluidAmount();
-            Component tooltip = switch (fluidAmount) {
-                case 0 -> Component.translatable("container.blockysiege.empty");
-                case 1000 -> Component.translatable("container.blockysiege.full");
-                default -> Component.literal(fluidAmount + " mB");
-            };
+
+            if (fluidAmount == 0) {
+                Component tooltip = Component.translatable("container.blockysiege.empty");
+                guiGraphics.renderTooltip(font, tooltip, mouseX, mouseY);
+                return;
+            }
+
+            FluidStack fluidStack = spewerBlockEntity.getFluidTank().getFluid();
+            Fluid fluid = fluidStack.getFluid();
+            String fluidName = getFluidName(fluid, fluidStack);
+
+            Component tooltip = Component.literal(fluidName + ": " + fluidAmount + "mB");
             guiGraphics.renderTooltip(font, tooltip, mouseX, mouseY);
         }
+    }
+
+    private String getFluidName(Fluid fluid, FluidStack fluidStack) {
+        if (fluid == Fluids.LAVA) {
+            return "Lava";
+        } else if (fluidStack.has(DataComponents.POTION_CONTENTS)) {
+            PotionContents potionContents = fluidStack.get(DataComponents.POTION_CONTENTS);
+            if (potionContents != null && potionContents.potion().isPresent()) {
+                return "Potion";
+            }
+        }
+        return "Water";
     }
 
     @Override

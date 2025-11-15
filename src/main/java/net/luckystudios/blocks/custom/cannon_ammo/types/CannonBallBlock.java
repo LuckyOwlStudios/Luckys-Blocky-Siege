@@ -2,8 +2,7 @@ package net.luckystudios.blocks.custom.cannon_ammo.types;
 
 import com.mojang.serialization.MapCodec;
 import net.luckystudios.blocks.custom.cannon_ammo.AbstractCannonBallBlock;
-import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
-import net.luckystudios.entity.custom.cannon_ball.types.normal.CannonBall;
+import net.luckystudios.entity.custom.cannonball.types.normal.CannonBall;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.world.entity.projectile.Projectile;

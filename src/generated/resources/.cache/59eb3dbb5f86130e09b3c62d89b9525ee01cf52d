@@ -1,10 +1,9 @@
-// 1.21.1	2025-11-10T16:50:49.2067499	Loot Tables
+// 1.21.1	2025-11-15T16:16:04.7697921	Loot Tables
 42306941049870bf6a33c30267898e60010d4e7d data/blockysiege/loot_table/blocks/ballista_block.json
 3ebcf42a828ff29f1487163e0de816efbcb18ca3 data/blockysiege/loot_table/blocks/cannon.json
-5ff369fe3433b3919ab597091c741748d4475ae1 data/blockysiege/loot_table/blocks/cannon_ball.json
+8f6dec16de3b1832c2bc9abdb31839fe0d2ffaf0 data/blockysiege/loot_table/blocks/cannonball.json
 9137b183c72483c1ed10b7db1252419df03876f4 data/blockysiege/loot_table/blocks/ember_pile.json
 9d67231fb21fdbded87d2a8804e3a3817390fbb0 data/blockysiege/loot_table/blocks/explosive_barrel.json
-9ec0ea74f18cb16aa8b95ef58a800215ad1548c2 data/blockysiege/loot_table/blocks/explosive_keg.json
 77718935ab9b10a83393c6dad1822523237b2f03 data/blockysiege/loot_table/blocks/fire_bomb.json
 0633255893d8df78c459eba8695b6d5a6764898d data/blockysiege/loot_table/blocks/frost_bomb.json
 221cb6ecd3213b727c68ec4c41b28ff4fc71ed6b data/blockysiege/loot_table/blocks/frost_pile.json

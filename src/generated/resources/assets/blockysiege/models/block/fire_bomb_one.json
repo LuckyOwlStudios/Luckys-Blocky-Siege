@@ -1,5 +1,5 @@
 {
-  "parent": "blockysiege:block/template_cannon_ball_one",
+  "parent": "blockysiege:block/template_cannonball_one",
   "render_type": "minecraft:translucent",
   "textures": {
     "all": "blockysiege:block/projectile/fire_bomb",

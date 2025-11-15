@@ -6,7 +6,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import java.util.List;
 
-
 public class ModCyclingSlotBackground {
     public List<ResourceLocation> icons = List.of();
     private int tick;
@@ -19,36 +18,47 @@ public class ModCyclingSlotBackground {
         if (!this.icons.equals(icons)) {
             this.icons = icons;
             this.iconIndex = 0;
+            this.tick = 0; // Reset tick when icons change
         }
 
-        if (!this.icons.isEmpty() && ++this.tick % 30 == 0) {
-            this.iconIndex = (this.iconIndex + 1) % this.icons.size();
+        if (!this.icons.isEmpty()) {
+            ++this.tick;
+            if (this.tick % 30 == 0) {
+                this.iconIndex = (this.iconIndex + 1) % this.icons.size();
+            }
         }
     }
 
     public void render(AbstractContainerMenu containerMenu, GuiGraphics guiGraphics, float partialTick, int x, int y) {
-            boolean flag = this.icons.size() > 1 && this.tick >= 30;
-            float f = flag ? this.getIconTransitionTransparency(partialTick) : 1.0F;
-            if (f < 1.0F) {
-                int i = Math.floorMod(this.iconIndex - 1, this.icons.size());
-                this.renderIcon(i, 1.0F - f, guiGraphics, x, y);
-            }
+        if (this.icons.isEmpty()) return;
 
-            this.renderIcon(this.iconIndex, f, guiGraphics, x, y);
+        // Only show transition if we have multiple icons and enough time has passed
+        boolean inTransition = this.icons.size() > 1 && (this.tick % 30) < 4 && this.tick >= 30;
+
+        if (inTransition) {
+            // Calculate transition alpha
+            float transitionAlpha = this.getIconTransitionTransparency(partialTick);
+
+            // Render previous icon (fading out)
+            int previousIndex = Math.floorMod(this.iconIndex - 1, this.icons.size());
+            this.renderIcon(previousIndex, 1.0F - transitionAlpha, guiGraphics, x, y);
+
+            // Render current icon (fading in)
+            this.renderIcon(this.iconIndex, transitionAlpha, guiGraphics, x, y);
+        } else {
+            // No transition, render current icon at full alpha
+            this.renderIcon(this.iconIndex, 1.0F, guiGraphics, x, y);
+        }
     }
 
     private void renderIcon(int iconIndex, float alpha, GuiGraphics guiGraphics, int x, int y) {
-        ResourceLocation image = iconIndex == 1 ? ResourceLocation.parse("blockysiege:textures/gui/container/bottle.png") : ResourceLocation.parse("blockysiege:textures/gui/container/bucket.png");
-        guiGraphics.setColor(1.0F, 1.0F, 1.0F, alpha); // Use the alpha parameter here
-        guiGraphics.blit(image, x, y, 0, 0, 16, 16, 16, 16);
-//        guiGraphics.blit(icon, x, y, 0, 0, 16, 16);
-        guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F); // Reset color to normal
+        if (iconIndex >= 0 && iconIndex < this.icons.size()) {
+            ResourceLocation icon = this.icons.get(iconIndex);
+            guiGraphics.setColor(1.0F, 1.0F, 1.0F, alpha);
+            guiGraphics.blit(icon, x, y, 0, 0, 16, 16, 16, 16);
+            guiGraphics.setColor(1.0F, 1.0F, 1.0F, 1.0F); // Reset color to normal
+        }
     }
-
-//    private void renderIcon(ResourceLocation icon, float alpha, GuiGraphics guiGraphics, int x, int y) {
-//        TextureAtlasSprite textureatlassprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(icon);
-//        guiGraphics.blit(x, y, 0, 16, 16, textureatlassprite, 1.0F, 1.0F, 1.0F, alpha);
-//    }
 
     private float getIconTransitionTransparency(float partialTick) {
         float f = (float)(this.tick % 30) + partialTick;

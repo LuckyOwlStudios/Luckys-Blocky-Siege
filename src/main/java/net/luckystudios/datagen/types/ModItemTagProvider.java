@@ -25,7 +25,7 @@ public class ModItemTagProvider extends ItemTagsProvider {
     protected void addTags(HolderLookup.Provider provider) {
         tag(ModTags.CANNON_AMMO)
                 .add(ModBlocks.CANNON_BALL.get().asItem())
-                .add(ModBlocks.EXPLOSIVE_KEG.get().asItem())
+                .add(ModBlocks.EXPLOSIVE_BARREL.get().asItem())
                 .add(ModBlocks.FIRE_BOMB.get().asItem())
                 .add(ModBlocks.FROST_BOMB.get().asItem())
                 .add(ModBlocks.WIND_BOMB.get().asItem())

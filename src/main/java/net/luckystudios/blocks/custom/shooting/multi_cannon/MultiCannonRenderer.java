@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.luckystudios.BlockySiege;
+import net.luckystudios.blocks.util.ModBlockStateProperties;
+import net.luckystudios.blocks.util.enums.DamageState;
 import net.luckystudios.util.ModModelLayers;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -20,7 +22,10 @@ import net.minecraft.world.phys.AABB;
 public class MultiCannonRenderer implements BlockEntityRenderer<MultiCannonBlockEntity> {
 
 	private final MultiCannonRenderer.CustomHierarchicalModel model;
-	private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/block/multi_cannon.png");
+	private static final ResourceLocation BASE_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/block/multi_cannon/multi_cannon.png");
+	private static final ResourceLocation LOW_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/block/multi_cannon/multi_cannon_crackiness_low.png");
+	private static final ResourceLocation MEDIUM_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/block/multi_cannon/multi_cannon_crackiness_medium.png");
+	private static final ResourceLocation HIGH_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/block/multi_cannon/multi_cannon_crackiness_high.png");
 
 	public MultiCannonRenderer(BlockEntityRendererProvider.Context context) {
 		this.model = new MultiCannonRenderer.CustomHierarchicalModel(context.bakeLayer(ModModelLayers.MULTI_CANNON));
@@ -36,29 +41,39 @@ public class MultiCannonRenderer implements BlockEntityRenderer<MultiCannonBlock
 	// Copied from the BlockEntityRenderer class
 	// Copied from the EnchantTableRenderer
 	@Override
-	public void render(MultiCannonBlockEntity cannonBlockEntity, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, int packedOverlay) {
-		Level level = cannonBlockEntity.getLevel();
+	public void render(MultiCannonBlockEntity multiCannonBlockEntity, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, int packedOverlay) {
+		Level level = multiCannonBlockEntity.getLevel();
 		if (level == null) return;
 		poseStack.pushPose();
 		poseStack.translate(0.5F, 1.5F, 0.5F);
 		poseStack.mulPose(Axis.XP.rotationDegrees(180.0F)); // Flip model upright
 
 		// Apply yaw and pitch
-		float yawDeg = interpolateAngleDeg(cannonBlockEntity.displayOYaw, cannonBlockEntity.displayYaw, partialTick);
-		float pitchDeg = Mth.lerp(partialTick, cannonBlockEntity.displayOPitch, cannonBlockEntity.displayPitch);
+		float yawDeg = interpolateAngleDeg(multiCannonBlockEntity.displayOYaw, multiCannonBlockEntity.displayYaw, partialTick);
+		float pitchDeg = Mth.lerp(partialTick, multiCannonBlockEntity.displayOPitch, multiCannonBlockEntity.displayPitch);
 		// Grabbing the vertex consumer/texture
-		VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutout(TEXTURE_LOCATION));
+		VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutout(getTextureLocation(multiCannonBlockEntity)));
 		// Setting up animations!
-		if (cannonBlockEntity.animationTime > 0) {
-			updateRenderState(cannonBlockEntity);
+		if (multiCannonBlockEntity.animationTime > 0) {
+			updateRenderState(multiCannonBlockEntity);
 		}
-		model.setupBlockEntityAnim(cannonBlockEntity, level.getGameTime() + partialTick);
+		model.setupBlockEntityAnim(multiCannonBlockEntity, level.getGameTime() + partialTick);
 
 		// Render full model from the root
 		model.setRotations(yawDeg, pitchDeg);
 		model.renderToBuffer(poseStack, vertexConsumer, packedLight, packedOverlay);
 
 		poseStack.popPose();
+	}
+
+	public static ResourceLocation getTextureLocation(MultiCannonBlockEntity multiCannonBlockEntity) {
+		DamageState damageState = multiCannonBlockEntity.getBlockState().getValue(ModBlockStateProperties.DAMAGE_STATE);
+		return switch (damageState) {
+			case LOW -> LOW_TEXTURE_LOCATION;
+			case MEDIUM -> MEDIUM_TEXTURE_LOCATION;
+			case HIGH -> HIGH_TEXTURE_LOCATION;
+			default -> BASE_TEXTURE_LOCATION;
+		};
 	}
 
 	private float interpolateAngleDeg(float from, float to, float partialTick) {

@@ -26,7 +26,6 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockWithItem(ModBlocks.EMBER_PILE.get(), models().carpet("ember_pile", mcLoc("block/magma")));
         simpleBlockWithItem(ModBlocks.FROST_PILE.get(), models().carpet("frost_pile", mcLoc("block/powder_snow")));
         generateCannonBallBlockState(ModBlocks.CANNON_BALL.get(), mcLoc("block/iron_block"), "cutout");
-        generateCannonBallBlockState(ModBlocks.EXPLOSIVE_KEG.get(), mcLoc("block/barrel_side"), "cutout");
         generateCannonBallBlockState(ModBlocks.FIRE_BOMB.get(), mcLoc("block/glass"), "translucent");
         generateCannonBallBlockState(ModBlocks.FROST_BOMB.get(), mcLoc("block/ice"), "translucent");
         generateCannonBallBlockState(ModBlocks.WIND_BOMB.get(), modLoc("block/projectile/wind_bomb"), "translucent");
@@ -37,12 +36,13 @@ public class ModBlockStateProvider extends BlockStateProvider {
     private void generateCannonBallBlockState(Block block, ResourceLocation breakParticle, String renderType) {
         String name = BuiltInRegistries.BLOCK.getKey(block).getPath();
         ResourceLocation texture = modLoc("block/projectile/" + name);
-        ModelFile ballOne = models().withExistingParent(name + "_one", modLoc("block/template_cannon_ball_one")).texture("all", texture).texture("particle", breakParticle).renderType(renderType);
-        ModelFile ballTwo = models().withExistingParent(name + "_two", modLoc("block/template_cannon_ball_two")).texture("all", texture).texture("particle", breakParticle).renderType(renderType);
-        ModelFile ballThree = models().withExistingParent(name + "_three", modLoc("block/template_cannon_ball_three")).texture("all", texture).texture("particle", breakParticle).renderType(renderType);
-        ModelFile ballFour = models().withExistingParent(name + "_four", modLoc("block/template_cannon_ball_four")).texture("all", texture).texture("particle", breakParticle).renderType(renderType);
+        ModelFile ballOne = models().withExistingParent(name + "_one", modLoc("block/template_cannonball_one")).texture("all", texture).texture("particle", breakParticle).renderType(renderType);
+        ModelFile ballTwo = models().withExistingParent(name + "_two", modLoc("block/template_cannonball_two")).texture("all", texture).texture("particle", breakParticle).renderType(renderType);
+        ModelFile ballThree = models().withExistingParent(name + "_three", modLoc("block/template_cannonball_three")).texture("all", texture).texture("particle", breakParticle).renderType(renderType);
+        ModelFile ballFour = models().withExistingParent(name + "_four", modLoc("block/template_cannonball_four")).texture("all", texture).texture("particle", breakParticle).renderType(renderType);
 
-        simpleBlockItem(block, ballOne);
+//        simpleBlockItem(block, ballOne);
+        this.itemModels().basicItem(block.asItem());
 
         getVariantBuilder(block).forAllStatesExcept(state -> {
             Direction facing = state.getValue(ButtonBlock.FACING);

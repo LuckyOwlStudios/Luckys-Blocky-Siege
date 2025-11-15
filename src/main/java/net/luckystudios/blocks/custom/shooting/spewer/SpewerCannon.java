@@ -6,11 +6,13 @@ import net.luckystudios.blocks.util.interfaces.DamageableBlock;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.init.ModFluids;
 import net.luckystudios.init.ModTags;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -33,6 +35,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public class SpewerCannon extends AbstractShootingBlock implements DamageableBlock {
     public static final MapCodec<SpewerCannon> CODEC = simpleCodec(SpewerCannon::new);
@@ -138,6 +142,12 @@ public class SpewerCannon extends AbstractShootingBlock implements DamageableBlo
         }
 
         level.addAlwaysVisibleParticle(particleOptions, spawnPos.x, spawnPos.y, spawnPos.z, 0.0, 0.0, 0.0);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        tooltipComponents.add(Component.translatable("block.blockysiege.spewer_cannon.description").withStyle(ChatFormatting.GRAY));
     }
 
     @Override

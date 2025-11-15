@@ -2,7 +2,7 @@ package net.luckystudios;
 
 import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonModel;
 import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonRenderer;
-import net.luckystudios.entity.custom.cannon_ball.TrailModel;
+import net.luckystudios.entity.custom.cannonball.TrailModel;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaGolemModel;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaRenderer;
 import net.luckystudios.gui.ballista.BallistaScreen;
@@ -14,12 +14,12 @@ import net.luckystudios.gui.multi_cannon.MultiCannonBlockScreen;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.blocks.custom.shooting.cannon.CannonRenderer;
-import net.luckystudios.entity.custom.cannon_ball.CannonBallModel;
-import net.luckystudios.entity.custom.cannon_ball.types.explosive_barrel.ExplosiveKegRenderer;
-import net.luckystudios.entity.custom.cannon_ball.types.spreading.fire_bomb.FireBombRenderer;
-import net.luckystudios.entity.custom.cannon_ball.types.spreading.frost_bomb.FrostBombRenderer;
-import net.luckystudios.entity.custom.cannon_ball.types.normal.CannonBallRenderer;
-import net.luckystudios.entity.custom.cannon_ball.types.wind_bomb.WindBombRenderer;
+import net.luckystudios.entity.custom.cannonball.CannonBallModel;
+import net.luckystudios.entity.custom.cannonball.types.explosive_barrel.ExplosiveKegRenderer;
+import net.luckystudios.entity.custom.cannonball.types.spreading.fire_bomb.FireBombRenderer;
+import net.luckystudios.entity.custom.cannonball.types.spreading.frost_bomb.FrostBombRenderer;
+import net.luckystudios.entity.custom.cannonball.types.normal.CannonBallRenderer;
+import net.luckystudios.entity.custom.cannonball.types.wind_bomb.WindBombRenderer;
 import net.luckystudios.entity.custom.explosive_barrel.PrimedExplosiveBarrelRenderer;
 import net.luckystudios.gui.spewer_cannon.SpewerCannonBlockScreen;
 import net.luckystudios.particles.BottleCapParticle;
@@ -67,7 +67,7 @@ public class BlockySiegeClient {
 
         // Entities
         event.registerEntityRenderer(ModEntityTypes.SEAT.get(), NoopRenderer::new);
-        event.registerEntityRenderer(ModEntityTypes.CANNON_BALL.get(), CannonBallRenderer::new);
+        event.registerEntityRenderer(ModEntityTypes.CANNONBALL.get(), CannonBallRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.EXPLOSIVE_KEG.get(), ExplosiveKegRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.FIRE_BOMB.get(), FireBombRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.FROST_BOMB.get(), FrostBombRenderer::new);

@@ -9,6 +9,7 @@ import net.luckystudios.blocks.util.interfaces.DamageableBlock;
 import net.luckystudios.entity.custom.bullet.FireworkStarProjectile;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.init.ModTags;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -27,15 +28,13 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Random;
 
-public class CannonBlock extends AbstractShootingBlock implements DamageableBlock {
+public class CannonBlock extends AbstractShootingBlock {
     public static final MapCodec<CannonBlock> CODEC = simpleCodec(CannonBlock::new);
-    public static final EnumProperty<DamageState> DAMAGE_STATE = ModBlockStateProperties.DAMAGE_STATE;
     public static final EnumProperty<FiringState> FIRING_STATE = ModBlockStateProperties.FIRING_STATE;
 
     @Override
@@ -61,7 +60,7 @@ public class CannonBlock extends AbstractShootingBlock implements DamageableBloc
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(DAMAGE_STATE, FIRING_STATE);
+        builder.add(FIRING_STATE);
     }
 
     @Nullable
@@ -73,23 +72,7 @@ public class CannonBlock extends AbstractShootingBlock implements DamageableBloc
     @Override
     public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
-        tooltipComponents.add(Component.translatable("block.blockysiege.cannon.description"));
-    }
-
-    @Override
-    protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
-        super.onProjectileHit(level, state, hit, projectile);
-        if (level.isClientSide()) return;
-        if (projectile.getType().is(ModTags.STRONG_PROJECTILE)) {
-            if (projectile instanceof FireworkStarProjectile) {
-                Random random = new Random();
-                if (random.nextFloat() < 0.25F) {
-                    damageBlock(null, level, hit.getBlockPos(), state);
-                }
-            } else {
-                damageBlock(null, level, hit.getBlockPos(), state);
-            }
-        }
+        tooltipComponents.add(Component.translatable("block.blockysiege.cannon.description").withStyle(ChatFormatting.GRAY));
     }
 
     @Override

@@ -4,7 +4,6 @@ import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntit
 import net.luckystudios.entity.custom.spreading.Ember;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.gui.spewer_cannon.SpewerCannonBlockBlockMenu;
-import net.luckystudios.init.ModFluids;
 import net.luckystudios.init.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -15,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -48,9 +48,17 @@ public class SpewerCannonBlockEntity extends AbstractShootingAimableBlockEntity 
 
     private int fireCooldown = 0;
 
+    public enum LIQUID_CONTENT {
+        NONE,
+        WATER,
+        LAVA,
+        POTION
+    }
+
     public SpewerCannonBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntityTypes.SPEWER_CANNON_BLOCK_ENTITY.get(), pos, blockState);
         this.animationLength = 0.25F;
+//        this.pitch = 30F;
     }
 
     public ItemStack getLiquidStack() {
@@ -217,5 +225,25 @@ public class SpewerCannonBlockEntity extends AbstractShootingAimableBlockEntity 
         int capacity = fluidTank.getCapacity();
         int amount = fluidTank.getFluidAmount();
         return (float) amount / capacity;
+    }
+
+    public LIQUID_CONTENT getLiquid() {
+        Fluid fluid = fluidTank.getFluid().getFluid();
+        if (fluid.isSame(Fluids.LAVA)) {
+            return LIQUID_CONTENT.LAVA;
+        } else if (fluid.isSame(Fluids.WATER)) {
+            PotionContents potionContents = fluidTank.getFluid().get(DataComponents.POTION_CONTENTS);
+            if (potionContents != null) {
+                return LIQUID_CONTENT.POTION;
+            } else {
+                return LIQUID_CONTENT.WATER;
+            }
+        }
+        return LIQUID_CONTENT.NONE;
+    }
+
+    public PotionContents getEffects() {
+        PotionContents potionContents = fluidTank.getFluid().get(DataComponents.POTION_CONTENTS);
+        return potionContents;
     }
 }

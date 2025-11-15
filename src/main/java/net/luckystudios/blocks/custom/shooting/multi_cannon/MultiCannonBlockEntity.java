@@ -1,6 +1,7 @@
 package net.luckystudios.blocks.custom.shooting.multi_cannon;
 
 import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
+import net.luckystudios.blocks.util.interfaces.DamageableBlock;
 import net.luckystudios.gui.multi_cannon.MultiCannonBlockMenu;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.entity.custom.bullet.FireworkStarProjectile;
@@ -34,6 +35,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Random;
 
 public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
@@ -154,6 +156,12 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
         multiCannonBlockEntity.removeItem(1, 1);
         multiCannonBlockEntity.barrelIndex += 1;
         if (multiCannonBlockEntity.barrelIndex > 3) multiCannonBlockEntity.barrelIndex = 0; // Reset if out of bounds
+
+        Random random = new Random();
+        if (random.nextFloat() >= 0.015) return;
+        if (multiCannonBlockEntity.getBlockState().getBlock() instanceof DamageableBlock damageableBlock) {
+            damageableBlock.damageBlock(null, level, pos, multiCannonBlockEntity.getBlockState());
+        }
     }
 
     // We use this to get the multiple barrel positions on the multi-cannon

@@ -1,5 +1,6 @@
 package net.luckystudios.blocks.custom.shooting;
 
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
@@ -43,6 +44,11 @@ public abstract class AbstractAimableBlock extends BaseEntityBlock {
 
         if (!level.isClientSide && placer != null && level.getBlockEntity(pos) instanceof AbstractShootingAimableBlockEntity aimableBlockEntity) {
             aimableBlockEntity.yaw = Direction.fromYRot(placer.getYRot()).toYRot();
+
+            // Set initial pitch for spewer cannons
+            if (aimableBlockEntity instanceof SpewerCannonBlockEntity) {
+                aimableBlockEntity.setPitch(30.0F); // Use setPitch to ensure proper clamping
+            }
         }
     }
 }

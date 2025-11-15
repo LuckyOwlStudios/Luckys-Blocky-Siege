@@ -4,6 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.luckystudios.BlockySiege;
+import net.luckystudios.blocks.util.ModBlockStateProperties;
+import net.luckystudios.blocks.util.enums.DamageState;
 import net.luckystudios.util.ModModelLayers;
 import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -21,7 +23,10 @@ import org.jetbrains.annotations.NotNull;
 public class SpewerCannonRenderer implements BlockEntityRenderer<SpewerCannonBlockEntity> {
 
 	private final CustomHierarchicalModel model;
-	private static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/block/spewer_cannon.png");
+	private static final ResourceLocation BASE_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/block/spewer_cannon/spewer_cannon.png");
+	private static final ResourceLocation LOW_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/block/spewer_cannon/spewer_cannon_crackiness_low.png");
+	private static final ResourceLocation MEDIUM_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/block/spewer_cannon/spewer_cannon_crackiness_medium.png");
+	private static final ResourceLocation HIGH_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/block/spewer_cannon/spewer_cannon_crackiness_high.png");
 
 	public SpewerCannonRenderer(BlockEntityRendererProvider.Context context) {
 		this.model = new CustomHierarchicalModel(context.bakeLayer(ModModelLayers.SPEWER_CANNON));
@@ -48,7 +53,7 @@ public class SpewerCannonRenderer implements BlockEntityRenderer<SpewerCannonBlo
 		float yawDeg = interpolateAngleDeg(spewerCannonBlockEntity.displayOYaw, spewerCannonBlockEntity.displayYaw, partialTick);
 		float pitchDeg = Mth.lerp(partialTick, spewerCannonBlockEntity.displayOPitch, spewerCannonBlockEntity.displayPitch);
 		// Grabbing the vertex consumer/texture
-		VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(TEXTURE_LOCATION));
+		VertexConsumer vertexConsumer = multiBufferSource.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(spewerCannonBlockEntity)));
 		// Setting up animations!
 		if (spewerCannonBlockEntity.animationTime > 0) {
 			updateRenderState(spewerCannonBlockEntity);
@@ -59,6 +64,16 @@ public class SpewerCannonRenderer implements BlockEntityRenderer<SpewerCannonBlo
 		model.setRotations(yawDeg, pitchDeg);
 		model.renderToBuffer(poseStack, vertexConsumer, packedLight, packedOverlay);
 		poseStack.popPose();
+	}
+
+	public static ResourceLocation getTextureLocation(SpewerCannonBlockEntity spewerCannonBlockEntity) {
+		DamageState damageState = spewerCannonBlockEntity.getBlockState().getValue(ModBlockStateProperties.DAMAGE_STATE);
+		return switch (damageState) {
+			case LOW -> LOW_TEXTURE_LOCATION;
+			case MEDIUM -> MEDIUM_TEXTURE_LOCATION;
+			case HIGH -> HIGH_TEXTURE_LOCATION;
+			default -> BASE_TEXTURE_LOCATION;
+		};
 	}
 
 	private float interpolateAngleDeg(float from, float to, float partialTick) {

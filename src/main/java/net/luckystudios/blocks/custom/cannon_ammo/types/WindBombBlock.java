@@ -2,9 +2,7 @@ package net.luckystudios.blocks.custom.cannon_ammo.types;
 
 import com.mojang.serialization.MapCodec;
 import net.luckystudios.blocks.custom.cannon_ammo.AbstractCannonBallBlock;
-import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
-import net.luckystudios.entity.custom.cannon_ball.types.spreading.frost_bomb.FrostBomb;
-import net.luckystudios.entity.custom.cannon_ball.types.wind_bomb.WindBomb;
+import net.luckystudios.entity.custom.cannonball.types.wind_bomb.WindBomb;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.world.entity.projectile.Projectile;

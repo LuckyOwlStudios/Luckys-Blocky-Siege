@@ -11,6 +11,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -57,7 +58,7 @@ public abstract class PotionFluid extends FlowingFluid {
 
     @Override
     protected BlockState createLegacyBlock(FluidState state) {
-        return ModBlocks.POTION_LIQUID_BLOCK.get().defaultBlockState().setValue(LiquidBlock.LEVEL, getLegacyLevel(state));
+        return Blocks.WATER.defaultBlockState().setValue(LiquidBlock.LEVEL, getLegacyLevel(state));
     }
 
     @Override
@@ -94,7 +95,7 @@ public abstract class PotionFluid extends FlowingFluid {
 
         @Override
         protected BlockState createLegacyBlock(FluidState state) {
-            return ModBlocks.POTION_LIQUID_BLOCK.get().defaultBlockState().setValue(LiquidBlock.LEVEL, getLegacyLevel(state));
+            return Blocks.WATER.defaultBlockState().setValue(LiquidBlock.LEVEL, getLegacyLevel(state));
         }
 
         @Override
@@ -136,7 +137,7 @@ public abstract class PotionFluid extends FlowingFluid {
 
         @Override
         protected BlockState createLegacyBlock(FluidState state) {
-            return ModBlocks.POTION_LIQUID_BLOCK.get().defaultBlockState().setValue(LiquidBlock.LEVEL, getLegacyLevel(state));
+            return Blocks.WATER.defaultBlockState().setValue(LiquidBlock.LEVEL, getLegacyLevel(state));
         }
 
         @Override

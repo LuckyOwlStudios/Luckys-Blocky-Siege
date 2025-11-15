@@ -44,7 +44,7 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         super(ModBlockEntityTypes.CANNON_BLOCK_ENTITY.get(), pos, blockState);
         this.maxCooldown = 60;
         this.animationLength = 0.25F;
-        this.firePower = 1; // Default firepower
+        this.firePower = 4; // Default firepower
         this.cooldown = -1; // Default cooldown
     }
 

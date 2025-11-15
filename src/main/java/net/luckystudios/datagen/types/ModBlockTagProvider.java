@@ -29,7 +29,6 @@ public class ModBlockTagProvider extends BlockTagsProvider {
         ;
 
         tag(BlockTags.MINEABLE_WITH_AXE)
-                .add(ModBlocks.EXPLOSIVE_KEG.get())
                 .add(ModBlocks.EXPLOSIVE_BARREL.get())
         ;
 

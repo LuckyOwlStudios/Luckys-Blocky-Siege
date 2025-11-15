@@ -1,22 +1,25 @@
 package net.luckystudios.blocks.custom.explosive_barrel;
 
+import net.luckystudios.entity.custom.cannonball.types.explosive_barrel.ExplosiveKeg;
 import net.luckystudios.entity.custom.explosive_barrel.PrimedExplosiveBarrel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Position;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.TntBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
-public class ExplosiveBarrelBlock extends TntBlock {
+public class ExplosiveBarrelBlock extends TntBlock implements ProjectileItem {
 
     public ExplosiveBarrelBlock(Properties properties) {
         super(properties);
@@ -82,5 +85,10 @@ public class ExplosiveBarrelBlock extends TntBlock {
 
         // Spawn the entity in the world
         level.addFreshEntity(primedBarrel);
+    }
+
+    @Override
+    public Projectile asProjectile(Level level, Position pos, ItemStack stack, Direction direction) {
+        return new ExplosiveKeg(level, pos.x(), pos.y(), pos.z());
     }
 }

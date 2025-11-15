@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.luckystudios.BlockySiege;
+import net.luckystudios.blocks.util.ModBlockStateProperties;
 import net.luckystudios.blocks.util.enums.DamageState;
 import net.luckystudios.util.ModModelLayers;
 import net.minecraft.client.model.geom.ModelPart;
@@ -67,7 +68,7 @@ public class CannonRenderer implements BlockEntityRenderer<CannonBlockEntity> {
 	}
 
 	public static ResourceLocation getTextureLocation(CannonBlockEntity cannonBlockEntity) {
-		DamageState damageState = cannonBlockEntity.getBlockState().getValue(CannonBlock.DAMAGE_STATE);
+		DamageState damageState = cannonBlockEntity.getBlockState().getValue(ModBlockStateProperties.DAMAGE_STATE);
 		return switch (damageState) {
 			case LOW -> LOW_TEXTURE_LOCATION;
 			case MEDIUM -> MEDIUM_TEXTURE_LOCATION;

@@ -25,7 +25,6 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.SPEWER_CANNON);
                         output.accept(Items.GUNPOWDER);
                         output.accept(ModBlocks.CANNON_BALL);
-                        output.accept(ModBlocks.EXPLOSIVE_KEG);
                         output.accept(ModBlocks.FIRE_BOMB);
                         output.accept(ModBlocks.FROST_BOMB);
                         output.accept(ModBlocks.WIND_BOMB);

@@ -4,15 +4,17 @@ import net.luckystudios.blocks.util.ModBlockStateProperties;
 import net.luckystudios.blocks.util.enums.DamageState;
 import net.luckystudios.blocks.util.enums.FiringState;
 import net.luckystudios.blocks.util.interfaces.DamageableBlock;
+import net.luckystudios.entity.custom.bullet.FireworkStarProjectile;
 import net.luckystudios.entity.custom.seat.Seat;
+import net.luckystudios.init.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.SimpleMenuProvider;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -27,12 +29,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class AbstractShootingBlock extends AbstractAimableBlock {
+import java.util.Random;
 
+public abstract class AbstractShootingBlock extends AbstractAimableBlock implements DamageableBlock{
+    public static final EnumProperty<DamageState> DAMAGE_STATE = ModBlockStateProperties.DAMAGE_STATE;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
     protected AbstractShootingBlock(Properties properties) {
@@ -40,13 +44,14 @@ public abstract class AbstractShootingBlock extends AbstractAimableBlock {
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(LIT, Boolean.FALSE)
+                .setValue(DAMAGE_STATE, DamageState.NONE)
         );
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(LIT);
+        builder.add(LIT, DAMAGE_STATE);
     }
 
     @Override
@@ -100,6 +105,7 @@ public abstract class AbstractShootingBlock extends AbstractAimableBlock {
         if (state.getBlock() instanceof DamageableBlock damageableBlock) {
             Item repairStack = damageableBlock.repairItem();
             if (stack.is(repairStack) && state.getValue(ModBlockStateProperties.DAMAGE_STATE) != DamageState.NONE) {
+                stack.shrink(1);
                 damageableBlock.repairBlock(player, level, pos, state);
                 return ItemInteractionResult.SUCCESS;
             }
@@ -125,6 +131,22 @@ public abstract class AbstractShootingBlock extends AbstractAimableBlock {
         if (level.getBlockEntity(pos) instanceof AbstractShootingAimableBlockEntity shootingAimableBlockEntity) {
             if (newState.getValue(LIT) && (newState.hasProperty(ModBlockStateProperties.FIRING_STATE) && newState.getValue(ModBlockStateProperties.FIRING_STATE) == FiringState.OFF) && shootingAimableBlockEntity.canShoot()) {
                 triggerBlock(newState, shootingAimableBlockEntity.getLevel(), pos);
+            }
+        }
+    }
+
+    @Override
+    protected void onProjectileHit(Level level, BlockState state, BlockHitResult hit, Projectile projectile) {
+        super.onProjectileHit(level, state, hit, projectile);
+        if (level.isClientSide()) return;
+        if (projectile.getType().is(ModTags.STRONG_PROJECTILE)) {
+            if (projectile instanceof FireworkStarProjectile) {
+                Random random = new Random();
+                if (random.nextFloat() < 0.25F) {
+                    damageBlock(null, level, hit.getBlockPos(), state);
+                }
+            } else {
+                damageBlock(null, level, hit.getBlockPos(), state);
             }
         }
     }

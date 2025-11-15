@@ -57,18 +57,12 @@ public class ModBlocks {
                     .sound(SoundType.ANVIL)
             ));
 
-    public static final DeferredBlock<Block> CANNON_BALL = registerBlock("cannon_ball",
+    public static final DeferredBlock<Block> CANNON_BALL = registerBlock("cannonball",
             () -> new CannonBallBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)
                     .requiresCorrectToolForDrops()
                     .strength(5.0F, 6.0F)
                     .sound(SoundType.METAL)
-            ));
-    public static final DeferredBlock<Block> EXPLOSIVE_KEG = registerBlock("explosive_keg",
-            () -> new ExplosiveKegBlock(BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.WOOD)
-                    .strength(2.0F, 2.0F)
-                    .sound(SoundType.WOOD)
             ));
     public static final DeferredBlock<Block> FIRE_BOMB = registerBlock("fire_bomb",
             () -> new FireBombBlock(BlockBehaviour.Properties.of()
@@ -115,9 +109,6 @@ public class ModBlocks {
                     .strength(5.0F, 6.0F)
                     .sound(SoundType.METAL)
             ));
-
-    public static final DeferredBlock<Block> POTION_LIQUID_BLOCK = registerBlock("potion_liquid_block",
-            () -> new LiquidBlock(ModFluids.SOURCE_POTION.get(), BlockBehaviour.Properties.of().liquid().noCollission()));
 
     private static ToIntFunction<BlockState> firingStateBlockEmission() {
         return state -> switch (state.getValue(ModBlockStateProperties.FIRING_STATE)) {

@@ -1,8 +1,0 @@
-{
-  "parent": "blockysiege:block/template_cannon_ball_four",
-  "render_type": "minecraft:cutout",
-  "textures": {
-    "all": "blockysiege:block/projectile/explosive_keg",
-    "particle": "minecraft:block/barrel_side"
-  }
-}

@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 public class ModKeyMappings {
     public static final Supplier<KeyMapping> FIRE_CANNON = Suppliers.memoize( () -> new KeyMapping(
             "key.blockysiege.fire_cannon",
-            InputConstants.Type.KEYSYM,
+            InputConstants.Type.MOUSE,
             GLFW.GLFW_MOUSE_BUTTON_RIGHT,
             "key.categories.gameplay"
     ));
