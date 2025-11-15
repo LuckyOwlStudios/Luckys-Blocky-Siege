@@ -4,15 +4,23 @@ import net.luckystudios.entity.custom.cannon_ball.types.spreading.SpreadingBomb;
 import net.luckystudios.entity.custom.spreading.AbstractSpreadingProjectile;
 import net.luckystudios.entity.custom.spreading.Ember;
 import net.luckystudios.init.ModBlocks;
-import net.luckystudios.entity.ModEntityTypes;
+import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.entity.custom.cannon_ball.AbstractNewProjectile;
+import net.luckystudios.init.ModParticleTypes;
 import net.luckystudios.init.ModSoundEvents;
+import net.minecraft.commands.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -20,13 +28,18 @@ import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.SimpleExplosionDamageCalculator;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
 public class FireBomb extends SpreadingBomb {
-
     private static final ExplosionDamageCalculator EXPLOSION_DAMAGE_CALCULATOR = new SimpleExplosionDamageCalculator(
             true, true, Optional.of(.25F), BuiltInRegistries.BLOCK.getTag(BlockTags.BLOCKS_WIND_CHARGE_EXPLOSIONS).map(Function.identity())
     );
@@ -51,7 +64,7 @@ public class FireBomb extends SpreadingBomb {
 
     @Override
     public Block blockToSpread() {
-        return ModBlocks.EMBER_PILE.get();
+        return Blocks.FIRE;
     }
 
     @Override
@@ -66,10 +79,30 @@ public class FireBomb extends SpreadingBomb {
     }
 
     @Override
-    protected List<ParticleOptions> getTrailParticles() {
-        ParticleOptions smokeParticle = ParticleTypes.CAMPFIRE_COSY_SMOKE;
-        ParticleOptions fireParticle = ParticleTypes.FLAME;
-        return List.of(smokeParticle, fireParticle);
+    public void tick() {
+        super.tick();
+    }
+
+    @Override
+    public void spawnTrailParticles() {
+        super.spawnTrailParticles();
+        Vec3 newPos = this.position();
+        if (this.tickCount > 1 && !this.isInWater()) {
+
+            double dx = newPos.x - xo;
+            double dy = newPos.y - yo;
+            double dz = newPos.z - zo;
+            int s = 4;
+            for (int i = 0; i < s; ++i) {
+                double j = i / (double) s;
+
+                this.level().addParticle(ModParticleTypes.FLAME_TRAIL.get(),
+                        xo - dx * j,
+                        0.25 + yo - dy * j,
+                        zo - dz * j,
+                        0, 0.02, 0);
+            }
+        }
     }
 
     @Override
@@ -83,6 +116,17 @@ public class FireBomb extends SpreadingBomb {
     }
 
     @Override
+    protected void onHitBlock(BlockHitResult result) {
+        super.onHitBlock(result);
+        explode();
+    }
+
+    @Override
+    protected void onHitEntity(EntityHitResult result) {
+        super.onHitEntity(result);
+        explode();
+    }
+
     public void explode() {
         super.explode();
         this.level()
@@ -101,5 +145,17 @@ public class FireBomb extends SpreadingBomb {
                         BuiltInRegistries.SOUND_EVENT.wrapAsHolder(ModSoundEvents.IMPACT_FIERY.get())
                 );
         this.discard();
+    }
+
+    @Override
+    public void handleEntityEvent(byte id) {
+        super.handleEntityEvent(id);
+        switch (id) {
+            case 67:
+                RandomSource random = level().getRandom();
+                for (int i = 0; i < 10; ++i) {
+                    level().addParticle(ParticleTypes.SMOKE, this.getX() + 0.25f - random.nextFloat() * 0.5f, this.getY() + 0.45f - random.nextFloat() * 0.5f, this.getZ() + 0.25f - random.nextFloat() * 0.5f, 0, 0.005, 0);
+                }
+        }
     }
 }

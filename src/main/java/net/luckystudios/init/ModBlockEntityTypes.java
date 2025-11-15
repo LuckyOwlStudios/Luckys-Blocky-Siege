@@ -1,9 +1,9 @@
 package net.luckystudios.init;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.blocks.custom.cannon.types.spewer.SpewerCannonBlockEntity;
-import net.luckystudios.blocks.custom.cannon.types.generic.CannonBlockEntity;
-import net.luckystudios.blocks.custom.cannon.types.multi.MultiCannonBlockEntity;
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonBlockEntity;
+import net.luckystudios.blocks.custom.shooting.cannon.CannonBlockEntity;
+import net.luckystudios.blocks.custom.shooting.multi_cannon.MultiCannonBlockEntity;
 import net.luckystudios.blocks.custom.turret.ballista.BallistaBlockEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;

@@ -1,17 +1,19 @@
 package net.luckystudios;
 
-import net.luckystudios.blocks.custom.cannon.types.spewer.SpewerCannonModel;
-import net.luckystudios.blocks.custom.cannon.types.spewer.SpewerCannonRenderer;
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonModel;
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonRenderer;
+import net.luckystudios.entity.custom.cannon_ball.TrailModel;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaGolemModel;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaRenderer;
 import net.luckystudios.gui.ballista.BallistaScreen;
-import net.luckystudios.gui.cannons.ShootingBlockScreen;
-import net.luckystudios.blocks.custom.cannon.types.generic.CannonModel;
-import net.luckystudios.blocks.custom.cannon.types.multi.MultiCannonModel;
-import net.luckystudios.blocks.custom.cannon.types.multi.MultiCannonRenderer;
+import net.luckystudios.gui.cannons.CannonBlockScreen;
+import net.luckystudios.blocks.custom.shooting.cannon.CannonModel;
+import net.luckystudios.blocks.custom.shooting.multi_cannon.MultiCannonModel;
+import net.luckystudios.blocks.custom.shooting.multi_cannon.MultiCannonRenderer;
+import net.luckystudios.gui.multi_cannon.MultiCannonBlockScreen;
 import net.luckystudios.init.ModBlockEntityTypes;
-import net.luckystudios.entity.ModEntityTypes;
-import net.luckystudios.blocks.custom.cannon.types.generic.CannonRenderer;
+import net.luckystudios.init.ModEntityTypes;
+import net.luckystudios.blocks.custom.shooting.cannon.CannonRenderer;
 import net.luckystudios.entity.custom.cannon_ball.CannonBallModel;
 import net.luckystudios.entity.custom.cannon_ball.types.explosive_barrel.ExplosiveKegRenderer;
 import net.luckystudios.entity.custom.cannon_ball.types.spreading.fire_bomb.FireBombRenderer;
@@ -20,11 +22,11 @@ import net.luckystudios.entity.custom.cannon_ball.types.normal.CannonBallRendere
 import net.luckystudios.entity.custom.cannon_ball.types.wind_bomb.WindBombRenderer;
 import net.luckystudios.entity.custom.explosive_barrel.PrimedExplosiveBarrelRenderer;
 import net.luckystudios.gui.spewer_cannon.SpewerCannonBlockScreen;
-import net.luckystudios.overlays.CannonOverlay;
 import net.luckystudios.particles.BottleCapParticle;
 import net.luckystudios.particles.CannonFireParticle;
 import net.luckystudios.init.ModParticleTypes;
 import net.luckystudios.init.ModMenuTypes;
+import net.luckystudios.particles.FlameTrailParticle;
 import net.luckystudios.util.ModModelLayers;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -35,14 +37,13 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
-import net.neoforged.neoforge.common.NeoForge;
 
 // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
-@EventBusSubscriber(modid = BlockySiege.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = BlockySiege.MOD_ID, value = Dist.CLIENT)
 public class BlockySiegeClient {
     @SubscribeEvent
     public static void onClientSetup(FMLClientSetupEvent event) {
-        NeoForge.EVENT_BUS.addListener(CannonOverlay::renderCannonOverlay);
+
     }
 
     @SubscribeEvent
@@ -51,12 +52,13 @@ public class BlockySiegeClient {
         event.registerLayerDefinition(ModModelLayers.MULTI_CANNON, MultiCannonModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.SPEWER_CANNON, SpewerCannonModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.CANNON_BALL, CannonBallModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.TRAIL, TrailModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.BALLISTA, BallistaGolemModel::createBodyLayer);
     }
 
     // Registering entity renderers!
     @SubscribeEvent
-    public static void registerBER(EntityRenderersEvent.RegisterRenderers event) {
+    public static void registerER(EntityRenderersEvent.RegisterRenderers event) {
 
         // Blocks
         event.registerBlockEntityRenderer(ModBlockEntityTypes.CANNON_BLOCK_ENTITY.get(), CannonRenderer::new);
@@ -74,13 +76,14 @@ public class BlockySiegeClient {
         event.registerEntityRenderer(ModEntityTypes.WOODEN_SHRAPNEL.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.EMBER.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.ICE_SHARD.get(), NoopRenderer::new);
-        event.registerEntityRenderer(ModEntityTypes.BULLET.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(ModEntityTypes.FIREWORK_STAR.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.BALLISTA.get(), BallistaRenderer::new);
     }
 
     @SubscribeEvent
     public static void registerScreens(RegisterMenuScreensEvent event) {
-        event.register(ModMenuTypes.CANNON_BLOCK_MENU.get(), ShootingBlockScreen::new);
+        event.register(ModMenuTypes.CANNON_BLOCK_MENU.get(), CannonBlockScreen::new);
+        event.register(ModMenuTypes.MULTI_CANNON_BLOCK_MENU.get(), MultiCannonBlockScreen::new);
         event.register(ModMenuTypes.SPEWER_BLOCK_MENU.get(), SpewerCannonBlockScreen::new);
         event.register(ModMenuTypes.BALLISTA_BLOCK_MENU.get(), BallistaScreen::new);
     }
@@ -88,6 +91,7 @@ public class BlockySiegeClient {
     @SubscribeEvent
     public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticleTypes.BOTTLE_CAP.get(), BottleCapParticle.Provider::new);
+        event.registerSpriteSet(ModParticleTypes.FLAME_TRAIL.get(), FlameTrailParticle.Provider::new);
         event.registerSpriteSet(ModParticleTypes.CANNON_FIRE.get(), CannonFireParticle.Provider::new);
     }
 }

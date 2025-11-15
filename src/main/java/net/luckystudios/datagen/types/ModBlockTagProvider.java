@@ -3,7 +3,9 @@ package net.luckystudios.datagen.types;
 import net.luckystudios.BlockySiege;
 import net.luckystudios.init.ModBlocks;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -23,6 +25,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .add(ModBlocks.CANNON.get())
                 .add(ModBlocks.MULTI_CANNON.get())
                 .add(ModBlocks.CANNON_BALL.get())
+                .add(ModBlocks.BALLISTA_BLOCK.get())
         ;
 
         tag(BlockTags.MINEABLE_WITH_AXE)
@@ -35,5 +38,9 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .add(ModBlocks.MULTI_CANNON.get())
                 .add(ModBlocks.CANNON_BALL.get())
         ;
+
+        tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath("supplementaries", "lightable_by_gunpowder"))
+                ).add(ModBlocks.CANNON.get());
+
     }
 }

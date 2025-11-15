@@ -1,7 +1,7 @@
 package net.luckystudios.entity.custom.cannon_ball.types.wind_bomb;
 
 import net.luckystudios.init.ModBlocks;
-import net.luckystudios.entity.ModEntityTypes;
+import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
 import net.luckystudios.entity.custom.cannon_ball.AbstractNewProjectile;
 import net.luckystudios.util.ParticleHandler;
@@ -13,13 +13,14 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.SimpleExplosionDamageCalculator;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
@@ -54,12 +55,6 @@ public class WindBomb extends AbstractCannonBall {
     }
 
     @Override
-    protected List<ParticleOptions> getTrailParticles() {
-        ParticleOptions whiteAsh = ParticleTypes.WHITE_ASH;
-        return List.of(whiteAsh);
-    }
-
-    @Override
     protected float baseDamage() {
         return 8;
     }
@@ -70,6 +65,38 @@ public class WindBomb extends AbstractCannonBall {
     }
 
     @Override
+    public void spawnTrailParticles() {
+        super.spawnTrailParticles();
+        Vec3 newPos = this.position();
+        if (this.tickCount > 1 && !this.isInWater()) {
+
+            double dx = newPos.x - xo;
+            double dy = newPos.y - yo;
+            double dz = newPos.z - zo;
+            int s = 4;
+            for (int i = 0; i < s; ++i) {
+                double j = i / (double) s;
+                this.level().addParticle(ParticleTypes.WHITE_ASH,
+                        xo - dx * j,
+                        0.25 + yo - dy * j,
+                        zo - dz * j,
+                        0, 0.02, 0);
+            }
+        }
+    }
+
+    @Override
+    protected void onHitBlock(BlockHitResult result) {
+        super.onHitBlock(result);
+        explode();
+    }
+
+    @Override
+    protected void onHitEntity(EntityHitResult result) {
+        super.onHitEntity(result);
+        explode();
+    }
+
     public void explode() {
         double explosionX = this.getX();
         double explosionY = this.getY();

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "blockysiege:block/iron_ring",
+    "side": "blockysiege:block/ballista_side",
+    "top": "blockysiege:block/iron_ring"
+  }
+}

@@ -1,8 +1,14 @@
 package net.luckystudios.blocks.custom.cannon_ammo;
 
 import com.mojang.serialization.MapCodec;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ProjectileItem;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelAccessor;
@@ -22,10 +28,11 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
+import java.util.List;
 import java.util.Objects;
 
 // Based on the candle block, this block can be stacked.
-public abstract class AbstractCannonBallBlock extends Block implements SimpleWaterloggedBlock, CannonBallProjectileBlock {
+public abstract class AbstractCannonBallBlock extends Block implements SimpleWaterloggedBlock, ProjectileItem {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -174,5 +181,11 @@ public abstract class AbstractCannonBallBlock extends Block implements SimpleWat
     @Override
     protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         return Block.canSupportCenter(level, pos.below(), Direction.UP);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+        super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+        tooltipComponents.add(Component.translatable("tooltip.blockysiege.placeable").withStyle(ChatFormatting.GRAY));
     }
 }

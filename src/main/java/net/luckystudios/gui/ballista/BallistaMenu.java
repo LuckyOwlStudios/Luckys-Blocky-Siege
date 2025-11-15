@@ -12,7 +12,6 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class BallistaMenu extends AbstractContainerMenu {
@@ -33,12 +32,12 @@ public class BallistaMenu extends AbstractContainerMenu {
         addPlayerHotbar(inv);
 
         // Weapon Slot
-        this.addSlot(new SlotItemHandler(this.blockEntity.inventory, 9, 37, 26));
+        this.addSlot(new CrossbowSlotItemHandler(this.blockEntity.inventory, 9, 37, 26));
 
         // Ammunition Slots
         for(int i = 0; i < 3; ++i) {
             for(int j = 0; j < 3; ++j) {
-                this.addSlot(new SlotItemHandler(this.blockEntity.inventory, j + i * 3, 105 + j * 18, 8 + i * 18));
+                this.addSlot(new ArrowSlotItemHandler(this.blockEntity.inventory, j + i * 3, 105 + j * 18, 8 + i * 18));
             }
         }
     }

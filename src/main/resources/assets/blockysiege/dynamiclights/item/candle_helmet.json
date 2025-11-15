@@ -1,0 +1,7 @@
+{
+  "match": {
+    "items": "spelunkers_charm:candle_helmet"
+  },
+  "luminance": 10,
+  "water_sensitive": true
+}

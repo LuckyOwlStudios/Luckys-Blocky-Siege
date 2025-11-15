@@ -29,7 +29,6 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.FIRE_BOMB);
                         output.accept(ModBlocks.FROST_BOMB);
                         output.accept(ModBlocks.WIND_BOMB);
-                        output.accept(ModItems.BULLET);
                         output.accept(ModBlocks.EXPLOSIVE_BARREL);
                         output.accept(Blocks.TNT);
                     }).build());

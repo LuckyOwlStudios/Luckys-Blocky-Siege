@@ -1,3 +1,5 @@
-// 1.21.1	2025-07-01T19:49:00.0625136	Tags for minecraft:item mod id blockysiege
+// 1.21.1	2025-11-14T22:57:55.4382159	Tags for minecraft:item mod id blockysiege
 bd201c49ef40a58e6254c2b45b0f1ce271d9f302 data/blockysiege/tags/item/bottled_ammo.json
-949012f0ce0dd197baa1845fb41f8e78b6ab177b data/blockysiege/tags/item/cannon_ammo.json
+6225705bfc927ae6a67ccde2e9e3318b57eb4185 data/blockysiege/tags/item/cannon_ammo.json
+88c48084f11b17ba3ef0d051cd7a88ca891e7a45 data/blockysiege/tags/item/multi_cannon_shootable.json
+fc5f43b91d03266de009d0de32cdb9be7199f987 data/blockysiege/tags/item/spewer_ammo.json

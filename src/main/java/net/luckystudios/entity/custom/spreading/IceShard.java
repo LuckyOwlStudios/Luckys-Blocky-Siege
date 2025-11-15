@@ -1,6 +1,6 @@
 package net.luckystudios.entity.custom.spreading;
 
-import net.luckystudios.entity.ModEntityTypes;
+import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.init.ModBlocks;
 import net.luckystudios.init.ModItems;
 import net.luckystudios.init.ModSoundEvents;
@@ -13,6 +13,7 @@ import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -49,5 +50,13 @@ public class IceShard extends AbstractSpreadingProjectile {
     @Override
     protected Block blockToPlace() {
         return ModBlocks.FROST_PILE.get();
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (level().getBlockState(blockPosition()) == Blocks.WATER.defaultBlockState()) {
+            level().setBlock(blockPosition(), Blocks.FROSTED_ICE.defaultBlockState(), 3);
+        }
     }
 }

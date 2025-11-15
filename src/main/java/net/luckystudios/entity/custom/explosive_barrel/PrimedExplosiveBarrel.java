@@ -1,7 +1,7 @@
 package net.luckystudios.entity.custom.explosive_barrel;
 
 import net.luckystudios.init.ModBlocks;
-import net.luckystudios.entity.ModEntityTypes;
+import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.entity.custom.wooden_shrapnel.WoodenShrapnel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;

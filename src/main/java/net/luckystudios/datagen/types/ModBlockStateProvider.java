@@ -30,6 +30,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
         generateCannonBallBlockState(ModBlocks.FIRE_BOMB.get(), mcLoc("block/glass"), "translucent");
         generateCannonBallBlockState(ModBlocks.FROST_BOMB.get(), mcLoc("block/ice"), "translucent");
         generateCannonBallBlockState(ModBlocks.WIND_BOMB.get(), modLoc("block/projectile/wind_bomb"), "translucent");
+
+        simpleBlockWithItem(ModBlocks.BALLISTA_BLOCK.get(), models().cubeBottomTop("ballista_block", modLoc("block/ballista_side"), modLoc("block/iron_ring"), modLoc("block/iron_ring")));
     }
 
     private void generateCannonBallBlockState(Block block, ResourceLocation breakParticle, String renderType) {

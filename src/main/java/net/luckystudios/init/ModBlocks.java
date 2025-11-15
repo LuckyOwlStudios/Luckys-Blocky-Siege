@@ -1,25 +1,29 @@
 package net.luckystudios.init;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.blocks.custom.PileBlock;
-import net.luckystudios.blocks.custom.cannon.types.generic.CannonBlock;
-import net.luckystudios.blocks.custom.cannon.types.multi.MultiCannonBlock;
-import net.luckystudios.blocks.custom.cannon.types.spewer.SpewerCannon;
-import net.luckystudios.blocks.custom.cannon_ammo.*;
+import net.luckystudios.blocks.custom.cannon_ammo.PileBlock;
+import net.luckystudios.blocks.custom.cannon_ammo.types.*;
+import net.luckystudios.blocks.custom.shooting.cannon.CannonBlock;
+import net.luckystudios.blocks.custom.shooting.multi_cannon.MultiCannonBlock;
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannon;
 import net.luckystudios.blocks.custom.explosive_barrel.ExplosiveBarrelBlock;
 import net.luckystudios.blocks.custom.turret.ballista.BallistaBlock;
+import net.luckystudios.blocks.util.ModBlockStateProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
+import java.util.function.ToIntFunction;
 
 public class ModBlocks {
     public static final DeferredRegister.Blocks BLOCKS =
@@ -30,8 +34,9 @@ public class ModBlocks {
                     .mapColor(MapColor.METAL)
                     .dynamicShape()
                     .requiresCorrectToolForDrops()
+                    .lightLevel(firingStateBlockEmission())
                     .strength(5.0F, 6.0F)
-                    .sound(SoundType.METAL)
+                    .sound(SoundType.ANVIL)
             ));
 
     public static final DeferredBlock<Block> MULTI_CANNON = registerBlock("multi_cannon",
@@ -40,7 +45,7 @@ public class ModBlocks {
                     .dynamicShape()
                     .requiresCorrectToolForDrops()
                     .strength(5.0F, 6.0F)
-                    .sound(SoundType.METAL)
+                    .sound(SoundType.ANVIL)
             ));
 
     public static final DeferredBlock<Block> SPEWER_CANNON = registerBlock("spewer_cannon",
@@ -49,7 +54,7 @@ public class ModBlocks {
                     .dynamicShape()
                     .requiresCorrectToolForDrops()
                     .strength(5.0F, 6.0F)
-                    .sound(SoundType.METAL)
+                    .sound(SoundType.ANVIL)
             ));
 
     public static final DeferredBlock<Block> CANNON_BALL = registerBlock("cannon_ball",
@@ -110,6 +115,17 @@ public class ModBlocks {
                     .strength(5.0F, 6.0F)
                     .sound(SoundType.METAL)
             ));
+
+    public static final DeferredBlock<Block> POTION_LIQUID_BLOCK = registerBlock("potion_liquid_block",
+            () -> new LiquidBlock(ModFluids.SOURCE_POTION.get(), BlockBehaviour.Properties.of().liquid().noCollission()));
+
+    private static ToIntFunction<BlockState> firingStateBlockEmission() {
+        return state -> switch (state.getValue(ModBlockStateProperties.FIRING_STATE)) {
+            case OFF -> 0;
+            case CHARGING -> 5;
+            case FIRED -> 10;
+        };
+    }
 
     private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
         DeferredBlock<T> toReturn = BLOCKS.register(name, block);

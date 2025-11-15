@@ -1,7 +1,7 @@
 package net.luckystudios.entity.custom.cannon_ball.types.explosive_barrel;
 
 import net.luckystudios.init.ModBlocks;
-import net.luckystudios.entity.ModEntityTypes;
+import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
 import net.luckystudios.entity.custom.cannon_ball.AbstractNewProjectile;
 import net.luckystudios.entity.custom.explosive_barrel.PrimedExplosiveBarrel;
@@ -17,6 +17,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.SimpleExplosionDamageCalculator;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,9 +49,24 @@ public class ExplosiveKeg extends AbstractCannonBall {
     }
 
     @Override
-    protected List<ParticleOptions> getTrailParticles() {
-        ParticleOptions smokeParticle = ParticleTypes.SMOKE;
-        return List.of(smokeParticle);
+    public void spawnTrailParticles() {
+        super.spawnTrailParticles();
+        Vec3 newPos = this.position();
+        if (this.tickCount > 1 && !this.isInWater()) {
+
+            double dx = newPos.x - xo;
+            double dy = newPos.y - yo;
+            double dz = newPos.z - zo;
+            int s = 4;
+            for (int i = 0; i < s; ++i) {
+                double j = i / (double) s;
+                this.level().addParticle(ParticleTypes.SMOKE,
+                        xo - dx * j,
+                        0.25 + yo - dy * j,
+                        zo - dz * j,
+                        0, 0.02, 0);
+            }
+        }
     }
 
     @Override
@@ -62,6 +80,17 @@ public class ExplosiveKeg extends AbstractCannonBall {
     }
 
     @Override
+    protected void onHitBlock(BlockHitResult result) {
+        super.onHitBlock(result);
+        explode();
+    }
+
+    @Override
+    protected void onHitEntity(EntityHitResult result) {
+        super.onHitEntity(result);
+        explode();
+    }
+
     public void explode() {
         PrimedExplosiveBarrel.explode(level(), this.getOwner(), this.position());
         this.discard();

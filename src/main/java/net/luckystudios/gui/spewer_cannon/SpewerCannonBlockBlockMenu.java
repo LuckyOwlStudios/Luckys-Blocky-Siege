@@ -1,6 +1,7 @@
 package net.luckystudios.gui.spewer_cannon;
 
-import net.luckystudios.blocks.custom.cannon.types.spewer.SpewerCannonBlockEntity;
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonBlockEntity;
+import net.luckystudios.gui.slots.custom.LiquidSlot;
 import net.luckystudios.init.ModBlocks;
 import net.luckystudios.init.ModMenuTypes;
 import net.minecraft.network.FriendlyByteBuf;
@@ -32,7 +33,8 @@ public class SpewerCannonBlockBlockMenu extends AbstractContainerMenu {
         addPlayerHotbar(inv);
 
         // Slots for the cannon or multi-cannon
-        this.addSlot(new LiquidSlotItemHandler(this.blockEntity.inventory, 0, 80, 35));
+        if (!(blockEntity instanceof SpewerCannonBlockEntity spewerCannonBlockEntity)) return;
+        this.addSlot(new LiquidSlot(spewerCannonBlockEntity, 0, 80, 35, this));
     }
 
     // CREDIT GOES TO: diesieben07 | https://github.com/diesieben07/SevenCommons

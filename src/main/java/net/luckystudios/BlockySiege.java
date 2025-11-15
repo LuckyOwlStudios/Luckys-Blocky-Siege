@@ -1,15 +1,10 @@
 package net.luckystudios;
 
-import net.luckystudios.networking.ShooingBlockScreenPacket;
-import net.luckystudios.init.ModBlockEntityTypes;
-import net.luckystudios.init.ModBlocks;
-import net.luckystudios.entity.ModEntityTypes;
-import net.luckystudios.networking.ControllingCannonPacket;
-import net.luckystudios.init.ModParticleTypes;
-import net.luckystudios.init.ModMenuTypes;
-import net.luckystudios.init.ModCreativeModeTabs;
-import net.luckystudios.init.ModItems;
-import net.luckystudios.init.ModSoundEvents;
+import net.luckystudios.init.*;
+import net.luckystudios.networking.CannonBlockScreenPacket;
+import net.luckystudios.networking.ControllingShootingBlockPacket;
+import net.luckystudios.networking.MultiCannonBlockScreenPacket;
+import net.luckystudios.networking.SpewerCannonBlockScreenPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -75,6 +70,8 @@ public class BlockySiege
         ModEntityTypes.register(modEventBus);
         ModSoundEvents.register(modEventBus);
         ModParticleTypes.register(modEventBus);
+        ModFluids.register(modEventBus);
+        ModFluidTypes.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
 
@@ -106,8 +103,10 @@ public class BlockySiege
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
-        BlockySiege.addNetworkMessage(ControllingCannonPacket.TYPE, ControllingCannonPacket.STREAM_CODEC, ControllingCannonPacket::handleData);
-        BlockySiege.addNetworkMessage(ShooingBlockScreenPacket.TYPE, ShooingBlockScreenPacket.STREAM_CODEC, ShooingBlockScreenPacket::handleData);
+        BlockySiege.addNetworkMessage(ControllingShootingBlockPacket.TYPE, ControllingShootingBlockPacket.STREAM_CODEC, ControllingShootingBlockPacket::handleData);
+        BlockySiege.addNetworkMessage(CannonBlockScreenPacket.TYPE, CannonBlockScreenPacket.STREAM_CODEC, CannonBlockScreenPacket::handleData);
+        BlockySiege.addNetworkMessage(MultiCannonBlockScreenPacket.TYPE, MultiCannonBlockScreenPacket.STREAM_CODEC, MultiCannonBlockScreenPacket::handleData);
+        BlockySiege.addNetworkMessage(SpewerCannonBlockScreenPacket.TYPE, SpewerCannonBlockScreenPacket.STREAM_CODEC, SpewerCannonBlockScreenPacket::handleData);
     }
 
     // Add the example block item to the building blocks tab

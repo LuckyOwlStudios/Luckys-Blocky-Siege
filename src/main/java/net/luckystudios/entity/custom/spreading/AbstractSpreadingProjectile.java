@@ -60,11 +60,7 @@ public abstract class AbstractSpreadingProjectile extends ThrowableItemProjectil
 
         // Try to place block at projectile's current position when hitting entity
         BlockPos projectilePos = this.blockPosition();
-        if (level().getBlockState(projectilePos).canBeReplaced()) {
-            level().setBlock(projectilePos, blockToPlace().defaultBlockState(), 3);
-        }
-
-        land();
+        land(level(), projectilePos);
         this.discard();
     }
 
@@ -78,24 +74,16 @@ public abstract class AbstractSpreadingProjectile extends ThrowableItemProjectil
         // Get the direction of the face that was hit
         // This tells us which side of the block was hit
         BlockPos placementPos = hitBlockPos.relative(result.getDirection());
-
-        System.out.println("Hit block at: " + hitBlockPos + ", trying to place at: " + placementPos);
-
-        // Check if the placement position is valid
-        BlockState currentState = level().getBlockState(placementPos);
-        if (currentState.canBeReplaced()) {
-            level().setBlock(placementPos, blockToPlace().defaultBlockState(), 3);
-            System.out.println("Block placed successfully!");
-        } else {
-            System.out.println("Cannot place block - position occupied by: " + currentState.getBlock().getName().getString());
-        }
-
-        land();
+        land(level(), placementPos);
         this.discard();
     }
 
-    public void land() {
-        this.level().playSound(this, this.blockPosition(), impactSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
+    public void land(Level level, BlockPos placementPos) {
+        BlockState currentState = level.getBlockState(placementPos);
+        if (currentState.canBeReplaced()) {
+            level().setBlock(placementPos, blockToPlace().defaultBlockState(), 3);
+        }
+        this.level().playSound(this, this.blockPosition(), impactSound(), SoundSource.BLOCKS, 0.5F, 1.0F);
         this.level().broadcastEntityEvent(this, (byte)3);
     }
 }

@@ -2,9 +2,9 @@ package net.luckystudios.keybinds;
 
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.platform.InputConstants;
-import net.luckystudios.blocks.custom.cannon.AbstractShootingAimableBlockEntity;
+import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
 import net.luckystudios.entity.custom.seat.Seat;
-import net.luckystudios.networking.ControllingCannonPacket;
+import net.luckystudios.networking.ControllingShootingBlockPacket;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -23,7 +23,7 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Supplier;
 
-@EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD, value = {Dist.CLIENT})
+@EventBusSubscriber(value = {Dist.CLIENT})
 public class ModKeyMappings {
     public static final Supplier<KeyMapping> FIRE_CANNON = Suppliers.memoize( () -> new KeyMapping(
             "key.blockysiege.fire_cannon",
@@ -59,9 +59,9 @@ public class ModKeyMappings {
             KeyMapping fireCannonKey = mc.options.keyUse;
 
             if (inventoryKey.consumeClick()) {
-                PacketDistributor.sendToServer(new ControllingCannonPacket(seatPos, 0, 0));
+                PacketDistributor.sendToServer(new ControllingShootingBlockPacket(seatPos, 0, 0));
             } else if (fireCannonKey.consumeClick()) {
-                PacketDistributor.sendToServer(new ControllingCannonPacket(seatPos, 3, 0));
+                PacketDistributor.sendToServer(new ControllingShootingBlockPacket(seatPos, 3, 0));
             }
         }
 

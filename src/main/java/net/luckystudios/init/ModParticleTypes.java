@@ -14,7 +14,10 @@ public class ModParticleTypes {
             DeferredRegister.create(BuiltInRegistries.PARTICLE_TYPE, BlockySiege.MOD_ID);
 
     public static final Supplier<SimpleParticleType> BOTTLE_CAP =
-            PARTICLE_TYPES.register("bottle_cap", () -> new SimpleParticleType(true));
+            PARTICLE_TYPES.register("bottle_cap", () -> new SimpleParticleType(false));
+
+    public static final Supplier<SimpleParticleType> FLAME_TRAIL =
+            PARTICLE_TYPES.register("flame_trail", () -> new SimpleParticleType(true));
 
     public static final Supplier<SimpleParticleType> CANNON_FIRE =
             PARTICLE_TYPES.register("cannon_fire", () -> new SimpleParticleType(true));

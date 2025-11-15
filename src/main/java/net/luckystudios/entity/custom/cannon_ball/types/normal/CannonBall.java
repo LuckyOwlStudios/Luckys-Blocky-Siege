@@ -1,7 +1,7 @@
 package net.luckystudios.entity.custom.cannon_ball.types.normal;
 
 import net.luckystudios.init.ModBlocks;
-import net.luckystudios.entity.ModEntityTypes;
+import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.entity.custom.cannon_ball.AbstractCannonBall;
 import net.luckystudios.entity.custom.cannon_ball.AbstractNewProjectile;
 import net.minecraft.core.BlockPos;
@@ -50,11 +50,6 @@ public class CannonBall extends AbstractCannonBall {
     @Override
     protected ItemStack getDefaultPickupItem() {
         return ModBlocks.CANNON_BALL.asItem().getDefaultInstance();
-    }
-
-    @Override
-    protected List<ParticleOptions> getTrailParticles() {
-        return List.of(ParticleTypes.SMOKE, ParticleTypes.FLAME);
     }
 
     @Override
@@ -212,15 +207,6 @@ public class CannonBall extends AbstractCannonBall {
                     this.random.nextGaussian() * 0.1,
                     this.random.nextGaussian() * 0.1,
                     this.random.nextGaussian() * 0.1);
-        }
-    }
-
-    @Override
-    public void explode() {
-        // Called when manually triggered
-        if (!this.level().isClientSide()) {
-            createExplosion(this.blockPosition(), this.getDeltaMovement().length());
-            this.discard();
         }
     }
 

@@ -1,4 +1,5 @@
-// 1.21.1	2025-09-08T14:23:47.5551083	Loot Tables
+// 1.21.1	2025-11-10T16:50:49.2067499	Loot Tables
+42306941049870bf6a33c30267898e60010d4e7d data/blockysiege/loot_table/blocks/ballista_block.json
 3ebcf42a828ff29f1487163e0de816efbcb18ca3 data/blockysiege/loot_table/blocks/cannon.json
 5ff369fe3433b3919ab597091c741748d4475ae1 data/blockysiege/loot_table/blocks/cannon_ball.json
 9137b183c72483c1ed10b7db1252419df03876f4 data/blockysiege/loot_table/blocks/ember_pile.json

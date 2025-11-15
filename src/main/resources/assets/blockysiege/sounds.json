@@ -47,5 +47,11 @@
     "sounds": [
       "blockysiege:impact_icy"
     ]
+  },
+  "fiery_loop": {
+    "subtitle": "sounds.blockysiege.fiery_loop",
+    "sounds": [
+      "blockysiege:fiery_loop"
+    ]
   }
 }

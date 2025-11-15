@@ -1,21 +1,25 @@
 package net.luckystudios.entity.custom.cannon_ball;
 
-import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-
-import java.util.List;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class AbstractCannonBall extends AbstractNewProjectile {
 
+    protected Vec3 movementOld;
+    protected boolean isStuck = false;
+    protected int stuckTime = 0;
+
     protected AbstractCannonBall(EntityType<? extends AbstractNewProjectile> entityType, Level level) {
         super(entityType, level);
+        this.movementOld = this.getDeltaMovement();
     }
 
     protected AbstractCannonBall(EntityType<? extends AbstractNewProjectile> entityType, double x, double y, double z, Level level, ItemStack pickupItemStack) {
@@ -30,25 +34,64 @@ public abstract class AbstractCannonBall extends AbstractNewProjectile {
         this.pickup = Pickup.ALLOWED;
     }
 
-    protected abstract List<ParticleOptions> getTrailParticles();
-
     protected abstract float baseDamage();
 
     protected abstract SoundEvent impactSound();
 
+
     @Override
     public void tick() {
         super.tick();
+
         Level level = this.level();
-        if (level.isClientSide) {
-            if (!this.inGround) {
-                for (ParticleOptions particle : getTrailParticles()) {
-                    level.addParticle(particle, getX(), getY(), getZ(), 0, 0, 0);
-                }
+        Vec3 movement = this.getDeltaMovement();
+        this.movementOld = movement;
+
+        // This causes the projectile to bounce off walls and such, can use again in the future under more polishing
+//        this.move(MoverType.SELF, movement);
+
+        // rest stuff
+        this.tryCheckInsideBlocks();
+
+        if (!isStuck) {
+            if (level.isClientSide) {
+                this.spawnTrailParticles();
             }
-        } else if (this.inGround && this.inGroundTime != 0 && this.inGroundTime >= 600) {
+
+            this.updateRotation();
+        }
+
+        // check if stuck
+        this.isStuck = !this.noPhysics && this.position().subtract(this.xo, this.yo, this.zo).lengthSqr() < (0.0001 * 0.0001);
+        if (this.isStuck) {
             level.broadcastEntityEvent(this, (byte)0);
-            this.setPickupItemStack(new ItemStack(Items.ARROW));
+            this.setPickupItemStack(new ItemStack(getPickupItem().getItem()));
+        }
+    }
+
+    protected float getInertia() {
+        // normally 0.99 for everything
+        return 0.99F;
+    }
+
+    protected float getWaterInertia() {
+        // normally 0.6 for arrows and 0.99 for tridents and 0.8 for other projectiles
+        return 0.6F;
+    }
+
+    public void spawnTrailParticles() {
+        if (this.isInWater()) {
+            // Projectile particle code
+            var movement = this.getDeltaMovement();
+            double velX = movement.x;
+            double velY = movement.y;
+            double velZ = movement.z;
+            for (int j = 0; j < 4; ++j) {
+                double pY = this.getEyeY();
+                level().addParticle(ParticleTypes.BUBBLE,
+                        getX() - velX * 0.25D, pY - velY * 0.25D, getZ() - velZ * 0.25D,
+                        velX, velY, velZ);
+            }
         }
     }
 
@@ -56,14 +99,10 @@ public abstract class AbstractCannonBall extends AbstractNewProjectile {
     protected void onHitBlock(BlockHitResult result) {
         super.onHitBlock(result);
         this.level().playSound(null, this.getX(), this.getY(), this.getZ(), impactSound(), this.getSoundSource(), 1.0F, 1.0F);
-        explode();
     }
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
         super.onHitEntity(result);
-        explode();
     }
-
-    public abstract void explode();
 }

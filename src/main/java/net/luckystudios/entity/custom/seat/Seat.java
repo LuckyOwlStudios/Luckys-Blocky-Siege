@@ -1,7 +1,7 @@
 package net.luckystudios.entity.custom.seat;
 
-import net.luckystudios.blocks.custom.cannon.AbstractAimableBlockEntity;
-import net.luckystudios.entity.ModEntityTypes;
+import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
+import net.luckystudios.init.ModEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -44,7 +44,7 @@ public class Seat extends Entity {
         if (this.getControllingPassenger() == null) return;
         if (!(this.getControllingPassenger() instanceof LivingEntity livingEntity)) return;
         this.setRot(livingEntity.getYRot(), livingEntity.getXRot() * 0.5F);
-        if (!(level.getBlockEntity(blockPosition()) instanceof AbstractAimableBlockEntity aimableBlockEntity)) {
+        if (!(level.getBlockEntity(blockPosition()) instanceof AbstractShootingAimableBlockEntity aimableBlockEntity)) {
             this.discard();
             return;
         }

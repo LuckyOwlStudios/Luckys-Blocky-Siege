@@ -4,6 +4,18 @@
     "blockysiege:explosive_keg",
     "blockysiege:fire_bomb",
     "blockysiege:frost_bomb",
-    "blockysiege:wind_bomb"
+    "blockysiege:wind_bomb",
+    {
+      "id": "amendments:dragon_charge",
+      "required": false
+    },
+    {
+      "id": "supplementaries:bomb",
+      "required": false
+    },
+    {
+      "id": "supplementaries:bomb_blue",
+      "required": false
+    }
   ]
 }

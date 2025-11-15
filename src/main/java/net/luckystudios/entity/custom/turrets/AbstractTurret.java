@@ -27,24 +27,25 @@ public abstract class AbstractTurret extends Mob {
         this.pos = pos;
     }
 
-//    @Override
-//    public void tick() {
-//        if (!this.level().isClientSide) {
-//            this.checkBelowWorld();
-//            if (this.checkInterval++ == 100) {
-//                this.checkInterval = 0;
-//                if (!this.isRemoved() && !this.survives()) {
-//                    this.discard();
-//                    this.level().addAlwaysVisibleParticle(breakParticle(), true,
-//                        this.getX(), this.getY(), this.getZ(),
-//                        0.0D, 0.0D, 0.0D);
-//                }
-//            }
-//        }
-//    }
+    @Override
+    public void tick() {
+        super.tick();
+        if (!this.level().isClientSide) {
+            this.checkBelowWorld();
+            if (this.checkInterval++ == 100) {
+                this.checkInterval = 0;
+                if (!this.isRemoved() && !this.survives()) {
+                    this.discard();
+                    this.level().addAlwaysVisibleParticle(breakParticle(), true,
+                        this.getX(), this.getY(), this.getZ(),
+                        0.0D, 0.0D, 0.0D);
+                }
+            }
+        }
+    }
 
     public boolean survives() {
-        return this.level().getBlockState(pos.below()).is(this.attachedBlockState().getBlock());
+        return this.level().getBlockState(blockPosition().below()).is(this.attachedBlockState().getBlock());
     }
 
     public abstract BlockState attachedBlockState();

@@ -14,6 +14,5 @@ public class ModItemModelProvider extends ItemModelProvider {
     @Override
     protected void registerModels() {
         this.basicItem(ModItems.WOODEN_SHRAPNEL.asItem());
-        this.basicItem(ModItems.BULLET.asItem());
     }
 }

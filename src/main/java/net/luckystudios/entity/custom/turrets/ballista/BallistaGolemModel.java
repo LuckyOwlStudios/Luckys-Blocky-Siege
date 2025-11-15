@@ -8,8 +8,9 @@ import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.util.Mth;
 
-public class BallistaGolemModel<T extends Ballista> extends HierarchicalModel<T> {
+public class BallistaGolemModel<T extends BallistaEntity> extends HierarchicalModel<T> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(BlockySiege.id("ballista"), "main");
     private final ModelPart root;
@@ -74,5 +75,21 @@ public class BallistaGolemModel<T extends Ballista> extends HierarchicalModel<T>
         this.root().getAllParts().forEach(ModelPart::resetPose);
         this.string_left.yRot = 62.5F;
         this.string_right.yRot = -62.5F;
+    }
+
+    private void setGolemRotations(float netHeadYaw, float headPitch) {
+        headPitch = Mth.clamp(headPitch, -25.0F, 45.0F);
+
+        this.ballista.yRot = netHeadYaw * 0.017453292F;
+        this.turret.yRot = netHeadYaw * 0.017453292F;
+        this.turret.xRot = headPitch * 0.017453292F;
+    }
+
+    private void setStringAngles(BallistaEntity entity) {
+        int progress = entity.getChargeTime();
+        float maxRotation = 12.5F;
+        float angle = Mth.clamp(progress, 0.0F, maxRotation);
+        this.string_left.yRot = -angle * 0.017453292F; // Convert degrees to radians
+        this.string_right.yRot = -angle * 0.017453292F; // Convert degrees to radians
     }
 }

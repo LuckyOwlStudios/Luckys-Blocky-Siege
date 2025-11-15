@@ -20,6 +20,7 @@ public class ModSoundEvents {
     public static final Supplier<SoundEvent> BOTTLE_POP_LARGE = registerSoundEvent("bottle_pop_large");
     public static final Supplier<SoundEvent> IMPACT_FIERY = registerSoundEvent("impact_fiery");
     public static final Supplier<SoundEvent> IMPACT_ICY = registerSoundEvent("impact_icy");
+    public static final Supplier<SoundEvent> FIERY_LOOP = registerSoundEvent("fiery_loop");
 
     private static Supplier<SoundEvent> registerSoundEvent(String name) {
         ResourceLocation id = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, name);

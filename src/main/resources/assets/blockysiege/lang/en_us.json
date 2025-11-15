@@ -4,7 +4,9 @@
   "item.blockysiege.bullet": "Bullet",
 
   "block.blockysiege.cannon": "Cannon",
+  "block.blockysiege.cannon.description": "Fires powerful cannon rounds",
   "block.blockysiege.multi_cannon": "Multi-Cannon",
+  "block.blockysiege.multi_cannon.description": "Four-round burst cannon",
   "block.blockysiege.spewer_cannon": " Spewer Cannon",
   "block.blockysiege.cannon_ball": "Cannon Ball",
   "block.blockysiege.explosive_keg": "Explosive Keg",
@@ -15,11 +17,14 @@
   "block.blockysiege.ballista_block": "Ballista",
 
   "container.blockysiege.cannon": "Cannon",
-  "container.blockysiege.multi_cannon": "Multi-Cannon",
-  "container.blockysiege.spewer_cannon": "Spewer Cannon",
-  "container.blockysiege.cannon.aim": "Click to Aim Cannon",
+  "container.blockysiege.aim": "Click to Aim",
   "container.blockysiege.cannon.set_power": "Set Power",
+  "container.blockysiege.multi_cannon": "Multi-Cannon",
+  "container.blockysiege.multi_cannon.set_count": "Set Burst Count",
+  "container.blockysiege.spewer_cannon": "Spewer Cannon",
   "container.blockysiege.ballista": "Ballista",
+  "container.blockysiege.empty": "Empty",
+  "container.blockysiege.full": "Full",
 
   "entity.blockysiege.cannon_ball": "Cannon Ball",
   "entity.blockysiege.explosive_keg": "Explosive Keg",
@@ -36,5 +41,7 @@
   "sounds.blockysiege.impact_fiery": "Fiery Impact!",
   "sounds.blockysiege.impact_icy": "Icy Impact!",
 
-  "death.attack.cannon": "%1$s was blasted by a cannon!"
+  "death.attack.cannon": "%1$s was blasted by a cannon!",
+
+  "tooltip.blockysiege.placeable": "Placeable"
 }

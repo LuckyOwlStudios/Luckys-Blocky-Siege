@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
-public class BallistaRenderer extends MobRenderer<Ballista, BallistaGolemModel<Ballista>> {
+public class BallistaRenderer extends MobRenderer<BallistaEntity, BallistaGolemModel<BallistaEntity>> {
 
     private static final ResourceLocation BALLISTA_TEXTURE = BlockySiege.id("textures/entity/ballista/ballista.png");
 
@@ -14,7 +14,7 @@ public class BallistaRenderer extends MobRenderer<Ballista, BallistaGolemModel<B
     }
 
     @Override
-    public ResourceLocation getTextureLocation(Ballista ballista) {
+    public ResourceLocation getTextureLocation(BallistaEntity ballista) {
         return BALLISTA_TEXTURE;
     }
 }
