@@ -97,11 +97,8 @@ public abstract class AbstractCannonBall extends AbstractNewProjectile {
     @Override
     protected void onHitBlock(BlockHitResult result) {
         super.onHitBlock(result);
-        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), impactSound(), this.getSoundSource(), 1.0F, 1.0F);
-    }
-
-    @Override
-    protected void onHitEntity(EntityHitResult result) {
-        super.onHitEntity(result);
+        if (this.level().isClientSide()) {
+            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), impactSound(), this.getSoundSource(), 1.0F, 1.0F);
+        }
     }
 }

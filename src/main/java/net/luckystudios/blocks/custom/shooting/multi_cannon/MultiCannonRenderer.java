@@ -123,7 +123,13 @@ public class MultiCannonRenderer implements BlockEntityRenderer<MultiCannonBlock
 
 			public void setupBlockEntityAnim(MultiCannonBlockEntity blockEntity, float ageInTicks) {
 				animator.root().getAllParts().forEach(ModelPart::resetPose);
-				animator.animate(blockEntity.fireAnimation, MultiCannonAnimations.fire, ageInTicks, 1f);
+				int barrel_index = blockEntity.getBarrelIndex();
+				switch (barrel_index) {
+					case 0 -> animator.animate(blockEntity.fireAnimation, MultiCannonAnimations.fire_barrel_0, ageInTicks, 2f);
+					case 1 -> animator.animate(blockEntity.fireAnimation, MultiCannonAnimations.fire_barrel_1, ageInTicks, 2f);
+					case 2 -> animator.animate(blockEntity.fireAnimation, MultiCannonAnimations.fire_barrel_2, ageInTicks, 2f);
+					case 3 -> animator.animate(blockEntity.fireAnimation, MultiCannonAnimations.fire_barrel_3, ageInTicks, 2f);
+				}
 			}
 		}
 	}

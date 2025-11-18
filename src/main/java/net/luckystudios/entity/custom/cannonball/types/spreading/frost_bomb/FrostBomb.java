@@ -1,8 +1,8 @@
 package net.luckystudios.entity.custom.cannonball.types.spreading.frost_bomb;
 
 import net.luckystudios.entity.custom.cannonball.types.spreading.SpreadingBomb;
-import net.luckystudios.entity.custom.spreading.AbstractSpreadingProjectile;
-import net.luckystudios.entity.custom.spreading.IceShard;
+import net.luckystudios.entity.custom.liquid_projectile.AbstractLiquidProjectile;
+import net.luckystudios.entity.custom.liquid_projectile.SnowProjectile;
 import net.luckystudios.init.ModBlocks;
 import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.entity.custom.cannonball.AbstractNewProjectile;
@@ -38,8 +38,8 @@ public class FrostBomb extends SpreadingBomb {
     }
 
     @Override
-    public AbstractSpreadingProjectile spreadingProjectile() {
-        return new IceShard(level(), getX(), getY(), getZ());
+    public AbstractLiquidProjectile spreadingProjectile() {
+        return new SnowProjectile(level(), getX(), getY(), getZ());
     }
 
     @Override

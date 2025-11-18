@@ -5,6 +5,8 @@ import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonRenderer;
 import net.luckystudios.entity.custom.cannonball.TrailModel;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaGolemModel;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaRenderer;
+import net.luckystudios.entity.custom.water_drop.WaterBlobModel;
+import net.luckystudios.entity.custom.water_drop.WaterBlobRenderer;
 import net.luckystudios.gui.ballista.BallistaScreen;
 import net.luckystudios.gui.cannons.CannonBlockScreen;
 import net.luckystudios.blocks.custom.shooting.cannon.CannonModel;
@@ -23,10 +25,10 @@ import net.luckystudios.entity.custom.cannonball.types.wind_bomb.WindBombRendere
 import net.luckystudios.entity.custom.explosive_barrel.PrimedExplosiveBarrelRenderer;
 import net.luckystudios.gui.spewer_cannon.SpewerCannonBlockScreen;
 import net.luckystudios.particles.BottleCapParticle;
-import net.luckystudios.particles.CannonFireParticle;
 import net.luckystudios.init.ModParticleTypes;
 import net.luckystudios.init.ModMenuTypes;
 import net.luckystudios.particles.FlameTrailParticle;
+import net.luckystudios.particles.WaterParticle;
 import net.luckystudios.util.ModModelLayers;
 import net.minecraft.client.renderer.entity.NoopRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
@@ -53,6 +55,7 @@ public class BlockySiegeClient {
         event.registerLayerDefinition(ModModelLayers.SPEWER_CANNON, SpewerCannonModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.CANNON_BALL, CannonBallModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.TRAIL, TrailModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.WATER_BLOB, WaterBlobModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.BALLISTA, BallistaGolemModel::createBodyLayer);
     }
 
@@ -75,6 +78,7 @@ public class BlockySiegeClient {
         event.registerEntityRenderer(ModEntityTypes.PRIMED_EXPLOSIVE_BARREL.get(), PrimedExplosiveBarrelRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.WOODEN_SHRAPNEL.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.EMBER.get(), NoopRenderer::new);
+        event.registerEntityRenderer(ModEntityTypes.WATER_BLOB.get(), WaterBlobRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.ICE_SHARD.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.FIREWORK_STAR.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.BALLISTA.get(), BallistaRenderer::new);
@@ -92,6 +96,6 @@ public class BlockySiegeClient {
     public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ModParticleTypes.BOTTLE_CAP.get(), BottleCapParticle.Provider::new);
         event.registerSpriteSet(ModParticleTypes.FLAME_TRAIL.get(), FlameTrailParticle.Provider::new);
-        event.registerSpriteSet(ModParticleTypes.CANNON_FIRE.get(), CannonFireParticle.Provider::new);
+        event.registerSpriteSet(ModParticleTypes.WATER_TRAIL.get(), WaterParticle.Provider::new);
     }
 }

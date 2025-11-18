@@ -7,7 +7,6 @@ import net.luckystudios.init.ModDamageTypes;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.DustParticleOptions;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -17,24 +16,17 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.FireworkRocketEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.FireworkExplosion;
-import net.minecraft.world.item.component.Fireworks;
-import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
-
-import java.util.List;
 
 public class FireworkStarProjectile extends ImprovedProjectileEntity {
     private static final EntityDataAccessor<ItemStack> FIREWORK_STAR_ITEM = SynchedEntityData.defineId(FireworkStarProjectile.class, EntityDataSerializers.ITEM_STACK);
@@ -74,11 +66,6 @@ public class FireworkStarProjectile extends ImprovedProjectileEntity {
         this.setXRot((float)(Mth.atan2(vec3.y, d0) * (double)180.0F / (double)(float)Math.PI));
         this.yRotO = this.getYRot();
         this.xRotO = this.getXRot();
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
     }
 
     @Override
@@ -140,10 +127,24 @@ public class FireworkStarProjectile extends ImprovedProjectileEntity {
     @Override
     protected void onHitBlock(BlockHitResult result) {
         super.onHitBlock(result);
-        if (this.level().isClientSide()) {
-            BlockState blockState = this.level().getBlockState(result.getBlockPos());
+        BlockState blockState = this.level().getBlockState(result.getBlockPos());
+
+        if (!this.level().isClientSide()) {  // Server side for block breaking
+            float destroySpeed = blockState.getDestroySpeed(this.level(), result.getBlockPos());
+
+            // Break weak blocks (glass = 0.3, leaves = 0.2, etc.)
+            if (destroySpeed >= 0 && destroySpeed <= 0.4f) {  // Adjust threshold as needed
+                this.level().destroyBlock(result.getBlockPos(), true); // true = drop items
+                // Don't discard - let projectile continue through
+                return;
+            } else if (destroySpeed == -1.0f || destroySpeed > 2.0f) {
+                // Block is too strong or unbreakable
+                this.discard();
+            }
+        } else {  // Client side for particles
             for (int i = 0; i < 8; i++) {
-                this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockState), this.getX(), this.getY(), this.getZ(), 0.0, 0.0, 0.0);
+                this.level().addParticle(new BlockParticleOption(ParticleTypes.BLOCK, blockState),
+                        this.getX(), this.getY(), this.getZ(), 0.0, 0.0, 0.0);
             }
         }
     }

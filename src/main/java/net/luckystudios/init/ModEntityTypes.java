@@ -1,7 +1,8 @@
 package net.luckystudios.init;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.entity.custom.spreading.IceShard;
+import net.luckystudios.entity.custom.ember.Ember;
+import net.luckystudios.entity.custom.liquid_projectile.SnowProjectile;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaEntity;
 import net.luckystudios.entity.custom.bullet.FireworkStarProjectile;
 import net.luckystudios.entity.custom.cannonball.types.explosive_barrel.ExplosiveKeg;
@@ -10,7 +11,7 @@ import net.luckystudios.entity.custom.cannonball.types.spreading.frost_bomb.Fros
 import net.luckystudios.entity.custom.cannonball.types.normal.CannonBall;
 import net.luckystudios.entity.custom.explosive_barrel.PrimedExplosiveBarrel;
 import net.luckystudios.entity.custom.seat.Seat;
-import net.luckystudios.entity.custom.spreading.Ember;
+import net.luckystudios.entity.custom.water_drop.WaterBlob;
 import net.luckystudios.entity.custom.wooden_shrapnel.WoodenShrapnel;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
@@ -90,8 +91,13 @@ public class ModEntityTypes {
                     .sized(0.25F, 0.25F)
                     .build("ember"));
 
-    public static final Supplier<EntityType<IceShard>> ICE_SHARD =
-            ENTITY_TYPES.register("ice_shard", () -> EntityType.Builder.<IceShard>of(IceShard::new, MobCategory.MISC)
+    public static final Supplier<EntityType<WaterBlob>> WATER_BLOB =
+            ENTITY_TYPES.register("water_blob", () -> EntityType.Builder.<WaterBlob>of(WaterBlob::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .build("water_blob"));
+
+    public static final Supplier<EntityType<SnowProjectile>> ICE_SHARD =
+            ENTITY_TYPES.register("ice_shard", () -> EntityType.Builder.<SnowProjectile>of(SnowProjectile::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F)
                     .build("ice_shard"));
 

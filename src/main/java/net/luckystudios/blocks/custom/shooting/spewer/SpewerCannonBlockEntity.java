@@ -1,22 +1,22 @@
 package net.luckystudios.blocks.custom.shooting.spewer;
 
 import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
-import net.luckystudios.entity.custom.spreading.Ember;
+import net.luckystudios.entity.custom.ember.Ember;
+import net.luckystudios.entity.custom.water_drop.WaterBlob;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.gui.spewer_cannon.SpewerCannonBlockBlockMenu;
 import net.luckystudios.init.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
@@ -143,28 +143,29 @@ public class SpewerCannonBlockEntity extends AbstractShootingAimableBlockEntity 
         Vec3 spawnPos = Vec3.atCenterOf(pos).add(direction.scale(barrelOffsetDistance()));
 
         level.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z,
-                SoundEvents.BLAZE_SHOOT, SoundSource.BLOCKS, 0.25f, 0.75f);
+                getShootSound(), SoundSource.BLOCKS, 0.25f, 0.75f);
 
-        if (level instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(
-                    ParticleTypes.LAVA,
-                    spawnPos.x, spawnPos.y, spawnPos.z,
-                    1,  // count
-                    0.0, 0.0, 0.0,  // xOffset/yOffset/zOffset for random spread
-                    0.0  // speed
-            );
-        }
         // Create and launch the projectile
         Projectile projectile;
-        Fluid fluid = spewerCannonBlockEntity.getFluidTank().getFluid().getFluid();
-        if (fluid.isSame(Fluids.LAVA)) {
+        Fluid fluid = spewerCannonBlockEntity.getFluid();
+        if (fluid == Fluids.LAVA) {
             projectile = new Ember(level, spawnPos.x, spawnPos.y, spawnPos.z);
+        } else if (fluid == Fluids.WATER) {
+            projectile = new WaterBlob(level, spawnPos.x, spawnPos.y, spawnPos.z);
         } else {
-            projectile = new Ember(level, spawnPos.x, spawnPos.y, spawnPos.z);
+            projectile = new Snowball(level, spawnPos.x, spawnPos.y, spawnPos.z);
         }
         projectile.shoot(direction.x, direction.y, direction.z, 0.5F, 12.0F); // power * speed factor
         level.addFreshEntity(projectile);
         spewerCannonBlockEntity.fluidTank.drain(new FluidStack(spewerCannonBlockEntity.getFluidTank().getFluid().getFluid(), 10), IFluidHandler.FluidAction.EXECUTE);
+    }
+
+    private SoundEvent getShootSound() {
+        LIQUID_CONTENT liquidContent = this.getLiquidContent();
+        return switch (liquidContent) {
+            case LAVA -> SoundEvents.BLAZE_SHOOT;
+            default -> SoundEvents.BUCKET_EMPTY;
+        };
     }
 
     @Override
@@ -218,7 +219,11 @@ public class SpewerCannonBlockEntity extends AbstractShootingAimableBlockEntity 
     }
 
     public FluidTank getFluidTank() {
-        return fluidTank;
+        return this.fluidTank;
+    }
+
+    public Fluid getFluid() {
+        return this.fluidTank.getFluid().getFluid();
     }
 
     public float getFillPercentage() {
@@ -227,7 +232,7 @@ public class SpewerCannonBlockEntity extends AbstractShootingAimableBlockEntity 
         return (float) amount / capacity;
     }
 
-    public LIQUID_CONTENT getLiquid() {
+    public LIQUID_CONTENT getLiquidContent() {
         Fluid fluid = fluidTank.getFluid().getFluid();
         if (fluid.isSame(Fluids.LAVA)) {
             return LIQUID_CONTENT.LAVA;

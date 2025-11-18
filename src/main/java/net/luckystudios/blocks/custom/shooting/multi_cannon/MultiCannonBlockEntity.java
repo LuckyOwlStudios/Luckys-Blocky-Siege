@@ -17,6 +17,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
@@ -29,6 +30,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.Tags;
 import org.jetbrains.annotations.NotNull;
@@ -39,15 +41,16 @@ import java.util.Random;
 
 public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
+    public int cooldown, maxCooldown;
     public int barrelIndex; // Used to get which barrel we are currently at in the firing process
     private int shotsRemaining; // How many shots are remaining
     public int bullet_count;
-    public int cooldown, maxCooldown;
+    public int shotTime;
 
     public MultiCannonBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntityTypes.MULTI_CANNON_BLOCK_ENTITY.get(), pos, blockState);
         this.maxCooldown = 40;
-        this.animationLength = 0.75F;
+        this.animationLength = 0.25F;
         this.barrelIndex = 0; // Default to the first barrel
         this.shotsRemaining = 0;
     }
@@ -65,29 +68,53 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
         return this.getItem(1);
     }
 
+    public int getBarrelIndex() {
+        return this.barrelIndex;
+    }
+
+    public void setBulletCount(int bulletCount) {
+        this.bullet_count = Math.max(1, Math.min(4, bulletCount)); // Clamp between 1 and 4
+        this.maxCooldown = this.bullet_count * 10; // Recalculate max cooldown
+        this.setChanged();
+    }
+
+    public int getBulletCount() {
+        return this.bullet_count;
+    }
+
+    public void beginFiring(Level level, BlockPos pos, MultiCannonBlockEntity multiCannonBlockEntity) {
+        int calculatedCooldown = multiCannonBlockEntity.getBulletCount() * 10;
+        multiCannonBlockEntity.shotTime = 0;
+        multiCannonBlockEntity.cooldown = calculatedCooldown;
+        multiCannonBlockEntity.animationTime = multiCannonBlockEntity.animationLength;
+        multiCannonBlockEntity.shotsRemaining = multiCannonBlockEntity.getBulletCount(); // Set number of shots
+        fireRound(level, pos, multiCannonBlockEntity);
+        multiCannonBlockEntity.setChanged();
+    }
+
     public static void tick(Level level, BlockPos pos, BlockState state, MultiCannonBlockEntity multiCannonBlockEntity) {
         // Needed to handle rotates of the gun
         extraTick(level, pos, state, multiCannonBlockEntity);
+        BlockState blockState = multiCannonBlockEntity.getBlockState();
 
-        if (multiCannonBlockEntity.cooldown == multiCannonBlockEntity.maxCooldown) {
-            multiCannonBlockEntity.shotsRemaining = 4; // Set number of shots
-        }
+        // Only handle the firing if we have been triggered!
+        if (!blockState.getValue(BlockStateProperties.TRIGGERED)) return;
 
         if (multiCannonBlockEntity.cooldown > 0) {
             multiCannonBlockEntity.cooldown--;
-            multiCannonBlockEntity.setChanged();
         }
+
         if (multiCannonBlockEntity.animationTime > 0) {
             multiCannonBlockEntity.animationTime--;
         }
 
+        multiCannonBlockEntity.shotTime++;
+
         Vec3 particlePos = getRelativeLocationWithOffset(multiCannonBlockEntity, new Vec3(0, 0.0625, 0), 0.5f, 0.3f, 0.0F);
         if (multiCannonBlockEntity.cooldown > 0) {
-            if (multiCannonBlockEntity.cooldown > multiCannonBlockEntity.maxCooldown - 15) {
-                if (multiCannonBlockEntity.cooldown % 3 == 0 && multiCannonBlockEntity.canFire() && multiCannonBlockEntity.shotsRemaining > 0) {
-                    fireRound(level, pos, multiCannonBlockEntity);
-                    multiCannonBlockEntity.shotsRemaining--;
-                }
+            if (multiCannonBlockEntity.canFire() && multiCannonBlockEntity.shotsRemaining > 0 && multiCannonBlockEntity.shotTime % 3 == 0) {
+                fireRound(level, pos, multiCannonBlockEntity);
+                multiCannonBlockEntity.setChanged();
             } else {
                 if (level instanceof ServerLevel serverLevel) {
                     serverLevel.sendParticles(
@@ -99,14 +126,15 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
                     );
                 }
             }
-            if (multiCannonBlockEntity.cooldown == 1) {
-                Vec3 direction = getAimVector(multiCannonBlockEntity);
-                Vec3 spawnPos = Vec3.atCenterOf(pos).add(direction.scale(1.25));
-                if (level instanceof ServerLevel serverLevel) {
-                    serverLevel.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z,
-                            SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 1.0f, 1.0f);
-                }
+        } else if (multiCannonBlockEntity.bullet_count != 1) {
+            level.setBlock(pos, blockState.setValue(BlockStateProperties.TRIGGERED, false), 3);
+            Vec3 direction = getAimVector(multiCannonBlockEntity);
+            Vec3 spawnPos = Vec3.atCenterOf(pos).add(direction.scale(1.25));
+            if (level instanceof ServerLevel serverLevel) {
+                serverLevel.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z,
+                        SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.25F * multiCannonBlockEntity.getBulletCount(), 1.0f);
             }
+            multiCannonBlockEntity.shotTime = 0;
         }
     }
 
@@ -155,13 +183,20 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
         multiCannonBlockEntity.removeItem(0, 1);
         multiCannonBlockEntity.removeItem(1, 1);
         multiCannonBlockEntity.barrelIndex += 1;
-        if (multiCannonBlockEntity.barrelIndex > 3) multiCannonBlockEntity.barrelIndex = 0; // Reset if out of bounds
+        if (multiCannonBlockEntity.barrelIndex > 3) {
+            multiCannonBlockEntity.barrelIndex = 0; // Reset if out of bounds
+        } else {
+            multiCannonBlockEntity.animationTime = multiCannonBlockEntity.animationLength;
+        }
 
         Random random = new Random();
-        if (random.nextFloat() >= 0.015) return;
-        if (multiCannonBlockEntity.getBlockState().getBlock() instanceof DamageableBlock damageableBlock) {
-            damageableBlock.damageBlock(null, level, pos, multiCannonBlockEntity.getBlockState());
+        if (random.nextFloat() < 0.008) {
+            if (multiCannonBlockEntity.getBlockState().getBlock() instanceof DamageableBlock damageableBlock) {
+                damageableBlock.damageBlock(null, level, pos, multiCannonBlockEntity.getBlockState());
+            }
         }
+        multiCannonBlockEntity.shotsRemaining--;
+        level.sendBlockUpdated(pos, multiCannonBlockEntity.getBlockState(), multiCannonBlockEntity.getBlockState(), 3);
     }
 
     // We use this to get the multiple barrel positions on the multi-cannon
@@ -177,12 +212,16 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
         tag.putInt("cooldown", this.cooldown);
+        tag.putInt("bullet_count", this.bullet_count);
+        tag.putInt("barrelIndex", this.barrelIndex); // Add this
     }
 
     @Override
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         this.cooldown = tag.getInt("cooldown");
+        this.bullet_count = tag.getInt("bullet_count");
+        this.barrelIndex = tag.getInt("barrelIndex"); // Add this
     }
 
     @Nullable

@@ -1,4 +1,4 @@
-package net.luckystudios.entity.custom.spreading;
+package net.luckystudios.entity.custom.liquid_projectile;
 
 import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.init.ModBlocks;
@@ -12,23 +12,23 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class IceShard extends AbstractSpreadingProjectile {
+public class SnowProjectile extends AbstractLiquidProjectile {
 
-    public IceShard(EntityType<? extends ThrowableItemProjectile> entityType, Level level) {
+    public SnowProjectile(EntityType<? extends ThrowableItemProjectile> entityType, Level level) {
         super(entityType, level);
     }
 
-    public IceShard(Level level, double x, double y, double z) {
+    public SnowProjectile(Level level, double x, double y, double z) {
         super(ModEntityTypes.ICE_SHARD.get(), level, x, y, z);
     }
 
-    public IceShard(LivingEntity shooter, Level level) {
+    public SnowProjectile(LivingEntity shooter, Level level) {
         super(ModEntityTypes.ICE_SHARD.get(), shooter, level);
     }
 
@@ -48,8 +48,8 @@ public class IceShard extends AbstractSpreadingProjectile {
     }
 
     @Override
-    protected Block blockToPlace() {
-        return ModBlocks.FROST_PILE.get();
+    protected BlockState blockStateToPlace() {
+        return ModBlocks.FROST_PILE.get().defaultBlockState();
     }
 
     @Override

@@ -142,7 +142,7 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
         int emptyHeight = TANK_HEIGHT - fillHeight;
 
         FluidStack fluidStack = spewerBlockEntity.getFluidTank().getFluid();
-        Fluid fluid = fluidStack.getFluid();
+        Fluid fluid = spewerBlockEntity.getFluid();
 
         // Set up rendering state
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -150,12 +150,12 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
         RenderSystem.defaultBlendFunc();
 
         // Determine texture and color
-        ResourceLocation texture = getTankTexture(fluid, fluidStack);
-        setFluidColor(fluid, fluidStack);
+        ResourceLocation texture = getTankTexture(fluidStack);
+        setFluidColor(fluidStack);
 
         // Animation variables
         long gameTime = spewerBlockEntity.getLevel().getGameTime();
-        float animationSpeed = 0.5f; // Adjust speed as needed
+        float animationSpeed = spewerBlockEntity.getFluid() == Fluids.LAVA ? 0.25F : 0.5f; // Adjust speed as needed
         float textureOffset = (gameTime * animationSpeed) % TANK_HEIGHT;
 
         // Render animated fluid
@@ -167,48 +167,48 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
 //        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         // Render static frame overlay
-        ResourceLocation frameTexture = getFrameTexture(fluid, fluidStack);
-        renderStaticFrame(guiGraphics, frameTexture,
-                guiX + TANK_X, guiY + TANK_Y + emptyHeight,
-                TANK_WIDTH, fillHeight);
+//        ResourceLocation frameTexture = getFrameTexture(fluid, fluidStack);
+//        renderStaticFrame(guiGraphics, frameTexture,
+//                guiX + TANK_X, guiY + TANK_Y + emptyHeight,
+//                TANK_WIDTH, fillHeight);
 
         // Reset rendering state
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
-    private ResourceLocation getFrameTexture(Fluid fluid, FluidStack fluidStack) {
-        if (fluid == Fluids.LAVA) {
-            return LAVA_FRAME_TEXTURE;
-        } else {
-            // For both water and potions, use water frame
-            // You could add a separate potion frame texture if desired
-            return WATER_FRAME_TEXTURE;
-        }
-    }
-
-    private void renderStaticFrame(GuiGraphics guiGraphics, ResourceLocation frameTexture,
-                                   int x, int y, int width, int height) {
-        // Render frame at the same position and size as the liquid, but without animation
-        int textureHeight = TANK_HEIGHT; // Frame texture height should match liquid texture height
-
-        // If the fill height is less than the full texture height, we need to clip the frame
-        if (height < textureHeight) {
-            // Calculate which part of the frame texture to show (bottom portion)
-            int vOffset = textureHeight - height;
-            guiGraphics.blit(frameTexture,
-                    x, y,                      // screen position
-                    0, vOffset,                // texture u,v (start from bottom part of texture)
-                    width, height,             // render size
-                    width, textureHeight);     // texture size
-        } else {
-            // Full height - render normally
-            guiGraphics.blit(frameTexture,
-                    x, y,
-                    0, 0,
-                    width, height,
-                    width, textureHeight);
-        }
-    }
+//    private ResourceLocation getFrameTexture(Fluid fluid, FluidStack fluidStack) {
+//        if (fluid == Fluids.LAVA) {
+//            return LAVA_FRAME_TEXTURE;
+//        } else {
+//            // For both water and potions, use water frame
+//            // You could add a separate potion frame texture if desired
+//            return WATER_FRAME_TEXTURE;
+//        }
+//    }
+//
+//    private void renderStaticFrame(GuiGraphics guiGraphics, ResourceLocation frameTexture,
+//                                   int x, int y, int width, int height) {
+//        // Render frame at the same position and size as the liquid, but without animation
+//        int textureHeight = TANK_HEIGHT; // Frame texture height should match liquid texture height
+//
+//        // If the fill height is less than the full texture height, we need to clip the frame
+//        if (height < textureHeight) {
+//            // Calculate which part of the frame texture to show (bottom portion)
+//            int vOffset = textureHeight - height;
+//            guiGraphics.blit(frameTexture,
+//                    x, y,                      // screen position
+//                    0, vOffset,                // texture u,v (start from bottom part of texture)
+//                    width, height,             // render size
+//                    width, textureHeight);     // texture size
+//        } else {
+//            // Full height - render normally
+//            guiGraphics.blit(frameTexture,
+//                    x, y,
+//                    0, 0,
+//                    width, height,
+//                    width, textureHeight);
+//        }
+//    }
 
     private void renderAnimatedFluid(GuiGraphics guiGraphics, ResourceLocation texture,
                                      int x, int y, int width, int height, float offset) {
@@ -245,8 +245,8 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
         }
     }
 
-    private ResourceLocation getTankTexture(Fluid fluid, FluidStack fluidStack) {
-        if (fluid == Fluids.LAVA) {
+    private ResourceLocation getTankTexture(FluidStack fluidStack) {
+        if (fluidStack.getFluid() == Fluids.LAVA) {
             return LAVA_LIQUID_TEXTURE;
         } else if (fluidStack.has(DataComponents.POTION_CONTENTS)) {
             return POTION_TANK_TEXTURE;
@@ -255,8 +255,8 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
         }
     }
 
-    private void setFluidColor(Fluid fluid, FluidStack fluidStack) {
-        if (fluid == Fluids.LAVA) {
+    private void setFluidColor(FluidStack fluidStack) {
+        if (fluidStack.getFluid() == Fluids.LAVA) {
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // No tinting for lava
         } else {
             PotionContents potionContents = fluidStack.get(DataComponents.POTION_CONTENTS);

@@ -1,5 +1,6 @@
 package net.luckystudios.entity.custom.cannonball.types.normal;
 
+import net.luckystudios.BlockySiegeConfig;
 import net.luckystudios.init.ModBlocks;
 import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.entity.custom.cannonball.AbstractCannonBall;
@@ -52,7 +53,7 @@ public class CannonBall extends AbstractCannonBall {
 
     @Override
     protected float baseDamage() {
-        return 25; // Increased base damage
+        return BlockySiegeConfig.CANNON_DAMAGE.get(); // Increased base damage
     }
 
     @Override

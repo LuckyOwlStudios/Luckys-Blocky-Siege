@@ -11,6 +11,7 @@ import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.init.ModTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
@@ -25,6 +26,8 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +37,7 @@ import java.util.Random;
 
 public class MultiCannonBlock extends AbstractShootingBlock implements DamageableBlock {
     public static final MapCodec<MultiCannonBlock> CODEC = simpleCodec(MultiCannonBlock::new);
+    public static final BooleanProperty TRIGGERED = BlockStateProperties.TRIGGERED;
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
@@ -42,6 +46,18 @@ public class MultiCannonBlock extends AbstractShootingBlock implements Damageabl
 
     public MultiCannonBlock(Properties properties) {
         super(properties.noOcclusion());
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(LIT, Boolean.FALSE)
+                .setValue(DAMAGE_STATE, DamageState.NONE)
+                .setValue(TRIGGERED, false)
+        );
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(TRIGGERED);
     }
 
     @Override
@@ -65,9 +81,10 @@ public class MultiCannonBlock extends AbstractShootingBlock implements Damageabl
     public void triggerBlock(BlockState state, Level level, BlockPos pos) {
         if (!(level.getBlockEntity(pos) instanceof MultiCannonBlockEntity multiCannonBlockEntity)) return;
         if (multiCannonBlockEntity.cooldown > 0) return;
-        multiCannonBlockEntity.cooldown = multiCannonBlockEntity.maxCooldown; // Set fuse time for the cannon
-        multiCannonBlockEntity.animationTime = multiCannonBlockEntity.animationLength;
-        multiCannonBlockEntity.setChanged();
+
+        // Calculate cooldown based on bullet count (10 ticks per bullet)
+        level.setBlock(pos, state.setValue(TRIGGERED, true), 3);
+        multiCannonBlockEntity.beginFiring(level, pos, multiCannonBlockEntity);
     }
 
     @Override

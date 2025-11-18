@@ -12,41 +12,20 @@ public class BlockySiegeConfig {
 
     // === CATEGORY WORLD GENERATION CONFIGURATION ===
     public static String CATEGORY_WORLD_GENERATION = "worldGeneration";
-    public static ModConfigSpec.BooleanValue STONE_REPLACERS;
-    public static ModConfigSpec.BooleanValue TREMORS;
-    public static ModConfigSpec.BooleanValue ROCKS;
-    public static ModConfigSpec.BooleanValue GEYSERS;
-    public static ModConfigSpec.BooleanValue BOULDERS;
+    public static ModConfigSpec.ConfigValue<Float> CANNON_DAMAGE;
 
     // === CLIENT CONFIGURATION ===
     public static String CATEGORY_CLIENT = "client";
-    public static ModConfigSpec.DoubleValue TREMOR_VOLUME;
+    public static ModConfigSpec.ConfigValue<Float> CANNON_VOLUME;
 
     static {
         ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
 
         COMMON_BUILDER.comment("World Generation Settings").push(CATEGORY_WORLD_GENERATION);
 
-        STONE_REPLACERS = COMMON_BUILDER
-                .comment("The entire overworld stone generation is replaced with a custom stone replacer system.")
-                .gameRestart()
-                .define("stoneReplacers", false);
-
-        TREMORS = COMMON_BUILDER
-                .comment("Whether the tremor event can occur")
-                .define("tremors", true);
-
-        ROCKS = COMMON_BUILDER
-                .comment("Do rocks generate around the world")
-                .define("rocks", true);
-
-        GEYSERS = COMMON_BUILDER
-                .comment("Whether the geysers generate around the world")
-                .define("geysers", true);
-
-        BOULDERS = COMMON_BUILDER
-                .comment("Whether the geysers generate around the world")
-                .define("geysers", true);
+        CANNON_DAMAGE = COMMON_BUILDER
+                .comment("How much damage cannon's deal.")
+                .define("cannonDamage", 25F);
 
         COMMON_BUILDER.pop();
         COMMON_CONFIG = COMMON_BUILDER.build();
@@ -54,8 +33,11 @@ public class BlockySiegeConfig {
         ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
 
         CLIENT_BUILDER.comment("Client settings").push(CATEGORY_CLIENT);
-        TREMOR_VOLUME = CLIENT_BUILDER.comment("Should the hunger bar have a gilded overlay when the player has the Nourishment effect?")
-                .defineInRange("tremorVolume", 0.75, 0.0,1.0);
+
+        CANNON_VOLUME = CLIENT_BUILDER  // ✅ Use CLIENT_BUILDER
+                .comment("Volume for cannon sounds.")
+                .defineInRange("cannonVolume", 1.0F, 0.0F, 1.0F, Float.class);  // Fix name and remove Float.class
+
         CLIENT_BUILDER.pop();
 
         CLIENT_CONFIG = CLIENT_BUILDER.build();

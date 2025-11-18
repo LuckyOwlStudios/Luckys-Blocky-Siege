@@ -1,0 +1,1 @@
+Just a improved version of the Shulker in the form of a cannon. Fires a large shulker bullet that homes in on the target. The homing functionality can be done by looking at the trident code and what makes it come back to the player!

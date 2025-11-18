@@ -19,8 +19,8 @@ public class ModParticleTypes {
     public static final Supplier<SimpleParticleType> FLAME_TRAIL =
             PARTICLE_TYPES.register("flame_trail", () -> new SimpleParticleType(true));
 
-    public static final Supplier<SimpleParticleType> CANNON_FIRE =
-            PARTICLE_TYPES.register("cannon_fire", () -> new SimpleParticleType(true));
+    public static final Supplier<SimpleParticleType> WATER_TRAIL =
+            PARTICLE_TYPES.register("water_trail", () -> new SimpleParticleType(true));
 
     public static void register(IEventBus eventBus) {
         PARTICLE_TYPES.register(eventBus);

@@ -1,5 +1,6 @@
 package net.luckystudios.blocks.custom.shooting.cannon;
 
+import net.luckystudios.BlockySiegeConfig;
 import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
 import net.luckystudios.blocks.util.enums.FiringState;
 import net.luckystudios.blocks.util.interfaces.DamageableBlock;
@@ -126,7 +127,7 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
         SoundEvent cannonSound = getCannonSoundVariant(level, spawnPos);
         level.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z,
-                cannonSound, SoundSource.BLOCKS, 1.0f, 1.0f);
+                cannonSound, SoundSource.BLOCKS, BlockySiegeConfig.CANNON_VOLUME.get(), 1.0f);
 
         if (level instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(

@@ -1,8 +1,7 @@
 package net.luckystudios.entity.custom.cannonball.types.spreading.fire_bomb;
 
 import net.luckystudios.entity.custom.cannonball.types.spreading.SpreadingBomb;
-import net.luckystudios.entity.custom.spreading.AbstractSpreadingProjectile;
-import net.luckystudios.entity.custom.spreading.Ember;
+import net.luckystudios.entity.custom.ember.Ember;
 import net.luckystudios.init.ModBlocks;
 import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.entity.custom.cannonball.AbstractNewProjectile;
@@ -17,6 +16,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
@@ -49,7 +49,7 @@ public class FireBomb extends SpreadingBomb {
 
 
     @Override
-    public AbstractSpreadingProjectile spreadingProjectile() {
+    public Projectile spreadingProjectile() {
         return new Ember(level(), getX(), getY(), getZ());
     }
 

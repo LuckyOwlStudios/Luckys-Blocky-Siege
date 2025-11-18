@@ -2,7 +2,7 @@ package net.luckystudios.entity.custom.cannonball.types.spreading;
 
 import net.luckystudios.entity.custom.cannonball.AbstractCannonBall;
 import net.luckystudios.entity.custom.cannonball.AbstractNewProjectile;
-import net.luckystudios.entity.custom.spreading.AbstractSpreadingProjectile;
+import net.luckystudios.entity.custom.liquid_projectile.AbstractLiquidProjectile;
 import net.luckystudios.util.ParticleHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ExplosionDamageCalculator;
 import net.minecraft.world.level.Level;
@@ -44,7 +45,7 @@ public abstract class SpreadingBomb extends AbstractCannonBall {
         super(entityType, owner, level, itemStack);
     }
 
-    public abstract AbstractSpreadingProjectile spreadingProjectile();
+    public abstract Projectile spreadingProjectile();
     public abstract Block blockToSpread();
     public abstract ParticleOptions particle();
 
@@ -79,7 +80,7 @@ public abstract class SpreadingBomb extends AbstractCannonBall {
 
         // Spawn spreading projectiles based on hit direction
         for (int index0 = 0; index0 < 6; index0++) {
-            AbstractSpreadingProjectile projectile = spreadingProjectile();
+            Projectile projectile = spreadingProjectile();
 
             // Calculate spread direction based on hit direction
             Vec3 spreadDirection = calculateSpreadDirection(index0);

@@ -83,19 +83,16 @@ public class MultiCannonBlockScreenPacket implements CustomPacketPayload {
                 player.startRiding(seat);
             }
             case SET_POWER_1 -> {
-                // Example logic
-                multiCannonBlockEntity.bullet_count = 1;
+                multiCannonBlockEntity.setBulletCount(1);
             }
             case SET_POWER_2 -> {
-                // Example logic
-                multiCannonBlockEntity.bullet_count = 2;
+                multiCannonBlockEntity.setBulletCount(2);
             }
             case SET_POWER_3 -> {
-                // Example logic
-                multiCannonBlockEntity.bullet_count = 3;
+                multiCannonBlockEntity.setBulletCount(3);
             }
             case SET_POWER_4 -> {
-                multiCannonBlockEntity.bullet_count = 4;
+                multiCannonBlockEntity.setBulletCount(4);
             }
         }
     }
