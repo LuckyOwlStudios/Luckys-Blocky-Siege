@@ -126,8 +126,11 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         Vec3 spawnPos = Vec3.atCenterOf(pos).add(direction.scale(offsetDistance));
 
         SoundEvent cannonSound = getCannonSoundVariant(level, spawnPos);
-        level.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z,
-                cannonSound, SoundSource.BLOCKS, BlockySiegeConfig.CANNON_VOLUME.get(), 1.0f);
+        if (level.isClientSide()) {
+            level.playLocalSound(pos, ModSoundEvents.CANNON_FIRE.get(), SoundSource.BLOCKS, BlockySiegeConfig.CANNON_VOLUME.get().floatValue(), 1, true);
+//            level.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z,
+//                    cannonSound, SoundSource.BLOCKS, BlockySiegeConfig.CANNON_VOLUME.get(), 1.0f);
+        }
 
         if (level instanceof ServerLevel serverLevel) {
             serverLevel.sendParticles(

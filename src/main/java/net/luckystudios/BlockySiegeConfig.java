@@ -16,7 +16,7 @@ public class BlockySiegeConfig {
 
     // === CLIENT CONFIGURATION ===
     public static String CATEGORY_CLIENT = "client";
-    public static ModConfigSpec.ConfigValue<Float> CANNON_VOLUME;
+    public static ModConfigSpec.DoubleValue CANNON_VOLUME;
 
     static {
         ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
@@ -36,7 +36,7 @@ public class BlockySiegeConfig {
 
         CANNON_VOLUME = CLIENT_BUILDER  // ✅ Use CLIENT_BUILDER
                 .comment("Volume for cannon sounds.")
-                .defineInRange("cannonVolume", 1.0F, 0.0F, 1.0F, Float.class);  // Fix name and remove Float.class
+                .defineInRange("cannonVolume", 1.0, 0.0, 1.0);  // Fix name and remove Float.class
 
         CLIENT_BUILDER.pop();
 
