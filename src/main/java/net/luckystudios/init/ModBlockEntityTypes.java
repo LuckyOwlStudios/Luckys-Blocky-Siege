@@ -1,9 +1,10 @@
 package net.luckystudios.init;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonBlockEntity;
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerBlockEntity;
 import net.luckystudios.blocks.custom.shooting.cannon.CannonBlockEntity;
 import net.luckystudios.blocks.custom.shooting.multi_cannon.MultiCannonBlockEntity;
+import net.luckystudios.blocks.custom.shooting.volley.VolleyRackBlockEntity;
 import net.luckystudios.blocks.custom.turret.ballista.BallistaBlockEntity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -24,9 +25,13 @@ public class ModBlockEntityTypes {
             BLOCK_ENTITIES.register("multi_cannon_block_entity", () -> BlockEntityType.Builder.of(
                     MultiCannonBlockEntity::new, ModBlocks.MULTI_CANNON.get()).build(null));
 
-    public static final Supplier<BlockEntityType<SpewerCannonBlockEntity>> SPEWER_CANNON_BLOCK_ENTITY =
+    public static final Supplier<BlockEntityType<SpewerBlockEntity>> SPEWER_BLOCK_ENTITY =
             BLOCK_ENTITIES.register("spewer_cannon_block_entity", () -> BlockEntityType.Builder.of(
-                    SpewerCannonBlockEntity::new, ModBlocks.SPEWER_CANNON.get()).build(null));
+                    SpewerBlockEntity::new, ModBlocks.SPEWER_CANNON.get()).build(null));
+
+    public static final Supplier<BlockEntityType<VolleyRackBlockEntity>> VOLLEY_BLOCK_ENTITY =
+            BLOCK_ENTITIES.register("volley_block_entity", () -> BlockEntityType.Builder.of(
+                    VolleyRackBlockEntity::new, ModBlocks.VOLLEY_RACK.get()).build(null));
 
     public static final Supplier<BlockEntityType<BallistaBlockEntity>> BALLISTA_BLOCK_ENTITY =
             BLOCK_ENTITIES.register("ballista_block_entity", () -> BlockEntityType.Builder.of(

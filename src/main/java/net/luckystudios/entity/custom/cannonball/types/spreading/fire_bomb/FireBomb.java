@@ -72,6 +72,9 @@ public class FireBomb extends SpreadingBomb {
     @Override
     public void tick() {
         super.tick();
+        if (this.isInWater() || this.isInLava()) {
+            explode();
+        }
     }
 
     @Override

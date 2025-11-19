@@ -38,8 +38,9 @@ public class CannonBall extends AbstractCannonBall {
         super(entityType, level);
     }
 
-    public CannonBall(Level level, double x, double y, double z) {
+    public CannonBall(Level level, double x, double y, double z, boolean spectral) {
         super(ModEntityTypes.CANNONBALL.get(), x, y, z, level, ModBlocks.CANNON_BALL.toStack());
+        this.setGlowingTag(spectral);
     }
 
     public CannonBall(Level level, LivingEntity owner) {
@@ -62,6 +63,23 @@ public class CannonBall extends AbstractCannonBall {
     }
 
     @Override
+    public void spawnTrailParticles() {
+        super.spawnTrailParticles();
+        if (this.isCurrentlyGlowing()) {
+            var movement = this.getDeltaMovement();
+            double velX = movement.x;
+            double velY = movement.y;
+            double velZ = movement.z;
+            for (int j = 0; j < 4; ++j) {
+                double pY = this.getEyeY();
+                level().addParticle(ParticleTypes.GLOW,
+                        getX() - velX * 0.25D, pY - velY * 0.25D, getZ() - velZ * 0.25D,
+                        velX, velY, velZ);
+            }
+        }
+    }
+
+    @Override
     protected void onHitBlock(BlockHitResult result) {
         BlockPos hitPos = result.getBlockPos();
         BlockState hitState = this.level().getBlockState(hitPos);
@@ -70,6 +88,11 @@ public class CannonBall extends AbstractCannonBall {
         if (this.level().isClientSide()) {
             // Client-side particles and effects
             spawnImpactParticles(hitPos);
+            return;
+        }
+
+        if (this.isInWater() || this.isInLava()) {
+            super.onHitBlock(result);
             return;
         }
 

@@ -10,7 +10,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -22,7 +22,7 @@ import java.util.Random;
 // There is an event that handles the right click functionality already
 public interface DamageableBlock {
 
-    Item repairItem();
+    Ingredient repairItem();
 
     default void repairBlock(@Nullable Player player, LevelAccessor level, BlockPos pos, BlockState state) {
         playSound(SoundEvents.ANVIL_USE, player, level, pos);
@@ -37,6 +37,17 @@ public interface DamageableBlock {
             playSound(BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse("entity.generic.explode")), player, level, pos);
         } else {
             level.setBlock(pos, state.setValue(ModBlockStateProperties.DAMAGE_STATE, state.getValue(ModBlockStateProperties.DAMAGE_STATE).damage()), 3);
+        }
+    }
+
+    default void damageBlockFully(@Nullable Player player, LevelAccessor level, BlockPos pos, BlockState state) {
+        playSound(SoundEvents.METAL_BREAK, player, level, pos);
+        level.levelEvent(2001, pos, Block.getId(ModBlocks.CANNON.get().defaultBlockState()));
+        if (state.getValue(ModBlockStateProperties.DAMAGE_STATE) == DamageState.HIGH) {
+            level.destroyBlock(pos, false);
+            playSound(BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse("entity.generic.explode")), player, level, pos);
+        } else {
+            level.setBlock(pos, state.setValue(ModBlockStateProperties.DAMAGE_STATE, DamageState.HIGH), 3);
         }
     }
 

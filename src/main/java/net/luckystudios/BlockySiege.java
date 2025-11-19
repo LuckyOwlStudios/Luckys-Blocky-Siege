@@ -1,10 +1,8 @@
 package net.luckystudios;
 
 import net.luckystudios.init.*;
-import net.luckystudios.networking.CannonBlockScreenPacket;
-import net.luckystudios.networking.ControllingShootingBlockPacket;
-import net.luckystudios.networking.MultiCannonBlockScreenPacket;
-import net.luckystudios.networking.SpewerCannonBlockScreenPacket;
+import net.luckystudios.networking.*;
+import net.luckystudios.professions.ModVillagerProfessions;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -72,6 +70,7 @@ public class BlockySiege
         ModParticleTypes.register(modEventBus);
         ModFluids.register(modEventBus);
         ModFluidTypes.register(modEventBus);
+        ModVillagerProfessions.register(modEventBus);
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
 
@@ -107,6 +106,7 @@ public class BlockySiege
         BlockySiege.addNetworkMessage(CannonBlockScreenPacket.TYPE, CannonBlockScreenPacket.STREAM_CODEC, CannonBlockScreenPacket::handleData);
         BlockySiege.addNetworkMessage(MultiCannonBlockScreenPacket.TYPE, MultiCannonBlockScreenPacket.STREAM_CODEC, MultiCannonBlockScreenPacket::handleData);
         BlockySiege.addNetworkMessage(SpewerCannonBlockScreenPacket.TYPE, SpewerCannonBlockScreenPacket.STREAM_CODEC, SpewerCannonBlockScreenPacket::handleData);
+        BlockySiege.addNetworkMessage(VolleyRackBlockScreenPacket.TYPE, VolleyRackBlockScreenPacket.STREAM_CODEC, VolleyRackBlockScreenPacket::handleData);
     }
 
     // Add the example block item to the building blocks tab

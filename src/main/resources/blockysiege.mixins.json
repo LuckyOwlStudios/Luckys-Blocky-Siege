@@ -1,8 +1,9 @@
 {
   "required": true,
-  "package": "net.luckystudios",
+  "package": "net.luckystudios.mixins",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "FireworkRocketEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

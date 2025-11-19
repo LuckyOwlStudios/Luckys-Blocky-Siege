@@ -1,8 +1,7 @@
 package net.luckystudios.networking;
 
 import net.luckystudios.BlockySiege;
-import net.luckystudios.blocks.custom.shooting.cannon.CannonBlockEntity;
-import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonBlockEntity;
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerBlockEntity;
 import net.luckystudios.entity.custom.seat.Seat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -70,7 +69,7 @@ public class SpewerCannonBlockScreenPacket implements CustomPacketPayload {
         Level level = player.level();
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (!(blockEntity instanceof SpewerCannonBlockEntity)) return;
+        if (!(blockEntity instanceof SpewerBlockEntity)) return;
 
         switch (type) {
             case AIM_BUTTON -> {

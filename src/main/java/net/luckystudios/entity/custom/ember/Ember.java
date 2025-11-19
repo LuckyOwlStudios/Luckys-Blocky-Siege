@@ -4,6 +4,7 @@ import net.luckystudios.entity.ImprovedProjectile;
 import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.init.ModParticleTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -63,9 +64,11 @@ public class Ember extends ImprovedProjectile {
     @Override
     protected void onHitBlock(BlockHitResult result) {
         super.onHitBlock(result);
-        if (!this.level().isClientSide()) return;
+        if (this.level().isClientSide()) return;
         Level level = this.level();
-        BlockPos blockPos = result.getBlockPos();
+        BlockPos hitPos = result.getBlockPos();
+        Direction direction = result.getDirection();
+        BlockPos blockPos = hitPos.relative(direction);
         if (level.getBlockState(blockPos).canBeReplaced()) {
             level.setBlock(blockPos, Blocks.FIRE.defaultBlockState(), 3);
         }

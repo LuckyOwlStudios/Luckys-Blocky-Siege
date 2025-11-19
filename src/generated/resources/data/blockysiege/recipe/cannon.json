@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "tag": "minecraft:planks"
+    },
+    "@": {
+      "item": "minecraft:iron_block"
+    },
+    "X": {
+      "tag": "c:tools/igniter"
+    },
+    "Z": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "Z@Z",
+    "@X@",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "blockysiege:cannon"
+  }
+}

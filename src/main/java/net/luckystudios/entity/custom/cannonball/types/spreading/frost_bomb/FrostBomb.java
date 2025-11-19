@@ -76,6 +76,14 @@ public class FrostBomb extends SpreadingBomb {
     }
 
     @Override
+    public void tick() {
+        super.tick();
+        if (this.isInWater() || this.isInLava()) {
+            explode();
+        }
+    }
+
+    @Override
     public void spawnTrailParticles() {
         super.spawnTrailParticles();
         Vec3 newPos = this.position();

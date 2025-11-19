@@ -1,8 +1,11 @@
 package net.luckystudios.init;
 
 import net.luckystudios.BlockySiege;
+import net.luckystudios.entity.custom.FallingFireworkRocketEntity;
 import net.luckystudios.entity.custom.ember.Ember;
 import net.luckystudios.entity.custom.liquid_projectile.SnowProjectile;
+import net.luckystudios.entity.custom.new_boats.SloopEntity;
+import net.luckystudios.entity.custom.potion_blob.PotionBlob;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaEntity;
 import net.luckystudios.entity.custom.bullet.FireworkStarProjectile;
 import net.luckystudios.entity.custom.cannonball.types.explosive_barrel.ExplosiveKeg;
@@ -96,6 +99,11 @@ public class ModEntityTypes {
                     .sized(0.25F, 0.25F)
                     .build("water_blob"));
 
+    public static final Supplier<EntityType<PotionBlob>> POTION_BLOB =
+            ENTITY_TYPES.register("potion_blob", () -> EntityType.Builder.<PotionBlob>of(PotionBlob::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .build("potion_blob"));
+
     public static final Supplier<EntityType<SnowProjectile>> ICE_SHARD =
             ENTITY_TYPES.register("ice_shard", () -> EntityType.Builder.<SnowProjectile>of(SnowProjectile::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F)
@@ -110,11 +118,21 @@ public class ModEntityTypes {
                     .setUpdateInterval(1)
                     .build("firework_star"));
 
+    public static final Supplier<EntityType<FallingFireworkRocketEntity>> FALLING_FIREWORK =
+            ENTITY_TYPES.register("falling_firework", () -> EntityType.Builder.<FallingFireworkRocketEntity>of(FallingFireworkRocketEntity::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(4).updateInterval(10).build("falling_firework"));
+
     public static final Supplier<EntityType<BallistaEntity>> BALLISTA =
             ENTITY_TYPES.register("ballista", () -> EntityType.Builder.<BallistaEntity>of(BallistaEntity::new, MobCategory.MISC)
                     .sized(1.0F, 1.0F)
                     .eyeHeight(0.5F).clientTrackingRange(10)
                     .build("ballista"));
+
+    public static final Supplier<EntityType<SloopEntity>> SLOOP =
+            ENTITY_TYPES.register("sloop", () -> EntityType.Builder.<SloopEntity>of(SloopEntity::new, MobCategory.MISC)
+                    .sized(3.0F, 1.0F)
+                    .eyeHeight(0.5F).clientTrackingRange(10)
+                    .build("sloop"));
 
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);

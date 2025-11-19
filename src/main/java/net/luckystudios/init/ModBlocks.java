@@ -5,15 +5,15 @@ import net.luckystudios.blocks.custom.cannon_ammo.PileBlock;
 import net.luckystudios.blocks.custom.cannon_ammo.types.*;
 import net.luckystudios.blocks.custom.shooting.cannon.CannonBlock;
 import net.luckystudios.blocks.custom.shooting.multi_cannon.MultiCannonBlock;
-import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannon;
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerBlock;
 import net.luckystudios.blocks.custom.explosive_barrel.ExplosiveBarrelBlock;
+import net.luckystudios.blocks.custom.shooting.volley.VolleyRackBlock;
 import net.luckystudios.blocks.custom.turret.ballista.BallistaBlock;
 import net.luckystudios.blocks.util.ModBlockStateProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -49,12 +49,20 @@ public class ModBlocks {
             ));
 
     public static final DeferredBlock<Block> SPEWER_CANNON = registerBlock("spewer_cannon",
-            () -> new SpewerCannon(BlockBehaviour.Properties.of()
+            () -> new SpewerBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)
                     .dynamicShape()
                     .requiresCorrectToolForDrops()
                     .strength(5.0F, 6.0F)
                     .sound(SoundType.ANVIL)
+            ));
+
+    public static final DeferredBlock<Block> VOLLEY_RACK = registerBlock("volley_rack",
+            () -> new VolleyRackBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .dynamicShape()
+                    .strength(2.0F, 3.0F)
+                    .sound(SoundType.WOOD)
             ));
 
     public static final DeferredBlock<Block> CANNON_BALL = registerBlock("cannonball",

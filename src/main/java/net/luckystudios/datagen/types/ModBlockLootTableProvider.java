@@ -30,6 +30,7 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         dropSelf(ModBlocks.CANNON.get());
         dropSelf(ModBlocks.MULTI_CANNON.get());
         dropSelf(ModBlocks.SPEWER_CANNON.get());
+        dropSelf(ModBlocks.VOLLEY_RACK.get());
         this.add(ModBlocks.EMBER_PILE.get(), noDrop());
         this.add(ModBlocks.FROST_PILE.get(), noDrop());
         this.add(ModBlocks.CANNON_BALL.get(), createCannonAmmoStack(ModBlocks.CANNON_BALL.get()));

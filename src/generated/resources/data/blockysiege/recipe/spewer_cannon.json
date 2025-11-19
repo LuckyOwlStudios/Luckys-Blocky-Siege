@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "#": {
+      "tag": "minecraft:planks"
+    },
+    "@": {
+      "item": "minecraft:iron_ingot"
+    },
+    "X": {
+      "item": "minecraft:cauldron"
+    }
+  },
+  "pattern": [
+    "@@@",
+    "@X@",
+    "###"
+  ],
+  "result": {
+    "count": 1,
+    "id": "blockysiege:spewer_cannon"
+  }
+}

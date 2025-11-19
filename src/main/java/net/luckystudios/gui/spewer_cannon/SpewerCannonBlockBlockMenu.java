@@ -1,6 +1,6 @@
 package net.luckystudios.gui.spewer_cannon;
 
-import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonBlockEntity;
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerBlockEntity;
 import net.luckystudios.gui.slots.custom.LiquidSlot;
 import net.luckystudios.init.ModBlocks;
 import net.luckystudios.init.ModMenuTypes;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class SpewerCannonBlockBlockMenu extends AbstractContainerMenu {
-    public final SpewerCannonBlockEntity blockEntity;
+    public final SpewerBlockEntity blockEntity;
     private final Level level;
 
     public SpewerCannonBlockBlockMenu(int containerId, Inventory inv, FriendlyByteBuf extraData) {
@@ -25,7 +25,7 @@ public class SpewerCannonBlockBlockMenu extends AbstractContainerMenu {
 
     public SpewerCannonBlockBlockMenu(int containerId, Inventory inv, BlockEntity blockEntity) {
         super(ModMenuTypes.SPEWER_BLOCK_MENU.get(), containerId);
-        this.blockEntity = ((SpewerCannonBlockEntity) blockEntity);
+        this.blockEntity = ((SpewerBlockEntity) blockEntity);
         this.level = inv.player.level();
 
         // Slots for the player
@@ -33,7 +33,7 @@ public class SpewerCannonBlockBlockMenu extends AbstractContainerMenu {
         addPlayerHotbar(inv);
 
         // Slots for the cannon or multi-cannon
-        if (!(blockEntity instanceof SpewerCannonBlockEntity spewerCannonBlockEntity)) return;
+        if (!(blockEntity instanceof SpewerBlockEntity spewerCannonBlockEntity)) return;
         this.addSlot(new LiquidSlot(spewerCannonBlockEntity, 0, 80, 35, this));
     }
 

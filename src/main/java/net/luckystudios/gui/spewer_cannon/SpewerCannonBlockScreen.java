@@ -2,7 +2,7 @@ package net.luckystudios.gui.spewer_cannon;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.luckystudios.BlockySiege;
-import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonBlockEntity;
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerBlockEntity;
 import net.luckystudios.gui.ModCyclingSlotBackground;
 import net.luckystudios.networking.SpewerCannonBlockScreenPacket;
 import net.minecraft.client.gui.GuiGraphics;
@@ -16,7 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.Fluid;
@@ -34,7 +33,7 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
 
     private final Level level;
     private final BlockPos blockPos;
-    private final SpewerCannonBlockEntity spewerBlockEntity;
+    private final SpewerBlockEntity spewerBlockEntity;
     private ImageButton targetButton;
     private ImageButton infoButton;
     private final ModCyclingSlotBackground ammoIcon = new ModCyclingSlotBackground();

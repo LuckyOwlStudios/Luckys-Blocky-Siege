@@ -4,7 +4,6 @@ import com.mojang.serialization.MapCodec;
 import net.luckystudios.blocks.custom.shooting.AbstractShootingBlock;
 import net.luckystudios.blocks.util.interfaces.DamageableBlock;
 import net.luckystudios.init.ModBlockEntityTypes;
-import net.luckystudios.init.ModFluids;
 import net.luckystudios.init.ModTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -13,7 +12,6 @@ import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -22,6 +20,7 @@ import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -38,74 +37,68 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class SpewerCannon extends AbstractShootingBlock implements DamageableBlock {
-    public static final MapCodec<SpewerCannon> CODEC = simpleCodec(SpewerCannon::new);
+public class SpewerBlock extends AbstractShootingBlock implements DamageableBlock {
+    public static final MapCodec<SpewerBlock> CODEC = simpleCodec(SpewerBlock::new);
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
 
-    public SpewerCannon(Properties properties) {
+    public SpewerBlock(Properties properties) {
         super(properties.noOcclusion());
     }
 
     @Override
     public void triggerBlock(BlockState state, Level level, BlockPos pos) {
-        if (!(level.getBlockEntity(pos) instanceof SpewerCannonBlockEntity spewerCannonBlockEntity)) return;
-        spewerCannonBlockEntity.fireCannon(level, pos, spewerCannonBlockEntity);
+        if (!(level.getBlockEntity(pos) instanceof SpewerBlockEntity spewerCannonBlockEntity)) return;
+        spewerCannonBlockEntity.fireSpewer(level, pos, spewerCannonBlockEntity);
     }
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new SpewerCannonBlockEntity(pos, state);
+        return new SpewerBlockEntity(pos, state);
     }
 
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return createTickerHelper(blockEntityType, ModBlockEntityTypes.SPEWER_CANNON_BLOCK_ENTITY.get(), SpewerCannonBlockEntity::tick);
+        return createTickerHelper(blockEntityType, ModBlockEntityTypes.SPEWER_BLOCK_ENTITY.get(), SpewerBlockEntity::tick);
     }
 
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-        if (level.getBlockEntity(pos) instanceof SpewerCannonBlockEntity spewerCannonBlockEntity) {
-
+        if (level.getBlockEntity(pos) instanceof SpewerBlockEntity spewerCannonBlockEntity) {
             // Only allow interaction with buckets that are in the spewer ammo tag
-            if (stack.is(ModTags.SPEWER_AMMO) && stack.getItem() instanceof BucketItem bucketItem) {
-
-                // Check if tank is empty or can accept this fluid
-                FluidStack bucketFluid = new FluidStack(bucketItem.content, 1000);
-                int amountFilled = spewerCannonBlockEntity.getFluidTank().fill(bucketFluid, IFluidHandler.FluidAction.SIMULATE);
-
-                if (amountFilled > 0) {
-                    // Actually fill the tank
-                    spewerCannonBlockEntity.getFluidTank().fill(bucketFluid, IFluidHandler.FluidAction.EXECUTE);
-
-                    // Play appropriate sound
-                    SoundEvent fillSound = stack.is(Items.LAVA_BUCKET) ?
-                            SoundEvents.BUCKET_FILL_LAVA : SoundEvents.BUCKET_FILL;
-                    level.playSound(null, pos, fillSound, SoundSource.BLOCKS, 1.0f, 1.0f);
-
-                    // Replace bucket with empty bucket (only in survival mode)
-                    if (!player.getAbilities().instabuild) {
-                        ItemStack emptyBucket = new ItemStack(Items.BUCKET);
-                        if (stack.getCount() == 1) {
-                            player.setItemInHand(hand, emptyBucket);
+            if (stack.is(ModTags.SPEWER_AMMO)) {
+                ItemStack itemStack = spewerCannonBlockEntity.getLiquidStack();
+                if (spewerCannonBlockEntity.getFluidTank().getFluidAmount() <= 666) {
+                    if (itemStack.getItem() instanceof BucketItem bucketItem) {
+                        if (itemStack.is(Items.LAVA_BUCKET)) {
+                            level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
+                                    SoundEvents.BUCKET_FILL_LAVA, SoundSource.BLOCKS, 1.0f, 1.0f);
                         } else {
-                            stack.shrink(1);
-                            if (!player.getInventory().add(emptyBucket)) {
-                                player.drop(emptyBucket, false);
-                            }
+                            level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
+                                    SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
                         }
+                        spewerCannonBlockEntity.getFluidTank().fill(new FluidStack(bucketItem.content, 1000), IFluidHandler.FluidAction.EXECUTE);
+                        return ItemInteractionResult.SUCCESS;
                     }
-
-                    return ItemInteractionResult.SUCCESS;
+                } else if (itemStack.getItem() instanceof PotionItem) {
+                    // Get the potion contents from the item
+                    PotionContents potionContents = itemStack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+                    if (!potionContents.equals(PotionContents.EMPTY)) {
+                        int amount = spewerCannonBlockEntity.getFluidTank().getFluidAmount() == 666 ? 334 : 333;
+                        FluidStack stack2 = new FluidStack(Fluids.WATER, amount);
+                        stack.set(DataComponents.POTION_CONTENTS, potionContents);
+                        spewerCannonBlockEntity.getFluidTank().fill(stack2, IFluidHandler.FluidAction.EXECUTE);
+                        // Don't forget to consume the potion item
+                        level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
+                                SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 1.0f, 1.0f);
+                        return ItemInteractionResult.SUCCESS;
+                    }
                 }
-            }
-
-            // If no bucket interaction happened, try opening the GUI
-            if (!player.isCrouching()) {
+            } else if (!player.isCrouching()) {
                 player.openMenu(spewerCannonBlockEntity, pos);
                 return ItemInteractionResult.SUCCESS;
             }
@@ -117,7 +110,7 @@ public class SpewerCannon extends AbstractShootingBlock implements DamageableBlo
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         super.animateTick(state, level, pos, random);
-        if (!(level.getBlockEntity(pos) instanceof SpewerCannonBlockEntity spewerCannonBlockEntity)) return;
+        if (!(level.getBlockEntity(pos) instanceof SpewerBlockEntity spewerCannonBlockEntity)) return;
 
         Vec3 spawnPos = spewerCannonBlockEntity.getSpawnPos(pos);
         ParticleOptions particleOptions;
@@ -151,7 +144,7 @@ public class SpewerCannon extends AbstractShootingBlock implements DamageableBlo
     }
 
     @Override
-    public Item repairItem() {
-        return Items.IRON_INGOT;
+    public Ingredient repairItem() {
+        return Ingredient.of(Items.IRON_INGOT);
     }
 }

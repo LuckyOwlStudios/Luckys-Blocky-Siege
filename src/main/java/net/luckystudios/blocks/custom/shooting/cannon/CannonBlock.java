@@ -16,6 +16,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -84,7 +85,7 @@ public class CannonBlock extends AbstractShootingBlock {
     }
 
     @Override
-    public Item repairItem() {
-        return Items.IRON_INGOT;
+    public Ingredient repairItem() {
+        return Ingredient.of(Items.IRON_INGOT);
     }
 }

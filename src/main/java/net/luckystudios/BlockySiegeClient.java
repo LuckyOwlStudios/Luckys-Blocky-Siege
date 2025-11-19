@@ -2,7 +2,12 @@ package net.luckystudios;
 
 import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonModel;
 import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonRenderer;
+import net.luckystudios.blocks.custom.shooting.volley.VolleyBlockRenderer;
+import net.luckystudios.blocks.custom.shooting.volley.VolleyRackModel;
 import net.luckystudios.entity.custom.cannonball.TrailModel;
+import net.luckystudios.entity.custom.new_boats.SloopModel;
+import net.luckystudios.entity.custom.new_boats.SloopRenderer;
+import net.luckystudios.entity.custom.potion_blob.PotionBlobRenderer;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaGolemModel;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaRenderer;
 import net.luckystudios.entity.custom.water_drop.WaterBlobModel;
@@ -13,6 +18,7 @@ import net.luckystudios.blocks.custom.shooting.cannon.CannonModel;
 import net.luckystudios.blocks.custom.shooting.multi_cannon.MultiCannonModel;
 import net.luckystudios.blocks.custom.shooting.multi_cannon.MultiCannonRenderer;
 import net.luckystudios.gui.multi_cannon.MultiCannonBlockScreen;
+import net.luckystudios.gui.volley.VolleyRackBlockScreen;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.blocks.custom.shooting.cannon.CannonRenderer;
@@ -53,10 +59,12 @@ public class BlockySiegeClient {
         event.registerLayerDefinition(ModModelLayers.CANNON, CannonModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.MULTI_CANNON, MultiCannonModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.SPEWER_CANNON, SpewerCannonModel::createBodyLayer);
+        event.registerLayerDefinition(ModModelLayers.VOLLEY_RACK, VolleyRackModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.CANNON_BALL, CannonBallModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.TRAIL, TrailModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.WATER_BLOB, WaterBlobModel::createBodyLayer);
         event.registerLayerDefinition(ModModelLayers.BALLISTA, BallistaGolemModel::createBodyLayer);
+        event.registerLayerDefinition(SloopModel.LAYER_LOCATION, SloopModel::createBodyLayer);
     }
 
     // Registering entity renderers!
@@ -66,7 +74,8 @@ public class BlockySiegeClient {
         // Blocks
         event.registerBlockEntityRenderer(ModBlockEntityTypes.CANNON_BLOCK_ENTITY.get(), CannonRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntityTypes.MULTI_CANNON_BLOCK_ENTITY.get(), MultiCannonRenderer::new);
-        event.registerBlockEntityRenderer(ModBlockEntityTypes.SPEWER_CANNON_BLOCK_ENTITY.get(), SpewerCannonRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntityTypes.SPEWER_BLOCK_ENTITY.get(), SpewerCannonRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntityTypes.VOLLEY_BLOCK_ENTITY.get(), VolleyBlockRenderer::new);
 
         // Entities
         event.registerEntityRenderer(ModEntityTypes.SEAT.get(), NoopRenderer::new);
@@ -79,9 +88,12 @@ public class BlockySiegeClient {
         event.registerEntityRenderer(ModEntityTypes.WOODEN_SHRAPNEL.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.EMBER.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.WATER_BLOB.get(), WaterBlobRenderer::new);
+        event.registerEntityRenderer(ModEntityTypes.POTION_BLOB.get(), PotionBlobRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.ICE_SHARD.get(), NoopRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.FIREWORK_STAR.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(ModEntityTypes.FALLING_FIREWORK.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.BALLISTA.get(), BallistaRenderer::new);
+        event.registerEntityRenderer(ModEntityTypes.SLOOP.get(), SloopRenderer::new);
     }
 
     @SubscribeEvent
@@ -89,6 +101,7 @@ public class BlockySiegeClient {
         event.register(ModMenuTypes.CANNON_BLOCK_MENU.get(), CannonBlockScreen::new);
         event.register(ModMenuTypes.MULTI_CANNON_BLOCK_MENU.get(), MultiCannonBlockScreen::new);
         event.register(ModMenuTypes.SPEWER_BLOCK_MENU.get(), SpewerCannonBlockScreen::new);
+        event.register(ModMenuTypes.VOLLEY_BLOCK_MENU.get(), VolleyRackBlockScreen::new);
         event.register(ModMenuTypes.BALLISTA_BLOCK_MENU.get(), BallistaScreen::new);
     }
 

@@ -20,7 +20,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.NotNull;
 
-public class SpewerCannonRenderer implements BlockEntityRenderer<SpewerCannonBlockEntity> {
+public class SpewerCannonRenderer implements BlockEntityRenderer<SpewerBlockEntity> {
 
 	private final CustomHierarchicalModel model;
 	private static final ResourceLocation BASE_TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/block/spewer_cannon/spewer_cannon.png");
@@ -32,7 +32,7 @@ public class SpewerCannonRenderer implements BlockEntityRenderer<SpewerCannonBlo
 		this.model = new CustomHierarchicalModel(context.bakeLayer(ModModelLayers.SPEWER_CANNON));
 	}
 
-	private void updateRenderState(SpewerCannonBlockEntity spewerCannonBlockEntity) {
+	private void updateRenderState(SpewerBlockEntity spewerCannonBlockEntity) {
 		Level level = spewerCannonBlockEntity.getLevel();
 		if (level == null) return;
 		int tickCount = (int) level.getGameTime();
@@ -42,7 +42,7 @@ public class SpewerCannonRenderer implements BlockEntityRenderer<SpewerCannonBlo
 	// Copied from the BlockEntityRenderer class
 	// Copied from the EnchantTableRenderer
 	@Override
-	public void render(SpewerCannonBlockEntity spewerCannonBlockEntity, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, int packedOverlay) {
+	public void render(SpewerBlockEntity spewerCannonBlockEntity, float partialTick, PoseStack poseStack, MultiBufferSource multiBufferSource, int packedLight, int packedOverlay) {
 		Level level = spewerCannonBlockEntity.getLevel();
 		if (level == null) return;
 		poseStack.pushPose();
@@ -66,7 +66,7 @@ public class SpewerCannonRenderer implements BlockEntityRenderer<SpewerCannonBlo
 		poseStack.popPose();
 	}
 
-	public static ResourceLocation getTextureLocation(SpewerCannonBlockEntity spewerCannonBlockEntity) {
+	public static ResourceLocation getTextureLocation(SpewerBlockEntity spewerCannonBlockEntity) {
 		DamageState damageState = spewerCannonBlockEntity.getBlockState().getValue(ModBlockStateProperties.DAMAGE_STATE);
 		return switch (damageState) {
 			case LOW -> LOW_TEXTURE_LOCATION;
@@ -84,7 +84,7 @@ public class SpewerCannonRenderer implements BlockEntityRenderer<SpewerCannonBlo
 	}
 
 	@Override
-	public @NotNull AABB getRenderBoundingBox(SpewerCannonBlockEntity blockEntity) {
+	public @NotNull AABB getRenderBoundingBox(SpewerBlockEntity blockEntity) {
 		return new AABB(blockEntity.getBlockPos()).inflate(1);
 	}
 
@@ -102,7 +102,7 @@ public class SpewerCannonRenderer implements BlockEntityRenderer<SpewerCannonBlo
 			this.root = root;
 		}
 
-		public void setupBlockEntityAnim(SpewerCannonBlockEntity blockEntity, float ageInTicks) {
+		public void setupBlockEntityAnim(SpewerBlockEntity blockEntity, float ageInTicks) {
 			animator.setupBlockEntityAnim(blockEntity, ageInTicks);
 			super.setupAnim(null, 0, 0, ageInTicks, 0, 0);
 		}
@@ -121,7 +121,7 @@ public class SpewerCannonRenderer implements BlockEntityRenderer<SpewerCannonBlo
 			public void setupAnim(Entity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 			}
 
-			public void setupBlockEntityAnim(SpewerCannonBlockEntity blockEntity, float ageInTicks) {
+			public void setupBlockEntityAnim(SpewerBlockEntity blockEntity, float ageInTicks) {
 				animator.root().getAllParts().forEach(ModelPart::resetPose);
 				animator.animate(blockEntity.fireAnimation, SpewerCannonAnimations.fire, ageInTicks, 1f);
 			}

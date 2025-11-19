@@ -4,21 +4,28 @@ import net.luckystudios.BlockySiege;
 import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
 import net.luckystudios.blocks.custom.shooting.AbstractShootingBlock;
 import net.luckystudios.blocks.custom.shooting.cannon.CannonBlockEntity;
-import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonBlockEntity;
+import net.luckystudios.blocks.custom.shooting.multi_cannon.MultiCannonBlockEntity;
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerBlockEntity;
+import net.luckystudios.blocks.custom.shooting.volley.VolleyRackBlockEntity;
 import net.luckystudios.blocks.util.ModBlockStateProperties;
 import net.luckystudios.entity.custom.seat.Seat;
 import net.luckystudios.init.ModBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -53,7 +60,7 @@ public class MountedCannonClientBusEvents {
         Player player = mc.player;
         Level level = player.level();
 
-        if (!isPlayerControllingCannon(player, mc.level)) {
+        if (!isPlayerControllingGun(player, mc.level) || mc.options.hideGui) {
             return;
         }
 
@@ -68,39 +75,106 @@ public class MountedCannonClientBusEvents {
         int centerX = screenWidth / 2;
         int centerY = screenHeight / 2;
 
-        renderCrosshair(guiGraphics, blockState, centerX, centerY);
-        renderHealthBar(guiGraphics, blockState, centerX, screenHeight);
-        renderCenterNumber(guiGraphics, abstractShootingAimableBlockEntity, centerX, screenHeight);
-        if (abstractShootingAimableBlockEntity instanceof SpewerCannonBlockEntity) return;
-        renderFiringBar(guiGraphics, abstractShootingAimableBlockEntity, centerX, screenHeight);
-        renderHotBar(guiGraphics, abstractShootingAimableBlockEntity, centerX, screenHeight);
+        if (abstractShootingAimableBlockEntity instanceof CannonBlockEntity cannonBlockEntity) {
+            renderCannonHUD(guiGraphics, blockState, centerX, centerY, screenHeight, cannonBlockEntity);
+        } else if (abstractShootingAimableBlockEntity instanceof MultiCannonBlockEntity multiCannonBlockEntity) {
+            renderMultiCannonHUD(guiGraphics, blockState, centerX, centerY, screenHeight, multiCannonBlockEntity);
+        } else if (abstractShootingAimableBlockEntity instanceof SpewerBlockEntity spewerBlockEntity) {
+            renderSpewerHUD(guiGraphics, blockState, centerX, centerY, screenHeight, spewerBlockEntity);
+        } else if (abstractShootingAimableBlockEntity instanceof VolleyRackBlockEntity volleyRackBlockEntity) {
+            renderVolleyRackHUD(guiGraphics, blockState, centerX, centerY, screenHeight, volleyRackBlockEntity);
+        }
     }
 
-    private static boolean isPlayerControllingCannon(Player player, Level level) {
+    private static boolean isPlayerControllingGun(Player player, Level level) {
         return player != null &&
                 level != null &&
                 player.getVehicle() instanceof Seat seat &&
                 level.getBlockState(seat.blockPosition()).getBlock() instanceof AbstractShootingBlock;
     }
 
-    private static void renderCrosshair(GuiGraphics guiGraphics, BlockState blockState, int centerX, int centerY) {
-        boolean isSpewer = blockState.getBlock() == ModBlocks.SPEWER_CANNON.get();
-
-        ResourceLocation crosshairTexture = isSpewer
-                ? BlockySiege.id("textures/gui/sprites/hud/cannon/spewer_sight.png")
-                : BlockySiege.id("textures/gui/sprites/hud/cannon/cannon_sight.png");
-
-        int crosshairSize = isSpewer ? 30 : 15;
-        int crosshairWidth = 15;
-
-        guiGraphics.blit(crosshairTexture,
-                centerX - 8, centerY - 8,
-                0.0F, 0.0F,
-                crosshairWidth, crosshairSize,
-                crosshairWidth, crosshairSize);
+    private static void renderCannonHUD(GuiGraphics guiGraphics, BlockState blockState, int centerX, int centerY, int screenHeight, CannonBlockEntity cannonBlockEntity) {
+        renderCrosshair(guiGraphics, BlockySiege.id("textures/gui/sprites/hud/firing_hud/sight.png"), 15, 15, centerX, centerY);
+        renderHealthBar(guiGraphics, blockState, centerX, screenHeight, 4);
+        renderCenterNumber(guiGraphics, cannonBlockEntity, centerX, screenHeight);
+        renderHotBar(guiGraphics, cannonBlockEntity, centerX, screenHeight);
+        float progress = cannonBlockEntity.getFiringProgress();
+        renderFiringBar(guiGraphics, centerX, screenHeight, progress, ResourceLocation.withDefaultNamespace("textures/gui/sprites/boss_bar/white_progress.png"), new Color(1,1 - progress, 1 - progress, 1));
     }
 
-    private static void renderHealthBar(GuiGraphics guiGraphics, BlockState blockState, int centerX, int screenHeight) {
+    private static void renderMultiCannonHUD(GuiGraphics guiGraphics, BlockState blockState, int centerX, int centerY, int screenHeight, MultiCannonBlockEntity multiCannonBlockEntity) {
+        renderCrosshair(guiGraphics, BlockySiege.id("textures/gui/sprites/hud/firing_hud/sight.png"), 15, 15, centerX, centerY);
+        renderHealthBar(guiGraphics, blockState, centerX, screenHeight, 4);
+        renderCenterNumber(guiGraphics, multiCannonBlockEntity, centerX, screenHeight);
+        renderHotBar(guiGraphics, multiCannonBlockEntity, centerX, screenHeight);
+        renderFiringBar(guiGraphics, centerX, screenHeight, 1, ResourceLocation.withDefaultNamespace("textures/gui/sprites/boss_bar/white_progress.png"), Color.WHITE);
+    }
+
+    private static void renderSpewerHUD(GuiGraphics guiGraphics, BlockState blockState, int centerX, int centerY, int screenHeight, SpewerBlockEntity spewerBlockEntity) {
+        renderCrosshair(guiGraphics, BlockySiege.id("textures/gui/sprites/hud/firing_hud/spewer/spewer_sight.png"), 15, 30, centerX, centerY);
+        renderHealthBar(guiGraphics, blockState, centerX, screenHeight, 4);
+        ResourceLocation hotbar = BlockySiege.id("textures/gui/sprites/hud/firing_hud/spewer/spewer_hotbar.png");
+        int xPos = centerX - 91;
+        int yPos = screenHeight - 22;
+        guiGraphics.blit(hotbar, xPos, yPos, 0.0F, 0.0F, 182, 22, 182, 22);
+        float progress = spewerBlockEntity.getFillPercentage();
+        Color color;
+        if (spewerBlockEntity.getFluid() == Fluids.LAVA) {
+            // Convert float values (0-1) to int values (0-255)
+            color = new Color(255, 55, 0, 255);
+        } else {
+            PotionContents potionContents = spewerBlockEntity.getFluidTank().getFluid().get(DataComponents.POTION_CONTENTS);
+            if (potionContents != null) {
+                int potionColor = potionContents.getColor();
+                // Extract RGB components and create Color with proper constructor
+                int red = (potionColor >> 16) & 0xFF;
+                int green = (potionColor >> 8) & 0xFF;
+                int blue = potionColor & 0xFF;
+                color = new Color(red, green, blue, 255);
+            } else {
+                int waterColor = BiomeColors.getAverageWaterColor(spewerBlockEntity.getLevel(), spewerBlockEntity.getBlockPos());
+                color = new Color(waterColor);
+            }
+        }
+        renderFiringBar(guiGraphics, centerX, screenHeight, progress, BlockySiege.id("textures/gui/sprites/hud/firing_hud/spewer/liquid_progress.png"), color);
+    }
+
+    private static void renderVolleyRackHUD(GuiGraphics guiGraphics, BlockState blockState, int centerX, int centerY, int screenHeight, VolleyRackBlockEntity volleyRackBlockEntity) {
+        renderCrosshair(guiGraphics, BlockySiege.id("textures/gui/sprites/hud/firing_hud/volley_rack/volley_rack_sight.png"), 45, 30, centerX, centerY);
+        renderHealthBar(guiGraphics, blockState, centerX, screenHeight, 2);
+        ResourceLocation firingBar = BlockySiege.id("textures/gui/sprites/hud/firing_hud/volley_rack/volley_rack_hotbar.png");
+        int xPos = centerX - 93;
+        int yPos = screenHeight - 22;
+        guiGraphics.blit(firingBar, xPos, yPos, 0.0F, 0.0F, 186, 22, 186, 22);
+
+        Font font = Minecraft.getInstance().font;
+
+        // Render Fuse Slot
+        int fuseX = xPos + 3;
+        int fuseY = yPos + 3;
+        ItemStack fuseStack = volleyRackBlockEntity.getItem(0);
+        guiGraphics.renderItem(fuseStack, fuseX, fuseY);
+        guiGraphics.renderItemDecorations(font, fuseStack, fuseX, fuseY);
+
+        // Render Ammo Slots
+        int startX = fuseX + 24;
+        for (int i = 1; i <= 8; i++) {
+            ItemStack ammoStack = volleyRackBlockEntity.getItem(i);
+            int slotX = startX + (i - 1) * 20; // (i - 1) because slot 1 should be at startX + 0
+            guiGraphics.renderItem(ammoStack, slotX, fuseY);
+            guiGraphics.renderItemDecorations(font, ammoStack, slotX, fuseY);
+        }
+    }
+
+    private static void renderCrosshair(GuiGraphics guiGraphics, ResourceLocation texture, int crosshairWidth, int crosshairHeight, int centerX, int centerY) {
+        guiGraphics.blit(texture,
+                centerX - crosshairWidth / 2, centerY - crosshairHeight / 2,
+                0.0F, 0.0F,
+                crosshairWidth, crosshairHeight,
+                crosshairWidth, crosshairHeight);
+    }
+
+    private static void renderHealthBar(GuiGraphics guiGraphics, BlockState blockState, int centerX, int screenHeight, int type) {
         if (!blockState.hasProperty(ModBlockStateProperties.DAMAGE_STATE)) {
             return;
         }
@@ -109,12 +183,12 @@ public class MountedCannonClientBusEvents {
         int healthBarY = screenHeight - 39;
 
         // Render health bar background
-        ResourceLocation healthBarBg = BlockySiege.id("textures/gui/sprites/hud/cannon/health_container.png");
+        ResourceLocation healthBarBg = BlockySiege.id("textures/gui/sprites/hud/firing_hud/health_container_" + type + ".png");
         guiGraphics.blit(healthBarBg, healthBarX, healthBarY, 0.0F, 0.0F, 81, 9, 81, 9);
 
         // Calculate health level and render health icons
         int healthLevel = getHealthLevel(blockState);
-        renderHealthIcons(guiGraphics, healthBarX, healthBarY, healthLevel);
+        renderHealthBarIcons(guiGraphics, healthBarX, healthBarY, healthLevel, type);
     }
 
     private static int getHealthLevel(BlockState blockState) {
@@ -126,20 +200,18 @@ public class MountedCannonClientBusEvents {
         };
     }
 
-    private static void renderHealthIcons(GuiGraphics guiGraphics, int startX, int startY, int healthLevel) {
-        ResourceLocation healthIcon = BlockySiege.id("textures/gui/sprites/hud/cannon/health_icon.png");
-        ResourceLocation damageIcon = BlockySiege.id("textures/gui/sprites/hud/cannon/damage_icon.png");
+    private static void renderHealthBarIcons(GuiGraphics guiGraphics, int startX, int startY, int healthLevel, int type) {
+        ResourceLocation healthIcon = BlockySiege.id("textures/gui/sprites/hud/firing_hud/health_icon_" + type + ".png");
+        ResourceLocation damageIcon = BlockySiege.id("textures/gui/sprites/hud/firing_hud/damage_icon_" + type + ".png");
 
-        int iconWidth = 19;
+        int iconWidth = type == 4 ? 19 : 39;
         int iconHeight = 7;
-        int iconSpacing = 20;
-        int iconOffsetX = 1;
-        int iconOffsetY = 1;
+        int iconSpacing = type == 4 ? 20 : 40;
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < type; i++) {
             ResourceLocation icon = (i < healthLevel) ? healthIcon : damageIcon;
-            int iconX = startX + iconOffsetX + (i * iconSpacing);
-            int iconY = startY + iconOffsetY;
+            int iconX = startX + 1 + (i * iconSpacing);
+            int iconY = startY + 1;
 
             guiGraphics.blit(icon, iconX, iconY, 0.0F, 0.0F, iconWidth, iconHeight, iconWidth, iconHeight);
         }
@@ -166,19 +238,24 @@ public class MountedCannonClientBusEvents {
         guiGraphics.drawString(font, numberText, textX, textY, Color.GRAY.getRGB(), true); // Green color with shadow
     }
 
-    private static void renderFiringBar(GuiGraphics guiGraphics, AbstractShootingAimableBlockEntity abstractShootingAimableBlockEntity, int centerX, int screenHeight) {
-        ResourceLocation firingBar = BlockySiege.id("textures/gui/sprites/hud/cannon/firing_bar.png");
-        ResourceLocation firingBarProgress = BlockySiege.id("textures/gui/sprites/hud/cannon/firing_bar_progress.png");
+    private static void renderFiringBar(GuiGraphics guiGraphics, int centerX, int screenHeight, float progress, ResourceLocation firingBarProgress, Color color) {
+        ResourceLocation firingBar = BlockySiege.id("textures/gui/sprites/hud/firing_hud/firing_bar.png");
         int xPos = centerX - 91;
         int textY = screenHeight - 29;
         guiGraphics.blit(firingBar, xPos, textY, 0.0F, 0.0F, 182, 5, 182, 5);
+        int UVWidth = (int)(182 * progress);
+
+        // Convert integer color values (0-255) to float values (0.0-1.0)
+        guiGraphics.setColor(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, color.getAlpha() / 255.0f);
+        guiGraphics.blit(firingBarProgress, xPos, textY, 0.0F, 0.0F, UVWidth, 5, 182, 5);
+        guiGraphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     private static void renderHotBar(GuiGraphics guiGraphics, AbstractShootingAimableBlockEntity abstractShootingAimableBlockEntity, int centerX, int screenHeight) {
-        ResourceLocation firingBar = BlockySiege.id("textures/gui/sprites/hud/cannon/cannon_hotbar.png");
+        ResourceLocation hotbar = BlockySiege.id("textures/gui/sprites/hud/firing_hud/firing_hotbar.png");
         int xPos = centerX - 91;
         int yPos = screenHeight - 22;
-        guiGraphics.blit(firingBar, xPos, yPos, 0.0F, 0.0F, 182, 22, 182, 22);
+        guiGraphics.blit(hotbar, xPos, yPos, 0.0F, 0.0F, 182, 22, 182, 22);
 
         ItemStack fuseStack = abstractShootingAimableBlockEntity.getItem(0);
         ItemStack ammoStack = abstractShootingAimableBlockEntity.getItem(1);

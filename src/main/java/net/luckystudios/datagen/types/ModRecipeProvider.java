@@ -8,6 +8,7 @@ import net.minecraft.data.recipes.*;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.conditions.IConditionBuilder;
 
 import java.util.concurrent.CompletableFuture;
@@ -24,6 +25,39 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
         String HAS_IRON = "has_iron";
 
         // Cannon Stuff
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.CANNON.get())
+                .pattern("Z@Z")
+                .pattern("@X@")
+                .pattern("###")
+                .define('@', Items.IRON_BLOCK)
+                .define('Z', Items.IRON_INGOT)
+                .define('X', Tags.Items.TOOLS_IGNITER)
+                .define('#', ItemTags.PLANKS)
+                .unlockedBy(HAS_IRON, has(Items.IRON_INGOT))
+                .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
+                .save(recipeOutput)
+        ;
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.SPEWER_CANNON.get())
+                .pattern("@@@")
+                .pattern("@X@")
+                .pattern("###")
+                .define('@', Items.IRON_INGOT)
+                .define('X', Items.CAULDRON)
+                .define('#', ItemTags.PLANKS)
+                .unlockedBy(HAS_IRON, has(Items.IRON_INGOT))
+                .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
+                .save(recipeOutput)
+        ;
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.VOLLEY_RACK.get())
+                .pattern("@@@")
+                .pattern("@X@")
+                .pattern("###")
+                .define('@', ItemTags.PLANKS)
+                .define('X', Tags.Items.TOOLS_IGNITER)
+                .define('#', ItemTags.WOODEN_SLABS)
+                .unlockedBy("has_igniter", has(Tags.Items.TOOLS_IGNITER))
+                .save(recipeOutput)
+        ;
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.CANNON_BALL.get())
                 .pattern(" # ")
                 .pattern("#@#")

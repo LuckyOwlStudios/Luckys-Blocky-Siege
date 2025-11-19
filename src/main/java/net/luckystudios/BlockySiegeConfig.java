@@ -9,6 +9,7 @@ public class BlockySiegeConfig {
     // === Spec Builders ===
     public static ModConfigSpec COMMON_CONFIG;
     public static ModConfigSpec CLIENT_CONFIG;
+    public static ModConfigSpec SERVER_CONFIG;
 
     // === CATEGORY WORLD GENERATION CONFIGURATION ===
     public static String CATEGORY_WORLD_GENERATION = "worldGeneration";
@@ -20,8 +21,7 @@ public class BlockySiegeConfig {
 
     static {
         ModConfigSpec.Builder COMMON_BUILDER = new ModConfigSpec.Builder();
-
-        COMMON_BUILDER.comment("World Generation Settings").push(CATEGORY_WORLD_GENERATION);
+        COMMON_BUILDER.comment("Server settings").push(CATEGORY_WORLD_GENERATION);
 
         CANNON_DAMAGE = COMMON_BUILDER
                 .comment("How much damage cannon's deal.")
@@ -31,7 +31,6 @@ public class BlockySiegeConfig {
         COMMON_CONFIG = COMMON_BUILDER.build();
 
         ModConfigSpec.Builder CLIENT_BUILDER = new ModConfigSpec.Builder();
-
         CLIENT_BUILDER.comment("Client settings").push(CATEGORY_CLIENT);
 
         CANNON_VOLUME = CLIENT_BUILDER  // ✅ Use CLIENT_BUILDER
@@ -39,7 +38,6 @@ public class BlockySiegeConfig {
                 .defineInRange("cannonVolume", 1.0, 0.0, 1.0);  // Fix name and remove Float.class
 
         CLIENT_BUILDER.pop();
-
         CLIENT_CONFIG = CLIENT_BUILDER.build();
     }
 }

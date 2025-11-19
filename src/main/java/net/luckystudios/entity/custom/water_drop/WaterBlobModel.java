@@ -15,7 +15,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class WaterBlobModel<W extends ImprovedProjectile> extends HierarchicalModel<WaterBlob> {
+public class WaterBlobModel<W extends ImprovedProjectile> extends HierarchicalModel<ImprovedProjectile> {
 
 	private final ModelPart projectile;
 
@@ -33,7 +33,7 @@ public class WaterBlobModel<W extends ImprovedProjectile> extends HierarchicalMo
 	}
 
 	@Override
-	public void setupAnim(WaterBlob entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+	public void setupAnim(ImprovedProjectile entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
 
 	}
 

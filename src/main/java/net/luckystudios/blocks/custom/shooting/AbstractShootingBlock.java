@@ -16,7 +16,6 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
@@ -35,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
-public abstract class AbstractShootingBlock extends AbstractAimableBlock implements DamageableBlock{
+public abstract class AbstractShootingBlock extends AbstractAimableBlock implements DamageableBlock {
     public static final EnumProperty<DamageState> DAMAGE_STATE = ModBlockStateProperties.DAMAGE_STATE;
     public static final BooleanProperty LIT = BlockStateProperties.LIT;
 
@@ -103,8 +102,8 @@ public abstract class AbstractShootingBlock extends AbstractAimableBlock impleme
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (state.getBlock() instanceof DamageableBlock damageableBlock) {
-            Item repairStack = damageableBlock.repairItem();
-            if (stack.is(repairStack) && state.getValue(ModBlockStateProperties.DAMAGE_STATE) != DamageState.NONE) {
+            boolean canRepair = damageableBlock.repairItem().test(stack);
+            if (canRepair && state.getValue(ModBlockStateProperties.DAMAGE_STATE) != DamageState.NONE) {
                 stack.shrink(1);
                 damageableBlock.repairBlock(player, level, pos, state);
                 return ItemInteractionResult.SUCCESS;

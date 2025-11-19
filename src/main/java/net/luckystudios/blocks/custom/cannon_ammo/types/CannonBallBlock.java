@@ -23,6 +23,6 @@ public class CannonBallBlock extends AbstractCannonBallBlock {
 
     @Override
     public Projectile asProjectile(Level level, Position position, ItemStack itemStack, Direction direction) {
-        return new CannonBall(level, position.x(), position.y(), position.z());
+        return new CannonBall(level, position.x(), position.y(), position.z(), false);
     }
 }

@@ -4,11 +4,13 @@ import net.luckystudios.BlockySiegeConfig;
 import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
 import net.luckystudios.blocks.util.enums.FiringState;
 import net.luckystudios.blocks.util.interfaces.DamageableBlock;
+import net.luckystudios.entity.custom.seat.Seat;
 import net.luckystudios.gui.cannons.CannonBlockMenu;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.init.ModParticleTypes;
 import net.luckystudios.init.ModSoundEvents;
 import net.luckystudios.init.ModTags;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -80,10 +82,11 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
                         .setValue(CannonBlock.FIRING_STATE, FiringState.OFF)
                         .setValue(CannonBlock.LIT, false), 3);
             }
-            if (level instanceof ServerLevel serverLevel) {
+            // Only render smoke particles on client side
+            if (level.isClientSide) {
                 Vec3 direction = getAimVector(cannonBlockEntity);
                 Vec3 particlePos = Vec3.atCenterOf(pos).add(direction.scale(1.25F));
-                serverLevel.sendParticles(ParticleTypes.LARGE_SMOKE, particlePos.x, particlePos.y, particlePos.z, 1, 0.0, 0.0, 0.0, 0.0);
+                level.addParticle(ParticleTypes.LARGE_SMOKE, particlePos.x, particlePos.y, particlePos.z, 0.0, 0.0, 0.0);
             }
         }
 
@@ -91,15 +94,17 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
         ItemStack cannonBall = cannonBlockEntity.getProjectile();
 
-        // Visual effects: flame & smoke while cooling down
-        if (level instanceof ServerLevel serverLevel) {
+        // Visual effects: flame & smoke while cooling down - CLIENT SIDE ONLY
+        if (level.isClientSide && !isControllingThisBlock(cannonBlockEntity)) {
             Vec3 particlePos = getRelativeLocationWithOffset(cannonBlockEntity, new Vec3(0, 0.0625, 0), 0.75f, 0.3f, 0.0f);
 
-            serverLevel.sendParticles(ParticleTypes.FLAME, particlePos.x, particlePos.y, particlePos.z, 1, 0.0, 0.0, 0.0, 0.0);
-            serverLevel.sendParticles(ParticleTypes.SMOKE, particlePos.x, particlePos.y, particlePos.z, 1, 0.0, 0.0, 0.0, 0.0);
+            level.addParticle(ParticleTypes.FLAME, particlePos.x, particlePos.y, particlePos.z, 0.0, 0.0, 0.0);
+            level.addParticle(ParticleTypes.SMOKE, particlePos.x, particlePos.y, particlePos.z, 0.0, 0.0, 0.0);
+        }
 
-            // Bottle pop effect when cooldown hits 20
-            if (cannonBlockEntity.cooldown == 20 && cannonBall.is(ModTags.BOTTLED_AMMO)) {
+        // Bottle pop effect when cooldown hits 20 - SERVER SIDE for sound and custom particles
+        if (cannonBlockEntity.cooldown == 20 && cannonBall.is(ModTags.BOTTLED_AMMO)) {
+            if (level instanceof ServerLevel serverLevel) {
                 Vec3 direction = getAimVector(cannonBlockEntity);
                 Vec3 spawnPos = Vec3.atCenterOf(pos).add(direction.scale(1.25));
 
@@ -127,9 +132,8 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
         SoundEvent cannonSound = getCannonSoundVariant(level, spawnPos);
         if (level.isClientSide()) {
-            level.playLocalSound(pos, ModSoundEvents.CANNON_FIRE.get(), SoundSource.BLOCKS, BlockySiegeConfig.CANNON_VOLUME.get().floatValue(), 1, true);
-//            level.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z,
-//                    cannonSound, SoundSource.BLOCKS, BlockySiegeConfig.CANNON_VOLUME.get(), 1.0f);
+            float soundVolume = 2f + cannonBlockEntity.firePower * 0.6f;
+            level.playLocalSound(pos, ModSoundEvents.CANNON_FIRE.get(), SoundSource.BLOCKS, soundVolume, 1, false);
         }
 
         if (level instanceof ServerLevel serverLevel) {
@@ -200,6 +204,15 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
     public ItemStack getProjectile() {
         return this.getItem(1);
+    }
+
+    public float getFiringProgress() {
+        if (this.cooldown <= 0) {
+            return 0.0f; // Not firing or ready to fire
+        }
+
+        // Calculate progress from 0.0 (just started) to 1.0 (ready to fire)
+        return 1.0f - ((float) this.cooldown / (float) this.maxCooldown);
     }
 
     @Override

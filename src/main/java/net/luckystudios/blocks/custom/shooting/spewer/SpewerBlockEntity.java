@@ -2,6 +2,7 @@ package net.luckystudios.blocks.custom.shooting.spewer;
 
 import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
 import net.luckystudios.entity.custom.ember.Ember;
+import net.luckystudios.entity.custom.potion_blob.PotionBlob;
 import net.luckystudios.entity.custom.water_drop.WaterBlob;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.gui.spewer_cannon.SpewerCannonBlockBlockMenu;
@@ -16,7 +17,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
@@ -33,7 +33,7 @@ import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.NotNull;
 
-public class SpewerCannonBlockEntity extends AbstractShootingAimableBlockEntity {
+public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
 
     // Copied from Mcreator! :)
     private final FluidTank fluidTank = new FluidTank(1000) {
@@ -55,10 +55,9 @@ public class SpewerCannonBlockEntity extends AbstractShootingAimableBlockEntity 
         POTION
     }
 
-    public SpewerCannonBlockEntity(BlockPos pos, BlockState blockState) {
-        super(ModBlockEntityTypes.SPEWER_CANNON_BLOCK_ENTITY.get(), pos, blockState);
+    public SpewerBlockEntity(BlockPos pos, BlockState blockState) {
+        super(ModBlockEntityTypes.SPEWER_BLOCK_ENTITY.get(), pos, blockState);
         this.animationLength = 0.25F;
-//        this.pitch = 30F;
     }
 
     public ItemStack getLiquidStack() {
@@ -70,7 +69,7 @@ public class SpewerCannonBlockEntity extends AbstractShootingAimableBlockEntity 
         return this.fireCooldown <= 0 && !this.fluidTank.isEmpty();
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, SpewerCannonBlockEntity spewerCannonBlockEntity) {
+    public static void tick(Level level, BlockPos pos, BlockState state, SpewerBlockEntity spewerCannonBlockEntity) {
         extraTick(level, pos, state, spewerCannonBlockEntity);
 
         handleInv(level, pos, spewerCannonBlockEntity);
@@ -88,12 +87,12 @@ public class SpewerCannonBlockEntity extends AbstractShootingAimableBlockEntity 
 
         // Only fire if redstone is on AND cooldown is 0
         if (has_redstone && spewerCannonBlockEntity.fireCooldown <= 0) {
-            spewerCannonBlockEntity.fireCannon(level, pos, spewerCannonBlockEntity);
+            spewerCannonBlockEntity.fireSpewer(level, pos, spewerCannonBlockEntity);
             spewerCannonBlockEntity.fireCooldown = 5; // Set 5-tick cooldown
         }
     }
 
-    private static void handleInv(Level level, BlockPos pos, SpewerCannonBlockEntity spewerCannonBlockEntity) {
+    private static void handleInv(Level level, BlockPos pos, SpewerBlockEntity spewerCannonBlockEntity) {
         ItemStack itemStack = spewerCannonBlockEntity.getLiquidStack();
         if (spewerCannonBlockEntity.fluidTank.isEmpty()) {
             if (itemStack.is(ModTags.SPEWER_AMMO)) {
@@ -133,7 +132,7 @@ public class SpewerCannonBlockEntity extends AbstractShootingAimableBlockEntity 
         return Vec3.atCenterOf(pos).add(getAimVector(this).scale(barrelOffsetDistance()));
     }
 
-    public void fireCannon(Level level, BlockPos pos, SpewerCannonBlockEntity spewerCannonBlockEntity) {
+    public void fireSpewer(Level level, BlockPos pos, SpewerBlockEntity spewerCannonBlockEntity) {
         if (!this.canShoot()) return;
         spewerCannonBlockEntity.animationTime = spewerCannonBlockEntity.animationLength;
         // Normalize direction
@@ -145,19 +144,23 @@ public class SpewerCannonBlockEntity extends AbstractShootingAimableBlockEntity 
         level.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z,
                 getShootSound(), SoundSource.BLOCKS, 0.25f, 0.75f);
 
+        if (level.isClientSide()) return;
         // Create and launch the projectile
         Projectile projectile;
         Fluid fluid = spewerCannonBlockEntity.getFluid();
         if (fluid == Fluids.LAVA) {
             projectile = new Ember(level, spawnPos.x, spawnPos.y, spawnPos.z);
-        } else if (fluid == Fluids.WATER) {
-            projectile = new WaterBlob(level, spawnPos.x, spawnPos.y, spawnPos.z);
         } else {
-            projectile = new Snowball(level, spawnPos.x, spawnPos.y, spawnPos.z);
+            PotionContents potionContents = spewerCannonBlockEntity.getEffects();
+            if (fluid == Fluids.WATER && potionContents != null) {
+                projectile = new PotionBlob(level, spawnPos.x, spawnPos.y, spawnPos.z, potionContents);
+            } else {
+                projectile = new WaterBlob(level, spawnPos.x, spawnPos.y, spawnPos.z);
+            }
         }
         projectile.shoot(direction.x, direction.y, direction.z, 0.5F, 12.0F); // power * speed factor
         level.addFreshEntity(projectile);
-        spewerCannonBlockEntity.fluidTank.drain(new FluidStack(spewerCannonBlockEntity.getFluidTank().getFluid().getFluid(), 10), IFluidHandler.FluidAction.EXECUTE);
+        spewerCannonBlockEntity.fluidTank.drain(10, IFluidHandler.FluidAction.EXECUTE);
     }
 
     private SoundEvent getShootSound() {

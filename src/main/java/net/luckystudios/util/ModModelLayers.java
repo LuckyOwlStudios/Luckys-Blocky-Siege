@@ -12,6 +12,7 @@ public class ModModelLayers {
     public static final ModelLayerLocation CANNON = register("cannon");
     public static final ModelLayerLocation MULTI_CANNON = register("multi_cannon");
     public static final ModelLayerLocation SPEWER_CANNON = register("spewer_cannon");
+    public static final ModelLayerLocation VOLLEY_RACK = register("volley_rack");
     public static final ModelLayerLocation CANNON_BALL = register("cannon_ball");
     public static final ModelLayerLocation WATER_BLOB = register("water_blob");
     public static final ModelLayerLocation TRAIL = register("trail");

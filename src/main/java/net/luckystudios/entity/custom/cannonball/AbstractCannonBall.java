@@ -63,6 +63,7 @@ public abstract class AbstractCannonBall extends AbstractNewProjectile {
         // check if stuck
         this.isStuck = !this.noPhysics && this.position().subtract(this.xo, this.yo, this.zo).lengthSqr() < (0.0001 * 0.0001);
         if (this.isStuck) {
+            this.setGlowingTag(false);
             level.broadcastEntityEvent(this, (byte)0);
             this.setPickupItemStack(new ItemStack(getPickupItem().getItem()));
         }

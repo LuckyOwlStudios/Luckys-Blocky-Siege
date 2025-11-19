@@ -3,6 +3,7 @@ package net.luckystudios.entity.custom.water_drop;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.luckystudios.BlockySiege;
+import net.luckystudios.entity.ImprovedProjectile;
 import net.luckystudios.util.ModModelLayers;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -12,7 +13,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
-public class WaterBlobRenderer<T extends WaterBlob> extends EntityRenderer<T> {
+public class WaterBlobRenderer<T extends ImprovedProjectile> extends EntityRenderer<T> {
 
     public static final ResourceLocation TEXTURE_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/entity/projectile/water_blob.png");
 
@@ -26,6 +27,10 @@ public class WaterBlobRenderer<T extends WaterBlob> extends EntityRenderer<T> {
     @Override
     public ResourceLocation getTextureLocation(T entity) {
         return TEXTURE_LOCATION;
+    }
+
+    public int getColor(T entity) {
+        return BiomeColors.getAverageWaterColor(entity.level(), entity.blockPosition());
     }
 
     @Override
@@ -57,10 +62,9 @@ public class WaterBlobRenderer<T extends WaterBlob> extends EntityRenderer<T> {
 
         poseStack.translate(0,-1.25,0);
 
-        int color = BiomeColors.getAverageWaterColor(entity.level(), entity.blockPosition());
         VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.entityCutout(getTextureLocation(entity))).setColor(1,0,0,1);
         model.setupAnim(entity, 0.0F, 0.0F, time, 0.0F, 0.0F);
-        model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, color);
+        model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, getColor(entity));
 
         poseStack.popPose();
     }

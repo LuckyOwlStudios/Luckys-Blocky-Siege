@@ -23,6 +23,7 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.CANNON);
                         output.accept(ModBlocks.MULTI_CANNON);
                         output.accept(ModBlocks.SPEWER_CANNON);
+                        output.accept(ModBlocks.VOLLEY_RACK);
                         output.accept(Items.GUNPOWDER);
                         output.accept(ModBlocks.CANNON_BALL);
                         output.accept(ModBlocks.FIRE_BOMB);

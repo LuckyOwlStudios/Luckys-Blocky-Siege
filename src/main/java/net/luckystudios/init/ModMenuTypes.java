@@ -5,6 +5,8 @@ import net.luckystudios.gui.ballista.BallistaMenu;
 import net.luckystudios.gui.cannons.CannonBlockMenu;
 import net.luckystudios.gui.multi_cannon.MultiCannonBlockMenu;
 import net.luckystudios.gui.spewer_cannon.SpewerCannonBlockBlockMenu;
+import net.luckystudios.gui.volley.VolleyRackBlockMenu;
+import net.luckystudios.gui.volley.VolleyRackBlockScreen;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -26,6 +28,9 @@ public class ModMenuTypes {
 
     public static final DeferredHolder<MenuType<?>, MenuType<SpewerCannonBlockBlockMenu>> SPEWER_BLOCK_MENU =
             registerMenuType("spewer_cannon_block_menu", SpewerCannonBlockBlockMenu::new);
+
+    public static final DeferredHolder<MenuType<?>, MenuType<VolleyRackBlockMenu>> VOLLEY_BLOCK_MENU =
+            registerMenuType("volley_block_menu", VolleyRackBlockMenu::new);
 
     public static final DeferredHolder<MenuType<?>, MenuType<BallistaMenu>> BALLISTA_BLOCK_MENU =
             registerMenuType("ballista_block_menu", BallistaMenu::new);

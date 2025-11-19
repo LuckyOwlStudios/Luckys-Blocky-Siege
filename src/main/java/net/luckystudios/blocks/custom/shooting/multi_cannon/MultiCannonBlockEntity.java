@@ -116,14 +116,9 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
                 fireRound(level, pos, multiCannonBlockEntity);
                 multiCannonBlockEntity.setChanged();
             } else {
-                if (level instanceof ServerLevel serverLevel) {
-                    serverLevel.sendParticles(
-                            ParticleTypes.SMOKE,
-                            particlePos.x, particlePos.y, particlePos.z,
-                            0,  // count
-                            0.0, 0.0, 0.0,  // xOffset/yOffset/zOffset for random spread
-                            0.0  // speed
-                    );
+                // Visual effects: flame & smoke while cooling down - CLIENT SIDE ONLY
+                if (level.isClientSide && !isControllingThisBlock(multiCannonBlockEntity)) {
+                    level.addParticle(ParticleTypes.SMOKE, particlePos.x, particlePos.y, particlePos.z, 0.0, 0.0, 0.0);
                 }
             }
         } else if (multiCannonBlockEntity.bullet_count != 1) {

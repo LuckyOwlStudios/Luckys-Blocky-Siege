@@ -2,30 +2,26 @@ package net.luckystudios.particles;
 
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.*;
-import net.minecraft.client.renderer.BiomeColors;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.particles.ColorParticleOption;
 import org.jetbrains.annotations.Nullable;
 
 public class WaterParticle extends TextureSheetParticle {
 
     private final SpriteSet sprites;
+
     protected WaterParticle(ClientLevel level, double x, double y, double z, SpriteSet spriteSet,
-                                 double xSpeed, double ySpeed, double zSpeed) {
+                            double xSpeed, double ySpeed, double zSpeed, ColorParticleOption option) {
         super(level, x, y, z, xSpeed, ySpeed, zSpeed);
         this.sprites = spriteSet;
         this.gravity = 0.0F;
         this.friction = 0.999F;
 
-        int color = BiomeColors.getAverageWaterColor(level, new BlockPos((int) x, (int) y, (int) z));
+        // Use the color from the ColorParticleOption
+        this.rCol = option.getRed();
+        this.gCol = option.getGreen();
+        this.bCol = option.getBlue();
+        this.alpha = 0.5F; // ColorParticleOption also provides alpha!
 
-        // Extract RGB components and normalize to 0.0-1.0 range
-        this.rCol = ((color >> 16) & 0xFF) / 255.0F;  // Red component
-        this.gCol = ((color >> 8) & 0xFF) / 255.0F;   // Green component
-        this.bCol = (color & 0xFF) / 255.0F;          // Blue component
-        this.alpha = 0.5F;  // Set a reasonable alpha value
-
-        // Optional random nudge
         this.xd = xSpeed;
         this.yd = ySpeed;
         this.zd = zSpeed;
@@ -48,18 +44,17 @@ public class WaterParticle extends TextureSheetParticle {
         return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
-    public static class Provider implements ParticleProvider<SimpleParticleType> {
+    public static class Provider implements ParticleProvider<ColorParticleOption> {
         private final SpriteSet spriteSet;
 
         public Provider(SpriteSet spriteSet) {
             this.spriteSet = spriteSet;
         }
 
-        @Nullable
         @Override
-        public Particle createParticle(SimpleParticleType simpleParticleType, ClientLevel clientLevel,
-                                       double pX, double pY, double pZ, double pXSpeed, double pYSpeed, double pZSpeed) {
-            return new WaterParticle(clientLevel, pX, pY, pZ, this.spriteSet, pXSpeed, pYSpeed, pZSpeed);
+        public @Nullable Particle createParticle(ColorParticleOption colorParticleOption, ClientLevel clientLevel,
+                                                 double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
+            return new WaterParticle(clientLevel, x, y, z, this.spriteSet, xSpeed, ySpeed, zSpeed, colorParticleOption);
         }
     }
 }

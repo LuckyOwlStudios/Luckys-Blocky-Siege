@@ -24,22 +24,24 @@ public class ModBlockTagProvider extends BlockTagsProvider {
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(ModBlocks.CANNON.get())
                 .add(ModBlocks.MULTI_CANNON.get())
+                .add(ModBlocks.SPEWER_CANNON.get())
                 .add(ModBlocks.CANNON_BALL.get())
                 .add(ModBlocks.BALLISTA_BLOCK.get())
         ;
 
         tag(BlockTags.MINEABLE_WITH_AXE)
                 .add(ModBlocks.EXPLOSIVE_BARREL.get())
+                .add(ModBlocks.VOLLEY_RACK.get())
         ;
 
         tag(BlockTags.NEEDS_IRON_TOOL)
                 .add(ModBlocks.CANNON.get())
                 .add(ModBlocks.MULTI_CANNON.get())
+                .add(ModBlocks.SPEWER_CANNON.get())
                 .add(ModBlocks.CANNON_BALL.get())
         ;
 
-        tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath("supplementaries", "lightable_by_gunpowder"))
-                ).add(ModBlocks.CANNON.get());
+        tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath("supplementaries", "lightable_by_gunpowder"))).add(ModBlocks.CANNON.get());
 
     }
 }

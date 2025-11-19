@@ -1,5 +1,7 @@
 package net.luckystudios.blocks.custom.shooting;
 
+import net.luckystudios.entity.custom.seat.Seat;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -10,6 +12,7 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.*;
 import net.minecraft.world.entity.AnimationState;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -48,6 +51,20 @@ public abstract class AbstractShootingAimableBlockEntity extends RandomizableCon
             float deltaPitch = shootingAimableBlockEntity.pitch - shootingAimableBlockEntity.displayPitch;
             shootingAimableBlockEntity.displayPitch += deltaPitch * 0.2F;
         }
+    }
+
+    // Used to stop the fuse particles from blocking the player's screen.
+    // Can be used for other things too
+    public static boolean isControllingThisBlock(AbstractShootingAimableBlockEntity shootingAimableBlockEntity) {
+        Entity entity = Minecraft.getInstance().player.getVehicle();
+        if (entity == null) return false;
+        if (!(entity instanceof Seat)) return false;
+
+        BlockPos seatPos = entity.blockPosition();
+        BlockPos cannonPos = shootingAimableBlockEntity.getBlockPos();
+
+        // Check if seat is within 1 block of the cannon
+        return seatPos.closerThan(cannonPos, 0.5);
     }
 
     public static Vec3 getRelativeLocationWithOffset(AbstractShootingAimableBlockEntity shootingAimableBlockEntity, Vec3 rotationPointOffset, float upOffset, float forwardOffset, float leftOffset) {
