@@ -74,9 +74,6 @@ public class BlockySiege
         // Register the Deferred Register to the mod event bus so tabs get registered
         CREATIVE_MODE_TABS.register(modEventBus);
 
-        // Register the item to a creative tab
-        modEventBus.addListener(this::addCreative);
-
         modEventBus.addListener(this::registerNetworking);
     }
 
@@ -107,13 +104,6 @@ public class BlockySiege
         BlockySiege.addNetworkMessage(MultiCannonBlockScreenPacket.TYPE, MultiCannonBlockScreenPacket.STREAM_CODEC, MultiCannonBlockScreenPacket::handleData);
         BlockySiege.addNetworkMessage(SpewerCannonBlockScreenPacket.TYPE, SpewerCannonBlockScreenPacket.STREAM_CODEC, SpewerCannonBlockScreenPacket::handleData);
         BlockySiege.addNetworkMessage(VolleyRackBlockScreenPacket.TYPE, VolleyRackBlockScreenPacket.STREAM_CODEC, VolleyRackBlockScreenPacket::handleData);
-    }
-
-    // Add the example block item to the building blocks tab
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
-//        if (event.getTabKey() == CreativeModeTabs.COMBAT)
-//            event.accept(ModBlocks.CANNON_BALL);
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call

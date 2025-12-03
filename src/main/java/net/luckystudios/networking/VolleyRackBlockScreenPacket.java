@@ -23,6 +23,10 @@ public class VolleyRackBlockScreenPacket implements CustomPacketPayload {
     public static final Type<VolleyRackBlockScreenPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "volley_rack_screen_packet"));
 
     public static final int AIM_BUTTON = 0;
+    public static final int SET_POWER_1 = 1;
+    public static final int SET_POWER_2 = 2;
+    public static final int SET_POWER_3 = 3;
+    public static final int SET_POWER_4 = 4;
 
     public static final StreamCodec<RegistryFriendlyByteBuf, VolleyRackBlockScreenPacket> STREAM_CODEC = StreamCodec.of((RegistryFriendlyByteBuf buffer, VolleyRackBlockScreenPacket message) -> {
         buffer.writeBlockPos(message.blockPos);
@@ -69,7 +73,7 @@ public class VolleyRackBlockScreenPacket implements CustomPacketPayload {
         Level level = player.level();
 
         BlockEntity blockEntity = level.getBlockEntity(pos);
-        if (!(blockEntity instanceof VolleyRackBlockEntity)) return;
+        if (!(blockEntity instanceof VolleyRackBlockEntity volleyRackBlockEntity)) return;
 
         switch (type) {
             case AIM_BUTTON -> {
@@ -77,6 +81,22 @@ public class VolleyRackBlockScreenPacket implements CustomPacketPayload {
                 Seat seat = new Seat(level, pos);
                 level.addFreshEntity(seat);
                 player.startRiding(seat);
+            }
+            case SET_POWER_1 -> {
+                volleyRackBlockEntity.firePower = 1;
+                volleyRackBlockEntity.setChanged();
+            }
+            case SET_POWER_2 -> {
+                volleyRackBlockEntity.firePower = 2;
+                volleyRackBlockEntity.setChanged();
+            }
+            case SET_POWER_3 -> {
+                volleyRackBlockEntity.firePower = 3;
+                volleyRackBlockEntity.setChanged();
+            }
+            case SET_POWER_4 -> {
+                volleyRackBlockEntity.firePower = 4;
+                volleyRackBlockEntity.setChanged();
             }
         }
     }

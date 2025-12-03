@@ -9,7 +9,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.data.tags.EntityTypeTagsProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -40,6 +39,9 @@ public class DataGenerators {
 
         generator.addProvider(event.includeServer(), new ModDamageTypeTagsProvider(packOutput, enrichedLookupProvider, existingFileHelper));
         generator.addProvider(event.includeServer(), new ModDataMapProvider(packOutput, enrichedLookupProvider));
+
+        // 🎯 ADD YOUR BANNER PATTERN TAG PROVIDER HERE:
+        generator.addProvider(event.includeServer(), new BannerItemTagProvider(packOutput, enrichedLookupProvider, existingFileHelper));
 
         // All your other providers
         generator.addProvider(event.includeServer(), new LootTableProvider(packOutput, Collections.emptySet(),

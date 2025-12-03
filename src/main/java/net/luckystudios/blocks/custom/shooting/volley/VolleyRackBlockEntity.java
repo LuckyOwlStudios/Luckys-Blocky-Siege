@@ -38,7 +38,6 @@ public class VolleyRackBlockEntity extends AbstractShootingAimableBlockEntity {
         this.cooldown = 0;
         this.firePower = 4;
         this.barrelIndex = 0; // Default to the first barrel
-//        this.pitch = 30;
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, VolleyRackBlockEntity volleyBlockEntity) {
@@ -191,6 +190,7 @@ public class VolleyRackBlockEntity extends AbstractShootingAimableBlockEntity {
         super.saveAdditional(tag, registries);
         tag.putInt("cooldown", this.cooldown);
         tag.putInt("barrelIndex", this.barrelIndex);
+        tag.putInt("firePower", this.firePower);
     }
 
     @Override
@@ -198,5 +198,6 @@ public class VolleyRackBlockEntity extends AbstractShootingAimableBlockEntity {
         super.loadAdditional(tag, registries);
         this.cooldown = tag.getInt("cooldown");
         this.barrelIndex = tag.getInt("barrelIndex");
+        this.firePower = tag.getInt("firePower");
     }
 }

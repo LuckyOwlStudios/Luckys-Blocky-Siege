@@ -63,19 +63,20 @@ public class VolleyRackBlockScreen extends AbstractContainerScreen<VolleyRackBlo
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
         guiGraphics.blit(GUI_TEXTURE, x, y, 0, 0, imageWidth, imageHeight);
-//        int powerX = this.leftPos + 16;
-//        int firePower = volleyBlockEntity.firePower;
-//        int fuseAmmo = volleyBlockEntity.getFuse().getCount();
-//        guiGraphics.blit(fuseAmmo > 0 ? POWER_SLOT_SPRITE : MISSING_SLOT_SPRITE, powerX, this.topPos + 50, 0, 0, 16, 8, 16, 8);
-//        if (firePower > 1) {
-//            guiGraphics.blit(fuseAmmo > 1 ? POWER_SLOT_SPRITE : MISSING_SLOT_SPRITE, powerX, this.topPos + 42, 0, 0, 16, 8, 16, 8);
-//            if (firePower > 2) {
-//                guiGraphics.blit(fuseAmmo > 2 ? POWER_SLOT_SPRITE : MISSING_SLOT_SPRITE, powerX, this.topPos + 34, 0, 0, 16, 8, 16, 8);
-//                if (firePower > 3) {
-//                    guiGraphics.blit(fuseAmmo > 3 ? POWER_SLOT_SPRITE : MISSING_SLOT_SPRITE, powerX, this.topPos + 26, 0, 0, 16, 8, 16, 8);
-//                }
-//            }
-//        }
+        int powerX = this.leftPos + 131;
+        int powerY = this.topPos + 77;
+        int firePower = volleyBlockEntity.firePower;
+        int fuseAmmo = volleyBlockEntity.getFuse().getCount();
+        guiGraphics.blit(fuseAmmo > 0 ? POWER_SLOT_SPRITE : MISSING_SLOT_SPRITE, powerX, powerY - 24, 0, 0, 16, 8, 16, 8);
+        if (firePower > 1) {
+            guiGraphics.blit(fuseAmmo > 1 ? POWER_SLOT_SPRITE : MISSING_SLOT_SPRITE, powerX, powerY - 32, 0, 0, 16, 8, 16, 8);
+            if (firePower > 2) {
+                guiGraphics.blit(fuseAmmo > 2 ? POWER_SLOT_SPRITE : MISSING_SLOT_SPRITE, powerX, powerY - 40, 0, 0, 16, 8, 16, 8);
+                if (firePower > 3) {
+                    guiGraphics.blit(fuseAmmo > 3 ? POWER_SLOT_SPRITE : MISSING_SLOT_SPRITE, powerX, powerY - 48, 0, 0, 16, 8, 16, 8);
+                }
+            }
+        }
         RenderSystem.disableBlend();
     }
 
@@ -90,7 +91,7 @@ public class VolleyRackBlockScreen extends AbstractContainerScreen<VolleyRackBlo
             guiGraphics.renderTooltip(font, Component.translatable("container.blockysiege.aim"), pMouseX, pMouseY);
         }
 
-//        if (power1Button.isHovered() || power2Button.isHovered() || power3Button.isHovered() || power4Button.isHovered()) guiGraphics.renderTooltip(font, Component.translatable("container.blockysiege.cannon.set_power"), pMouseX, pMouseY);
+        if (power1Button.isHovered() || power2Button.isHovered() || power3Button.isHovered() || power4Button.isHovered()) guiGraphics.renderTooltip(font, Component.translatable("container.blockysiege.cannon.set_power"), pMouseX, pMouseY);
     }
 
     @Override
@@ -106,8 +107,8 @@ public class VolleyRackBlockScreen extends AbstractContainerScreen<VolleyRackBlo
         super.init();
 
         // Position button relative to the GUI
-        int x = (width - imageWidth) / 2;
-        int y = (height - imageHeight) / 2;
+        int powerX = this.leftPos + 131;
+        int powerY = this.topPos + 77;
 
         // Initialize the button
         targetButton = new ImageButton(this.leftPos + 156, this.topPos + 6, 14, 14, BUTTON_SPRITES, button ->
@@ -119,50 +120,49 @@ public class VolleyRackBlockScreen extends AbstractContainerScreen<VolleyRackBlo
         };
         // Render the button
         this.addRenderableWidget(targetButton);
-//        int powerX = this.leftPos + 16;
-//
-//        power1Button = new ImageButton(powerX, this.topPos + 50, 16, 8, BUTTON_SPRITES, button ->
-//                PacketDistributor.sendToServer(new CannonBlockScreenPacket(blockPos, 1, 0))) {
-//            @Override
-//            public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-//                if (isHovered()) {
-//                    guiGraphics.blit(HIGHLIGHT_POWER_SLOT, getX(), getY(), 0, 0, width, height, width, height);
-//                }
-//            }
-//        };
-//        this.addRenderableWidget(power1Button);
-//
-//        power2Button = new ImageButton(powerX, this.topPos + 42, 16, 8, BUTTON_SPRITES, button ->
-//                PacketDistributor.sendToServer(new CannonBlockScreenPacket(blockPos, 2, 0))) {
-//            @Override
-//            public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-//                if (isHovered()) {
-//                    guiGraphics.blit(HIGHLIGHT_POWER_SLOT, getX(), getY(), 0, 0, width, height, width, height);
-//                }
-//            }
-//        };
-//        this.addRenderableWidget(power2Button);
-//
-//        power3Button = new ImageButton(powerX, this.topPos + 34, 16, 8, BUTTON_SPRITES, button ->
-//                PacketDistributor.sendToServer(new CannonBlockScreenPacket(blockPos, 3, 0))) {
-//            @Override
-//            public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-//                if (isHovered()) {
-//                    guiGraphics.blit(HIGHLIGHT_POWER_SLOT, getX(), getY(), 0, 0, width, height, width, height);
-//                }
-//            }
-//        };
-//        this.addRenderableWidget(power3Button);
-//
-//        power4Button = new ImageButton(powerX, this.topPos + 26, 16, 8, BUTTON_SPRITES, button ->
-//                PacketDistributor.sendToServer(new CannonBlockScreenPacket(blockPos, 4, 0))) {
-//            @Override
-//            public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-//                if (isHovered()) {
-//                    guiGraphics.blit(HIGHLIGHT_POWER_SLOT, getX(), getY(), 0, 0, width, height, width, height);
-//                }
-//            }
-//        };
-//        this.addRenderableWidget(power4Button);
+
+        power1Button = new ImageButton(powerX, powerY - 24, 16, 8, BUTTON_SPRITES, button ->
+                PacketDistributor.sendToServer(new VolleyRackBlockScreenPacket(blockPos, 1, 0))) {
+            @Override
+            public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                if (isHovered()) {
+                    guiGraphics.blit(HIGHLIGHT_POWER_SLOT, getX(), getY(), 0, 0, width, height, width, height);
+                }
+            }
+        };
+        this.addRenderableWidget(power1Button);
+
+        power2Button = new ImageButton(powerX, powerY - 32, 16, 8, BUTTON_SPRITES, button ->
+                PacketDistributor.sendToServer(new VolleyRackBlockScreenPacket(blockPos, 2, 0))) {
+            @Override
+            public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                if (isHovered()) {
+                    guiGraphics.blit(HIGHLIGHT_POWER_SLOT, getX(), getY(), 0, 0, width, height, width, height);
+                }
+            }
+        };
+        this.addRenderableWidget(power2Button);
+
+        power3Button = new ImageButton(powerX, powerY - 40, 16, 8, BUTTON_SPRITES, button ->
+                PacketDistributor.sendToServer(new VolleyRackBlockScreenPacket(blockPos, 3, 0))) {
+            @Override
+            public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                if (isHovered()) {
+                    guiGraphics.blit(HIGHLIGHT_POWER_SLOT, getX(), getY(), 0, 0, width, height, width, height);
+                }
+            }
+        };
+        this.addRenderableWidget(power3Button);
+
+        power4Button = new ImageButton(powerX, powerY - 48, 16, 8, BUTTON_SPRITES, button ->
+                PacketDistributor.sendToServer(new VolleyRackBlockScreenPacket(blockPos, 4, 0))) {
+            @Override
+            public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+                if (isHovered()) {
+                    guiGraphics.blit(HIGHLIGHT_POWER_SLOT, getX(), getY(), 0, 0, width, height, width, height);
+                }
+            }
+        };
+        this.addRenderableWidget(power4Button);
     }
 }

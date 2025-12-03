@@ -1,6 +1,7 @@
 package net.luckystudios.entity.custom.turrets.ballista;
 
 import net.luckystudios.blocks.custom.turret.ballista.BallistaBlockEntity;
+import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.init.ModBlocks;
 import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.entity.custom.turrets.AbstractTurret;
@@ -29,11 +30,14 @@ import net.minecraft.world.entity.monster.CrossbowAttackMob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-public class BallistaEntity extends AbstractTurret implements CrossbowAttackMob{
+import java.util.Optional;
+
+public class BallistaEntity extends AbstractTurret implements CrossbowAttackMob {
 
     private static final EntityDataAccessor<Integer> COOLDOWN = SynchedEntityData.defineId(BallistaEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> CROSSBOW_STATE = SynchedEntityData.defineId(BallistaEntity.class, EntityDataSerializers.INT);
@@ -56,17 +60,49 @@ public class BallistaEntity extends AbstractTurret implements CrossbowAttackMob{
     public static AttributeSupplier.Builder createAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 50.0F)
+                .add(Attributes.ATTACK_SPEED, 1)
+                .add(Attributes.FOLLOW_RANGE, 64.0)
                 .add(Attributes.ARMOR, 4.0F);
     }
 
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        this.goalSelector.addGoal(1, new BallistaCrossbowAttackGoal<>(this));
-        this.goalSelector.addGoal(2, new LookAtPlayerGoal(this, Player.class, 15.0F, 1.0F));
-        this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Mob.class, 15.0F));
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal(this, Player.class, true));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal(this, Mob.class, 10, true, false, (p_29932_) -> p_29932_ instanceof Enemy));
+        this.goalSelector.addGoal(1, new StationaryCrossbowAttackGoal<>(this));
+        // Increased look range to match targeting range
+        this.goalSelector.addGoal(2, new LookAtPlayerGoal(this, Player.class, 64.0F, 1.0F));
+        this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Mob.class, 64.0F));
+
+        // FIXED: Remove randomInterval for immediate targeting, set mustSee to false for longer range
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 1, false, false, null));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 1, false, false, (entity) -> entity instanceof Enemy));
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        Level level = this.level();
+        if (level.getBlockEntity(this.blockPosition().below()) instanceof BallistaBlockEntity ballistaBlockEntity) {
+            ItemStack itemStack = ballistaBlockEntity.inventory.getStackInSlot(9);
+            if (itemStack.getItem() instanceof CrossbowItem crossbowItem) {
+                setItemInHand(InteractionHand.MAIN_HAND, itemStack);
+            }
+        }
+    }
+
+    public Optional<BallistaBlockEntity> getBallistaBlockEntity() {
+        Level level = this.level();
+        return level.getBlockEntity(this.blockPosition().below(), ModBlockEntityTypes.BALLISTA_BLOCK_ENTITY.get());
+    }
+
+    @Override
+    public int getMaxHeadXRot() {
+        return 60;
+    }
+
+    @Override
+    public int getMaxHeadYRot() {
+        return 180;
     }
 
     @Override
@@ -123,14 +159,12 @@ public class BallistaEntity extends AbstractTurret implements CrossbowAttackMob{
         }
         super.die(damageSource);
         this.discard();
-        this.getEntityData().set(CROSSBOW_STATE, CrossbowState.CHARGED.ordinal());
     }
 
     public boolean hasCrossbow() {
         if (!(level().getBlockEntity(blockPosition().below()) instanceof BallistaBlockEntity ballistaBlockEntity)) {
             return false;
         }
-
         return ballistaBlockEntity.inventory.getStackInSlot(9).getItem() instanceof CrossbowItem;
     }
 
@@ -146,7 +180,7 @@ public class BallistaEntity extends AbstractTurret implements CrossbowAttackMob{
 
     @Override
     public void performRangedAttack(LivingEntity livingEntity, float v) {
-        this.performCrossbowAttack(livingEntity, v);
+
     }
 
     enum CrossbowState {

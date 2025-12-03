@@ -2,6 +2,10 @@
   "itemGroup.blockysiege": "Siege Weapons",
 
   "item.blockysiege.bullet": "Bullet",
+  "item.blockysiege.fort_banner_pattern": "Banner Pattern",
+  "item.blockysiege.fort_banner_pattern.desc": "Fort",
+  "item.blockysiege.boom_banner_pattern": "Banner Pattern",
+  "item.blockysiege.boom_banner_pattern.desc": "Boom",
 
   "block.blockysiege.cannon": "Cannon",
   "block.blockysiege.cannon.description": "Fires powerful cannon rounds",
@@ -36,6 +40,7 @@
   "entity.blockysiege.fire_bomb": "Fire Bomb",
   "entity.blockysiege.frost_bomb": "Frost Bomb",
   "entity.blockysiege.wind_bomb": "Wind Bomb",
+  "entity.blockysiege.wooden_shrapnel": "Shrapnel",
   "entity.blockysiege.ballista": "Ballista",
 
   "entity.minecraft.villager.blockysiege.siege_engineer": "Siege Engineer",

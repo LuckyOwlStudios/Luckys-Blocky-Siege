@@ -9,14 +9,12 @@ import net.luckystudios.blocks.custom.shooting.spewer.SpewerBlockEntity;
 import net.luckystudios.blocks.custom.shooting.volley.VolleyRackBlockEntity;
 import net.luckystudios.blocks.util.ModBlockStateProperties;
 import net.luckystudios.entity.custom.seat.Seat;
-import net.luckystudios.init.ModBlocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Pose;
@@ -107,7 +105,7 @@ public class MountedCannonClientBusEvents {
         renderHealthBar(guiGraphics, blockState, centerX, screenHeight, 4);
         renderCenterNumber(guiGraphics, multiCannonBlockEntity, centerX, screenHeight);
         renderHotBar(guiGraphics, multiCannonBlockEntity, centerX, screenHeight);
-        renderFiringBar(guiGraphics, centerX, screenHeight, 1, ResourceLocation.withDefaultNamespace("textures/gui/sprites/boss_bar/white_progress.png"), Color.WHITE);
+        renderFiringBar(guiGraphics, centerX, screenHeight, multiCannonBlockEntity.getFiringProgress(), ResourceLocation.withDefaultNamespace("textures/gui/sprites/boss_bar/white_progress.png"), Color.WHITE);
     }
 
     private static void renderSpewerHUD(GuiGraphics guiGraphics, BlockState blockState, int centerX, int centerY, int screenHeight, SpewerBlockEntity spewerBlockEntity) {

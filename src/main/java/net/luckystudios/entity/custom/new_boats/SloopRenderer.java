@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.luckystudios.BlockySiege;
 import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.WaterPatchModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -16,7 +17,7 @@ import org.joml.Quaternionf;
 
 public class SloopRenderer extends EntityRenderer<SloopEntity> {
 
-    private static final ResourceLocation SLOOP_TEXTURE = BlockySiege.id("textures/entity/boats/spruce_sloop.png");
+    private static final ResourceLocation SLOOP_TEXTURE = BlockySiege.id("textures/entity/boats/medium/spruce_medium_boat.png");
 
     private final EntityModel<SloopEntity> sloopModel;
 
@@ -33,8 +34,8 @@ public class SloopRenderer extends EntityRenderer<SloopEntity> {
     @Override
     public void render(SloopEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
-        poseStack.translate(0.0F, 2F, 0.0F);
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - entityYaw));
+        poseStack.translate(0.0F, 1.9F, 0.0F);
+        poseStack.mulPose(Axis.YP.rotationDegrees(270.0F - entityYaw));
         float f = (float)entity.getHurtTime() - partialTicks;
         float f1 = entity.getDamage() - partialTicks;
         if (f1 < 0.0F) {
@@ -55,11 +56,11 @@ public class SloopRenderer extends EntityRenderer<SloopEntity> {
         VertexConsumer vertexconsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(entity)));
         sloopModel.renderToBuffer(poseStack, vertexconsumer, packedLight, OverlayTexture.NO_OVERLAY);
         if (!entity.isUnderWater()) {
-//            VertexConsumer vertexconsumer1 = buffer.getBuffer(RenderType.waterMask());
-//            if (sloopModel instanceof WaterPatchModel) {
-//                WaterPatchModel waterpatchmodel = (WaterPatchModel)sloopModel;
-//                waterpatchmodel.waterPatch().render(poseStack, vertexconsumer1, packedLight, OverlayTexture.NO_OVERLAY);
-//            }
+            VertexConsumer vertexconsumer1 = buffer.getBuffer(RenderType.waterMask());
+            if (sloopModel instanceof WaterPatchModel) {
+                WaterPatchModel waterpatchmodel = (WaterPatchModel)sloopModel;
+                waterpatchmodel.waterPatch().render(poseStack, vertexconsumer1, packedLight, OverlayTexture.NO_OVERLAY);
+            }
         }
 
         poseStack.popPose();

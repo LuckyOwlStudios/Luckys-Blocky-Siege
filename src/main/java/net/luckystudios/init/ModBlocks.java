@@ -65,9 +65,17 @@ public class ModBlocks {
                     .sound(SoundType.WOOD)
             ));
 
-    public static final DeferredBlock<Block> CANNON_BALL = registerBlock("cannonball",
+    public static final DeferredBlock<Block> CANNONBALL = registerBlock("cannonball",
             () -> new CannonBallBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.METAL)
+                    .requiresCorrectToolForDrops()
+                    .strength(5.0F, 6.0F)
+                    .sound(SoundType.METAL)
+            ));
+    public static final DeferredBlock<Block> SPECTRAL_CANNONBALL = registerBlock("spectral_cannonball",
+            () -> new CannonBallBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .lightLevel(FireBombBlock.LIGHT_EMISSION)
                     .requiresCorrectToolForDrops()
                     .strength(5.0F, 6.0F)
                     .sound(SoundType.METAL)

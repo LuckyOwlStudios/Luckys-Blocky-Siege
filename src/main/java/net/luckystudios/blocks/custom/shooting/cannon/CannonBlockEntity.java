@@ -1,16 +1,13 @@
 package net.luckystudios.blocks.custom.shooting.cannon;
 
-import net.luckystudios.BlockySiegeConfig;
 import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
 import net.luckystudios.blocks.util.enums.FiringState;
 import net.luckystudios.blocks.util.interfaces.DamageableBlock;
-import net.luckystudios.entity.custom.seat.Seat;
 import net.luckystudios.gui.cannons.CannonBlockMenu;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.init.ModParticleTypes;
 import net.luckystudios.init.ModSoundEvents;
 import net.luckystudios.init.ModTags;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -211,8 +208,8 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
             return 0.0f; // Not firing or ready to fire
         }
 
-        // Calculate progress from 0.0 (just started) to 1.0 (ready to fire)
-        return 1.0f - ((float) this.cooldown / (float) this.maxCooldown);
+        // Calculate progress from 1.0 (just started) to 0.0 (ready to fire)
+        return (float) this.cooldown / (float) this.maxCooldown;
     }
 
     @Override

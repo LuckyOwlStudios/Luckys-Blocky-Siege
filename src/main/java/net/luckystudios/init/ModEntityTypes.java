@@ -2,6 +2,7 @@ package net.luckystudios.init;
 
 import net.luckystudios.BlockySiege;
 import net.luckystudios.entity.custom.FallingFireworkRocketEntity;
+import net.luckystudios.entity.custom.cannonball.types.spectral.SpectralCannonBall;
 import net.luckystudios.entity.custom.ember.Ember;
 import net.luckystudios.entity.custom.liquid_projectile.SnowProjectile;
 import net.luckystudios.entity.custom.new_boats.SloopEntity;
@@ -41,6 +42,14 @@ public class ModEntityTypes {
                     .clientTrackingRange(6)
                     .updateInterval(1)
                     .build("cannonball"));
+
+    public static final Supplier<EntityType<SpectralCannonBall>> SPECTRAL_CANNONBALL =
+            ENTITY_TYPES.register("spectral_cannonball", () -> EntityType.Builder.<SpectralCannonBall>of(SpectralCannonBall::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .eyeHeight(0.25F)
+                    .clientTrackingRange(6)
+                    .updateInterval(1)
+                    .build("spectral_cannonball"));
 
     public static final Supplier<EntityType<ExplosiveKeg>> EXPLOSIVE_KEG =
             ENTITY_TYPES.register("explosive_keg", () -> EntityType.Builder.<ExplosiveKeg>of(ExplosiveKeg::new, MobCategory.MISC)
@@ -125,7 +134,7 @@ public class ModEntityTypes {
     public static final Supplier<EntityType<BallistaEntity>> BALLISTA =
             ENTITY_TYPES.register("ballista", () -> EntityType.Builder.<BallistaEntity>of(BallistaEntity::new, MobCategory.MISC)
                     .sized(1.0F, 1.0F)
-                    .eyeHeight(0.5F).clientTrackingRange(10)
+                    .eyeHeight(0.5625F).clientTrackingRange(10)
                     .build("ballista"));
 
     public static final Supplier<EntityType<SloopEntity>> SLOOP =

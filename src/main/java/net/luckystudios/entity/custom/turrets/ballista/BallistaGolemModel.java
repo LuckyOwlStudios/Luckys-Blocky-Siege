@@ -75,14 +75,22 @@ public class BallistaGolemModel<T extends BallistaEntity> extends HierarchicalMo
         this.root().getAllParts().forEach(ModelPart::resetPose);
         this.string_left.yRot = 62.5F;
         this.string_right.yRot = -62.5F;
+        setTurretRotations(netHeadYaw, headPitch);
     }
 
-    private void setGolemRotations(float netHeadYaw, float headPitch) {
-        headPitch = Mth.clamp(headPitch, -25.0F, 45.0F);
+    private void setTurretRotations(float netHeadYaw, float headPitch) {
 
-        this.ballista.yRot = netHeadYaw * 0.017453292F;
-        this.turret.yRot = netHeadYaw * 0.017453292F;
-        this.turret.xRot = headPitch * 0.017453292F;
+        headPitch = Math.clamp(headPitch, -60, 30);
+
+        // Convert to radians
+        float yawRad = (float) Math.toRadians(netHeadYaw);
+        float pitchRad = (float) Math.toRadians(headPitch);
+
+        // Apply yaw rotation to the turret (horizontal rotation)
+        this.ballista.yRot = yawRad;
+
+        // Apply pitch rotation to the turret (vertical elevation)
+        this.turret.xRot = pitchRad;
     }
 
     private void setStringAngles(BallistaEntity entity) {

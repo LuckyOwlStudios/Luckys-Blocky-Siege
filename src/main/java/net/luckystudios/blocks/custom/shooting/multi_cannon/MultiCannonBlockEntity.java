@@ -82,6 +82,15 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
         return this.bullet_count;
     }
 
+    public float getFiringProgress() {
+        if (this.cooldown <= 0) {
+            return 0.0f; // Not firing or ready to fire
+        }
+
+        // Calculate progress from 0.0 (just started) to 1.0 (ready to fire)
+        return 1.0f - ((float) this.cooldown / (float) this.maxCooldown);
+    }
+
     public void beginFiring(Level level, BlockPos pos, MultiCannonBlockEntity multiCannonBlockEntity) {
         int calculatedCooldown = multiCannonBlockEntity.getBulletCount() * 10;
         multiCannonBlockEntity.shotTime = 0;

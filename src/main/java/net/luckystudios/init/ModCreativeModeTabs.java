@@ -17,7 +17,7 @@ public class ModCreativeModeTabs {
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, BlockySiege.MOD_ID);
 
     public static final Supplier<CreativeModeTab> BLOCKYSIEGE_CREATIVE_TAB = CREATIVE_MODE_TAB.register("blockysiege_tab",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModBlocks.CANNON_BALL.get()))
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModBlocks.CANNONBALL.get()))
                     .title(Component.translatable("itemGroup.blockysiege"))
                     .displayItems((itemDisplayParameters, output) -> {
                         output.accept(ModBlocks.CANNON);
@@ -25,12 +25,13 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.SPEWER_CANNON);
                         output.accept(ModBlocks.VOLLEY_RACK);
                         output.accept(Items.GUNPOWDER);
-                        output.accept(ModBlocks.CANNON_BALL);
+                        output.accept(ModBlocks.CANNONBALL);
                         output.accept(ModBlocks.FIRE_BOMB);
                         output.accept(ModBlocks.FROST_BOMB);
                         output.accept(ModBlocks.WIND_BOMB);
                         output.accept(ModBlocks.EXPLOSIVE_BARREL);
                         output.accept(Blocks.TNT);
+                        output.accept(ModItems.FORT_BANNER_PATTERN);
                     }).build());
 
     public static void register(IEventBus eventBus) {

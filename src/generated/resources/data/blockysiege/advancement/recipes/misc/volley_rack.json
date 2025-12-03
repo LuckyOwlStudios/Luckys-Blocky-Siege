@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_igniter": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#c:tools/igniter"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "blockysiege:volley_rack"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_igniter"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "blockysiege:volley_rack"
+    ]
+  }
+}

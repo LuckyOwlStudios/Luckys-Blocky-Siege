@@ -1,7 +1,6 @@
 package net.luckystudios.datagen.types;
 
 import net.luckystudios.init.ModBlocks;
-import net.luckystudios.init.ModItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
@@ -58,7 +57,7 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_igniter", has(Tags.Items.TOOLS_IGNITER))
                 .save(recipeOutput)
         ;
-        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.CANNON_BALL.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.CANNONBALL.get())
                 .pattern(" # ")
                 .pattern("#@#")
                 .pattern(" # ")

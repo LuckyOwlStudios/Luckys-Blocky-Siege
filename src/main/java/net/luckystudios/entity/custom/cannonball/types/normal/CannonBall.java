@@ -39,17 +39,17 @@ public class CannonBall extends AbstractCannonBall {
     }
 
     public CannonBall(Level level, double x, double y, double z, boolean spectral) {
-        super(ModEntityTypes.CANNONBALL.get(), x, y, z, level, ModBlocks.CANNON_BALL.toStack());
+        super(ModEntityTypes.CANNONBALL.get(), x, y, z, level, ModBlocks.CANNONBALL.toStack());
         this.setGlowingTag(spectral);
     }
 
     public CannonBall(Level level, LivingEntity owner) {
-        super(ModEntityTypes.CANNONBALL.get(), owner, level, ModBlocks.CANNON_BALL.toStack());
+        super(ModEntityTypes.CANNONBALL.get(), owner, level, ModBlocks.CANNONBALL.toStack());
     }
 
     @Override
     protected ItemStack getDefaultPickupItem() {
-        return ModBlocks.CANNON_BALL.asItem().getDefaultInstance();
+        return ModBlocks.CANNONBALL.asItem().getDefaultInstance();
     }
 
     @Override

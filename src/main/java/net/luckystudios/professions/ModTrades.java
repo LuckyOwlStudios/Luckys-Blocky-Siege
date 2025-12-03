@@ -32,7 +32,7 @@ public class ModTrades {
                     new ItemStack(ModBlocks.EXPLOSIVE_BARREL, 1), 12, 16, 0.25f));
             trades.get(2).add((entity, randomSource) -> new MerchantOffer(
                     new ItemCost(Items.EMERALD, 12),
-                    new ItemStack(ModBlocks.CANNON_BALL.asItem(), 1), 12, 16, 0.25f));
+                    new ItemStack(ModBlocks.CANNONBALL.asItem(), 1), 12, 16, 0.25f));
             trades.get(3).add((entity, randomSource) -> new MerchantOffer(
                     new ItemCost(Items.EMERALD, 16),
                     new ItemStack(ModBlocks.CANNON.asItem(), 1), 12, 16, 0.25f));

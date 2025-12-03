@@ -3,7 +3,6 @@ package net.luckystudios.datagen.types;
 import net.luckystudios.BlockySiege;
 import net.luckystudios.init.ModBlocks;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -25,7 +24,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .add(ModBlocks.CANNON.get())
                 .add(ModBlocks.MULTI_CANNON.get())
                 .add(ModBlocks.SPEWER_CANNON.get())
-                .add(ModBlocks.CANNON_BALL.get())
+                .add(ModBlocks.CANNONBALL.get())
                 .add(ModBlocks.BALLISTA_BLOCK.get())
         ;
 
@@ -38,7 +37,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .add(ModBlocks.CANNON.get())
                 .add(ModBlocks.MULTI_CANNON.get())
                 .add(ModBlocks.SPEWER_CANNON.get())
-                .add(ModBlocks.CANNON_BALL.get())
+                .add(ModBlocks.CANNONBALL.get())
         ;
 
         tag(BlockTags.create(ResourceLocation.fromNamespaceAndPath("supplementaries", "lightable_by_gunpowder"))).add(ModBlocks.CANNON.get());

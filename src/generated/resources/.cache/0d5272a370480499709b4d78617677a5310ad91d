@@ -1,0 +1,11 @@
+// 1.21.1	2025-12-02T18:07:17.9400182	Tags for minecraft:banner_pattern mod id blockysiege
+0e2f9a397eb16e620c7c0f99b4cb88154989b19f data/blockysiege/tags/banner_pattern/pattern_item/fort.json
+6ba9481de22a553378d51ce2d4b366ce404b2b17 data/minecraft/tags/banner_pattern/no_item_required.json
+da9ec5f7ed64a0d225e00ee60b8e6d6408b431fb data/minecraft/tags/banner_pattern/pattern_item/creeper.json
+ce667334decdb2f005481488800273c98740f74a data/minecraft/tags/banner_pattern/pattern_item/flow.json
+8a9a603a5ac941a149f07099fb0bcbb6320026c8 data/minecraft/tags/banner_pattern/pattern_item/flower.json
+2fde436967c97bd28b21e6d604d3e3d0909aa5fa data/minecraft/tags/banner_pattern/pattern_item/globe.json
+a4b919bca63edef592303f6997cac60f53835600 data/minecraft/tags/banner_pattern/pattern_item/guster.json
+cdfcfddb70869c41a037d2fa9d13cebce67d276b data/minecraft/tags/banner_pattern/pattern_item/mojang.json
+fcf7bebab33ff2a152e0861b981a153d0a1e3af7 data/minecraft/tags/banner_pattern/pattern_item/piglin.json
+fd8784340c4bcf8c4f20feea086ceebd965d20d7 data/minecraft/tags/banner_pattern/pattern_item/skull.json
