@@ -5,8 +5,8 @@ import net.luckystudios.blocks.util.interfaces.DamageableBlock;
 import net.luckystudios.gui.multi_cannon.MultiCannonBlockMenu;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.entity.custom.bullet.FireworkStarProjectile;
+import net.luckystudios.entity.custom.item_projectile.ItemProjectile;
 import net.luckystudios.init.ModSoundEvents;
-import net.luckystudios.init.ModTags;
 import net.minecraft.core.*;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -153,7 +153,7 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
         ItemStack fuseStack = this.getFuse();
         boolean hasFuse = fuseStack.is(Tags.Items.GUNPOWDERS);
         ItemStack ammoStack = this.getProjectile();
-        boolean hasAmmo = ammoStack.is(ModTags.MULTI_CANNON_SHOOTABLE);
+        boolean hasAmmo = !ammoStack.isEmpty();
         return hasAmmo && hasFuse;
     }
 
@@ -182,6 +182,11 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
             FireworkStarProjectile fireworkStarProjectile = new FireworkStarProjectile(level, spawnPos.x, spawnPos.y, spawnPos.z, itemStack);
             fireworkStarProjectile.shoot(direction.x, direction.y, direction.z, 4.0F, 1.0F);
             level.addFreshEntity(fireworkStarProjectile);
+        } else if (!itemStack.isEmpty()) {
+            // Any other item flies as a generic projectile and drops itself when it lands
+            ItemProjectile itemProjectile = new ItemProjectile(level, spawnPos.x, spawnPos.y, spawnPos.z, itemStack);
+            itemProjectile.shoot(direction.x, direction.y, direction.z, 2.0F, 1.0F);
+            level.addFreshEntity(itemProjectile);
         }
         // Consume
         multiCannonBlockEntity.removeItem(0, 1);
