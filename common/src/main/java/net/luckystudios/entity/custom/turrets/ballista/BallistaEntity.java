@@ -251,7 +251,7 @@ public class BallistaEntity extends AbstractTurret implements CrossbowAttackMob 
         this.noActionTime = 0;
     }
 
-    public static final double ATTACK_RANGE = 32.0;
+    public static final double ATTACK_RANGE = 48.0;
     private static final float ARROW_POWER = 3.15F;
     private static final float ROCKET_POWER = 1.6F;
     private static final float INACCURACY = 0.25F;
