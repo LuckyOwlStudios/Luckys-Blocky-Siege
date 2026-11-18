@@ -1,6 +1,21 @@
 package net.luckystudios.neoforge.platform;
 
+import net.luckystudios.fluids.FluidStack;
+import net.luckystudios.fluids.FluidTank;
+import net.luckystudios.neoforge.NeoForgeFluidHandler;
 import net.luckystudios.neoforge.NeoForgePotionFluid;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.common.SoundActions;
+import net.neoforged.neoforge.fluids.FluidActionResult;
+import net.neoforged.neoforge.fluids.FluidUtil;
+import org.jetbrains.annotations.Nullable;
 import net.luckystudios.platform.services.IPlatformHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -73,5 +88,44 @@ public class NeoForgePlatformHelper implements IPlatformHelper {
     @Override
     public <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T payload) {
         PacketDistributor.sendToPlayer(player, payload);
+    }
+
+    @Override
+    public boolean isFluidContainer(ItemStack stack) {
+        return stack.getCapability(Capabilities.FluidHandler.ITEM) != null;
+    }
+
+    @Override
+    public @Nullable ItemStack emptyContainerInto(ItemStack container, FluidTank tank) {
+        NeoForgeFluidHandler handler = new NeoForgeFluidHandler(tank);
+        FluidActionResult result = FluidUtil.tryEmptyContainer(container, handler, tank.getCapacity(), null, true);
+        return result.isSuccess() ? result.getResult() : null;
+    }
+
+    @Override
+    public @Nullable ItemStack fillContainerFrom(ItemStack container, FluidTank tank) {
+        NeoForgeFluidHandler handler = new NeoForgeFluidHandler(tank);
+        FluidActionResult result = FluidUtil.tryFillContainer(container, handler, tank.getCapacity(), null, true);
+        return result.isSuccess() ? result.getResult() : null;
+    }
+
+    @Override
+    public SoundEvent getFluidSound(FluidStack fluid, boolean emptyingIntoTank) {
+        net.neoforged.neoforge.fluids.FluidStack neoStack = NeoForgeFluidHandler.toNeo(fluid);
+        SoundEvent sound = neoStack.getFluidType().getSound(neoStack,
+                emptyingIntoTank ? SoundActions.BUCKET_EMPTY : SoundActions.BUCKET_FILL);
+        return sound == null ? SoundEvents.BUCKET_FILL : sound;
+    }
+
+    @Override
+    public TextureAtlasSprite getFluidStillSprite(FluidStack fluid) {
+        net.neoforged.neoforge.fluids.FluidStack neoStack = NeoForgeFluidHandler.toNeo(fluid);
+        IClientFluidTypeExtensions ext = IClientFluidTypeExtensions.of(fluid.getFluid());
+        return Minecraft.getInstance().getTextureAtlas(InventoryMenu.BLOCK_ATLAS).apply(ext.getStillTexture(neoStack));
+    }
+
+    @Override
+    public int getFluidTint(FluidStack fluid) {
+        return IClientFluidTypeExtensions.of(fluid.getFluid()).getTintColor(NeoForgeFluidHandler.toNeo(fluid));
     }
 }

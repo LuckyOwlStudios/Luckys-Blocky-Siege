@@ -6,7 +6,15 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.loader.api.FabricLoader;
+import net.luckystudios.fluids.FluidStack;
+import net.luckystudios.fluids.FluidTank;
 import net.luckystudios.fluids.PotionFluid;
+import net.luckystudios.fluids.VanillaFluidContainers;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluids;
 import net.luckystudios.platform.services.IPlatformHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -94,5 +102,37 @@ public class FabricPlatformHelper implements IPlatformHelper {
     @Override
     public <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T payload) {
         ServerPlayNetworking.send(player, payload);
+    }
+
+    @Override
+    public boolean isFluidContainer(ItemStack stack) {
+        return VanillaFluidContainers.isContainer(stack);
+    }
+
+    @Override
+    public @Nullable ItemStack emptyContainerInto(ItemStack container, FluidTank tank) {
+        return VanillaFluidContainers.emptyInto(container, tank);
+    }
+
+    @Override
+    public @Nullable ItemStack fillContainerFrom(ItemStack container, FluidTank tank) {
+        return VanillaFluidContainers.fillFrom(container, tank);
+    }
+
+    @Override
+    public SoundEvent getFluidSound(FluidStack fluid, boolean emptyingIntoTank) {
+        return VanillaFluidContainers.sound(fluid, emptyingIntoTank);
+    }
+
+    @Override
+    public TextureAtlasSprite getFluidStillSprite(FluidStack fluid) {
+        return Minecraft.getInstance().getBlockRenderer().getBlockModelShaper()
+                .getParticleIcon(fluid.getFluid().defaultFluidState().createLegacyBlock());
+    }
+
+    @Override
+    public int getFluidTint(FluidStack fluid) {
+        // Water's texture is grey and is tinted by biome; use the standard water colour. Everything else is untinted.
+        return fluid.getFluid() == Fluids.WATER ? 0xFF3F76E4 : 0xFFFFFFFF;
     }
 }

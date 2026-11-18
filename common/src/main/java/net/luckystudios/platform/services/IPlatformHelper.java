@@ -1,6 +1,12 @@
 package net.luckystudios.platform.services;
 
+import net.luckystudios.fluids.FluidStack;
+import net.luckystudios.fluids.FluidTank;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
@@ -52,4 +58,25 @@ public interface IPlatformHelper {
     <T extends CustomPacketPayload> void sendToServer(T payload);
 
     <T extends CustomPacketPayload> void sendToPlayer(ServerPlayer player, T payload);
+
+    // ---- Fluids ----
+
+    /** True for items that can hold fluid, such as buckets and modded tanks (empty or full). */
+    boolean isFluidContainer(ItemStack stack);
+
+    /** Pours the container's fluid into the tank. Returns the leftover container, or null when nothing could be moved. */
+    @Nullable
+    ItemStack emptyContainerInto(ItemStack container, FluidTank tank);
+
+    /** Fills the container from the tank. Returns the filled container, or null when nothing could be moved. */
+    @Nullable
+    ItemStack fillContainerFrom(ItemStack container, FluidTank tank);
+
+    SoundEvent getFluidSound(FluidStack fluid, boolean emptyingIntoTank);
+
+    /** The fluid's own still texture, for drawing it in GUIs. Client only. */
+    TextureAtlasSprite getFluidStillSprite(FluidStack fluid);
+
+    /** ARGB tint for the fluid's texture. Client only. */
+    int getFluidTint(FluidStack fluid);
 }

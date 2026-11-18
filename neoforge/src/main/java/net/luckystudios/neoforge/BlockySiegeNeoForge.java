@@ -15,7 +15,10 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.luckystudios.init.ModBlockEntityTypes;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -35,7 +38,14 @@ public class BlockySiegeNeoForge {
 
         modEventBus.addListener(BlockySiegeNeoForge::registerNetworking);
         modEventBus.addListener(BlockySiegeNeoForge::registerAttributes);
+        modEventBus.addListener(BlockySiegeNeoForge::registerCapabilities);
         NeoForge.EVENT_BUS.addListener(BlockySiegeNeoForge::addTrades);
+    }
+
+    private static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        // Lets pipes, tanks and modded buckets interact with the spewer's fluid tank
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, ModBlockEntityTypes.SPEWER_BLOCK_ENTITY.get(),
+                (be, side) -> new NeoForgeFluidHandler(be.getFluidTank()));
     }
 
     private static void registerAttributes(EntityAttributeCreationEvent event) {
