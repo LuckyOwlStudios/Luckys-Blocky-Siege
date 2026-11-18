@@ -1,0 +1,14 @@
+{
+  "required_mod": "farmersdelight",
+  "blocks": [
+    "farmersdelight:carrot_crate"
+  ],
+  "type": "blockysiege:break_into_drops",
+  "drops": [
+    {
+      "item": "minecraft:carrot",
+      "min": 9,
+      "max": 9
+    }
+  ]
+}

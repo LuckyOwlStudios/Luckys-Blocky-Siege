@@ -1,0 +1,13 @@
+{
+  "blocks": [
+    "minecraft:dried_kelp_block"
+  ],
+  "type": "blockysiege:break_into_drops",
+  "drops": [
+    {
+      "item": "minecraft:dried_kelp",
+      "min": 9,
+      "max": 9
+    }
+  ]
+}

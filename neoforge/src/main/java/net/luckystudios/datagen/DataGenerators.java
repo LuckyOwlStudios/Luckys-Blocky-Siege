@@ -52,6 +52,8 @@ public class DataGenerators {
         generator.addProvider(event.includeServer(), new ModItemTagProvider(packOutput, baseLookupProvider, blockTagsProvider.contentsGetter(), existingFileHelper));
         generator.addProvider(event.includeServer(), new ModEntityTypeTagsProvider(packOutput, baseLookupProvider, BlockySiege.MOD_ID, existingFileHelper));
 
+        generator.addProvider(event.includeServer(), new ModBlockProjectileBehaviorProvider(packOutput));
+
         generator.addProvider(event.includeClient(), new ModItemModelProvider(packOutput, existingFileHelper));
         generator.addProvider(event.includeClient(), new ModBlockStateProvider(packOutput, existingFileHelper));
     }
