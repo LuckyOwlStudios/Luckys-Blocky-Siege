@@ -48,6 +48,13 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
     };
 
     private int fireCooldown = 0;
+    // Ticks left in which a controlling player is still holding the fire key
+    private int holdFireTicks = 0;
+
+    /** Called when the controlling player reports that they are holding the fire key. */
+    public void holdFire() {
+        this.holdFireTicks = 3;
+    }
 
     public enum LIQUID_CONTENT {
         NONE,
@@ -84,7 +91,9 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
             spewerCannonBlockEntity.animationTime--;
         }
 
-        boolean has_redstone = level.hasNeighborSignal(pos) || level.hasNeighborSignal(pos.above());
+        boolean holding = spewerCannonBlockEntity.holdFireTicks > 0;
+        if (holding) spewerCannonBlockEntity.holdFireTicks--;
+        boolean has_redstone = holding || level.hasNeighborSignal(pos) || level.hasNeighborSignal(pos.above());
 
         // Only fire if redstone is on AND cooldown is 0
         if (has_redstone && spewerCannonBlockEntity.fireCooldown <= 0) {

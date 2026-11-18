@@ -3,6 +3,7 @@ package net.luckystudios.keybinds;
 import com.google.common.base.Suppliers;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerBlockEntity;
 import net.luckystudios.entity.custom.seat.Seat;
 import net.luckystudios.networking.ControllingShootingBlockPacket;
 import net.minecraft.client.KeyMapping;
@@ -50,6 +51,20 @@ public class ModKeyMappings {
 
         KeyMapping inventoryKey = mc.options.keyInventory;
         KeyMapping fireCannonKey = mc.options.keyUse;
+
+        if (blockEntity instanceof SpewerBlockEntity) {
+            // The spewer fires continuously while the key is held, at the same rate as a redstone signal
+            if (inventoryKey.consumeClick()) {
+                Services.PLATFORM.sendToServer(new ControllingShootingBlockPacket(seatPos, 0, 0));
+            }
+            while (fireCannonKey.consumeClick()) {
+                // Clear queued clicks so they don't trigger a block interaction
+            }
+            if (fireCannonKey.isDown()) {
+                Services.PLATFORM.sendToServer(new ControllingShootingBlockPacket(seatPos, ControllingShootingBlockPacket.HOLD_FIRE, 0));
+            }
+            return;
+        }
 
         if (inventoryKey.consumeClick()) {
             Services.PLATFORM.sendToServer(new ControllingShootingBlockPacket(seatPos, 0, 0));
