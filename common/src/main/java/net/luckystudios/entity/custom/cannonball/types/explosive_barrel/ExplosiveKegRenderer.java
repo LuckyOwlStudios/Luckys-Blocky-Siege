@@ -1,20 +1,53 @@
 package net.luckystudios.entity.custom.cannonball.types.explosive_barrel;
 
-import net.luckystudios.BlockySiege;
-import net.luckystudios.entity.custom.cannonball.AbstractCannonBallRenderer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
+import net.luckystudios.init.ModBlocks;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.BlockRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.TntMinecartRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.block.state.BlockState;
 
-public class ExplosiveKegRenderer extends AbstractCannonBallRenderer<ExplosiveKeg> {
-
-    public static final ResourceLocation CANNON_BALL_LOCATION = ResourceLocation.fromNamespaceAndPath(BlockySiege.MOD_ID, "textures/entity/projectile/explosive_keg.png");
+// Renders the keg as the explosive barrel block itself, the same way TntRenderer renders primed TNT
+public class ExplosiveKegRenderer extends EntityRenderer<ExplosiveKeg> {
+    private final BlockRenderDispatcher blockRenderer;
 
     public ExplosiveKegRenderer(EntityRendererProvider.Context context) {
         super(context);
+        this.shadowRadius = 0.5F;
+        this.blockRenderer = context.getBlockRenderDispatcher();
+    }
+
+    @Override
+    public void render(ExplosiveKeg entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+        poseStack.pushPose();
+        poseStack.translate(0.0F, 0.5F, 0.0F);
+
+        // Boat/minecart-style wobble that gets stronger with every hit
+        float wobble = entity.getWobbleTicks() - partialTicks;
+        if (wobble > 0.0F) {
+            float strength = entity.getHitCount() * 8.0F;
+            poseStack.mulPose(Axis.XP.rotationDegrees(Mth.sin(wobble) * wobble * strength / 10.0F * entity.getWobbleDirection()));
+        }
+
+        poseStack.mulPose(Axis.YP.rotationDegrees(-90.0F));
+        poseStack.translate(-0.5F, -0.5F, 0.5F);
+        poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
+        BlockState state = ModBlocks.EXPLOSIVE_BARREL.get().defaultBlockState();
+        // Flash white when the keg is hit, like TNT does when its fuse is about to run out
+        boolean flash = wobble > 0.0F && entity.getWobbleTicks() / 2 % 2 == 0;
+        TntMinecartRenderer.renderWhiteSolidBlock(this.blockRenderer, state, poseStack, buffer, packedLight, flash);
+        poseStack.popPose();
+        super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
     }
 
     @Override
     public ResourceLocation getTextureLocation(ExplosiveKeg entity) {
-        return CANNON_BALL_LOCATION;
+        return TextureAtlas.LOCATION_BLOCKS;
     }
 }
