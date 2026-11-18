@@ -49,7 +49,7 @@ public class ExplosiveBarrelBlock extends TntBlock implements ProjectileItem {
         }
     }
 
-    @Override
+    // NeoForge hook (no @Override because vanilla and Fabric lack it)
     public void onCaughtFire(BlockState state, Level level, BlockPos pos, @Nullable Direction face, @Nullable LivingEntity igniter) {
         if (!level.isClientSide) {
             createPrimedBarrel(level, pos, igniter);

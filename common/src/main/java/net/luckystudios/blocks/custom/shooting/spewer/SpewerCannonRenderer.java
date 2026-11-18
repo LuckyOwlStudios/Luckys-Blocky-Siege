@@ -83,7 +83,7 @@ public class SpewerCannonRenderer implements BlockEntityRenderer<SpewerBlockEnti
 		return from + delta * partialTick;
 	}
 
-	@Override
+	// NeoForge hook (no @Override because vanilla and Fabric lack it)
 	public @NotNull AABB getRenderBoundingBox(SpewerBlockEntity blockEntity) {
 		return new AABB(blockEntity.getBlockPos()).inflate(1);
 	}

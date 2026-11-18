@@ -83,7 +83,7 @@ public class VolleyBlockRenderer implements BlockEntityRenderer<VolleyRackBlockE
 		return from + delta * partialTick;
 	}
 
-	@Override
+	// NeoForge hook (no @Override because vanilla and Fabric lack it)
 	public AABB getRenderBoundingBox(VolleyRackBlockEntity blockEntity) {
 		return new AABB(blockEntity.getBlockPos()).inflate(1);
 	}

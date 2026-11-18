@@ -83,7 +83,7 @@ public class MultiCannonRenderer implements BlockEntityRenderer<MultiCannonBlock
 		return from + delta * partialTick;
 	}
 
-	@Override
+	// NeoForge hook (no @Override because vanilla and Fabric lack it)
 	public AABB getRenderBoundingBox(MultiCannonBlockEntity blockEntity) {
 		return new AABB(blockEntity.getBlockPos()).inflate(1);
 	}

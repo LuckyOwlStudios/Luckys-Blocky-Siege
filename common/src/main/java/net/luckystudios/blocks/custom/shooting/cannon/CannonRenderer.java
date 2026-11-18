@@ -84,7 +84,7 @@ public class CannonRenderer implements BlockEntityRenderer<CannonBlockEntity> {
 		return from + delta * partialTick;
 	}
 
-	@Override
+	// NeoForge hook (no @Override because vanilla and Fabric lack it)
 	public AABB getRenderBoundingBox(CannonBlockEntity blockEntity) {
 		return new AABB(blockEntity.getBlockPos()).inflate(1);
 	}

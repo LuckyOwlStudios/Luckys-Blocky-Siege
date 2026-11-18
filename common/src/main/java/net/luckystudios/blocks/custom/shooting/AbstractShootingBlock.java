@@ -54,7 +54,7 @@ public abstract class AbstractShootingBlock extends AbstractAimableBlock impleme
         builder.add(LIT, DAMAGE_STATE);
     }
 
-    @Override
+    // NeoForge hook (no @Override because vanilla and Fabric lack it)
     public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
         return true;
     }
@@ -125,9 +125,8 @@ public abstract class AbstractShootingBlock extends AbstractAimableBlock impleme
         return ItemInteractionResult.SUCCESS;
     }
 
-    @Override
+    // NeoForge hook (no @Override because vanilla and Fabric lack it)
     public void onBlockStateChange(LevelReader level, BlockPos pos, BlockState oldState, BlockState newState) {
-        super.onBlockStateChange(level, pos, oldState, newState);
         if (level.getBlockEntity(pos) instanceof AbstractShootingAimableBlockEntity shootingAimableBlockEntity) {
             if (newState.getValue(LIT) && (newState.hasProperty(ModBlockStateProperties.FIRING_STATE) && newState.getValue(ModBlockStateProperties.FIRING_STATE) == FiringState.OFF) && shootingAimableBlockEntity.canShoot()) {
                 triggerBlock(newState, shootingAimableBlockEntity.getLevel(), pos);
