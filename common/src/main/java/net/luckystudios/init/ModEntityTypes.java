@@ -9,6 +9,7 @@ import net.luckystudios.entity.custom.new_boats.SloopEntity;
 import net.luckystudios.entity.custom.potion_blob.PotionBlob;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaEntity;
 import net.luckystudios.entity.custom.bullet.FireworkStarProjectile;
+import net.luckystudios.entity.custom.item_projectile.ItemProjectile;
 import net.luckystudios.entity.custom.cannonball.types.explosive_barrel.ExplosiveKeg;
 import net.luckystudios.entity.custom.cannonball.types.spreading.fire_bomb.FireBomb;
 import net.luckystudios.entity.custom.cannonball.types.spreading.frost_bomb.FrostBomb;
@@ -122,6 +123,14 @@ public class ModEntityTypes {
                     .clientTrackingRange(6)
                     .updateInterval(1)
                     .build("firework_star"));
+
+    public static final Supplier<EntityType<ItemProjectile>> ITEM_PROJECTILE =
+            register("item_projectile", () -> EntityType.Builder.<ItemProjectile>of(ItemProjectile::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F)
+                    .eyeHeight(0.125F)
+                    .clientTrackingRange(6)
+                    .updateInterval(1)
+                    .build("item_projectile"));
 
     public static final Supplier<EntityType<FallingFireworkRocketEntity>> FALLING_FIREWORK =
             register("falling_firework", () -> EntityType.Builder.<FallingFireworkRocketEntity>of(FallingFireworkRocketEntity::new, MobCategory.MISC)
