@@ -1,25 +1,41 @@
+# Lucky's Blocky Siege
 
-Installation information
-=======
+A Minecraft 1.21.1 mod that adds siege weapons to Minecraft, for **NeoForge** and **Fabric**.
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions provided by [GitHub](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+## Project layout
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+This is a multiloader project based on [MultiLoader-Template](https://github.com/jaredlll08/MultiLoader-Template):
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+| Folder | What lives there |
+| --- | --- |
+| `common/` | Almost all of the mod: blocks, entities, menus, screens, renderers, packets, assets and data. It compiles against plain vanilla Minecraft, so it cannot use any loader API. |
+| `neoforge/` | The NeoForge entry point, event hooks, config spec, fluid type and the data generators. |
+| `fabric/` | The Fabric entry points, Fabric API hooks, a small properties config and client mixins. |
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+When common code needs something loader-specific (registering objects, opening menus, sending packets, creative tab builders), it goes through `net.luckystudios.platform.Services`, which loads `IPlatformHelper` and `IRegistryHelper` implementations from each loader's `META-INF/services`.
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+## Building
+
+```
+./gradlew build
+```
+
+The jars end up in `fabric/build/libs/` and `neoforge/build/libs/`.
+
+## Running
+
+- NeoForge: `./gradlew :neoforge:runClient` (or `runServer`)
+- Fabric: `./gradlew :fabric:runClient` (or `runServer`)
+
+## Data generation
+
+Data generators run on NeoForge and write into `common/src/generated/resources`, so both loaders ship the output:
+
+```
+./gradlew :neoforge:runData
+```
+
+## Config
+
+- NeoForge: `config/blockysiege-common.toml` and `config/blockysiege-client.toml`
+- Fabric: `config/blockysiege-common.properties` and `config/blockysiege-client.properties`
