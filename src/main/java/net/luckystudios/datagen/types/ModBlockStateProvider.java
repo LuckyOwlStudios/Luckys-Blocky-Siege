@@ -26,6 +26,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockWithItem(ModBlocks.EMBER_PILE.get(), models().carpet("ember_pile", mcLoc("block/magma")));
         simpleBlockWithItem(ModBlocks.FROST_PILE.get(), models().carpet("frost_pile", mcLoc("block/powder_snow")));
         generateCannonBallBlockState(ModBlocks.CANNONBALL.get(), mcLoc("block/iron_block"), "cutout");
+        generateCannonBallBlockState(ModBlocks.SPECTRAL_CANNONBALL.get(), mcLoc("block/iron_block"), "cutout");
         generateCannonBallBlockState(ModBlocks.FIRE_BOMB.get(), mcLoc("block/glass"), "translucent");
         generateCannonBallBlockState(ModBlocks.FROST_BOMB.get(), mcLoc("block/ice"), "translucent");
         generateCannonBallBlockState(ModBlocks.WIND_BOMB.get(), modLoc("block/projectile/wind_bomb"), "translucent");
