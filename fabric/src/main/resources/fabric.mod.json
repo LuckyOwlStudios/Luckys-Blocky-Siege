@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${version}",
+  "name": "${mod_name}",
+  "description": "${description}",
+  "authors": [
+    "${mod_author}"
+  ],
+  "contact": {
+    "sources": "https://github.com/LuckyOwlStudios/Luckys-Blocky-Siege"
+  },
+  "license": "${license}",
+  "icon": "assets/blockysiege/blocky_siege_icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.luckystudios.fabric.BlockySiegeFabric"
+    ],
+    "client": [
+      "net.luckystudios.fabric.BlockySiegeFabricClient"
+    ]
+  },
+  "accessWidener": "${mod_id}.accesswidener",
+  "mixins": [
+    "${mod_id}.mixins.json",
+    "${mod_id}.fabric.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}",
+    "java": ">=${java_version}"
+  }
+}

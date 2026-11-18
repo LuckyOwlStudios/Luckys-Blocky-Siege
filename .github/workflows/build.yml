@@ -1,6 +1,9 @@
 name: Build
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ master ]
+  pull_request:
 
 jobs:
   build:
@@ -22,4 +25,12 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build with Gradle
-        run: ./gradlew build
+        run: ./gradlew build --continue
+
+      - name: Upload mod jars
+        uses: actions/upload-artifact@v4
+        with:
+          name: blockysiege-jars
+          path: |
+            fabric/build/libs/*.jar
+            neoforge/build/libs/*.jar
