@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.luckystudios.fabric.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [],
+  "client": [
+    "client.GuiMixin",
+    "client.ItemInHandRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
