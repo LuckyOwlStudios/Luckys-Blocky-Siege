@@ -15,7 +15,9 @@ public class NeoForgeFluidHandler implements IFluidHandler {
 
     public static FluidStack toNeo(net.luckystudios.fluids.FluidStack stack) {
         if (stack.isEmpty()) return FluidStack.EMPTY;
-        return new FluidStack(stack.getFluid(), stack.getAmount(), stack.getComponentsPatch());
+        FluidStack result = new FluidStack(stack.getFluid(), stack.getAmount());
+        result.applyComponents(stack.getComponentsPatch());
+        return result;
     }
 
     public static net.luckystudios.fluids.FluidStack toCommon(FluidStack stack) {
