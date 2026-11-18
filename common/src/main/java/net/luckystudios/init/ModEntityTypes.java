@@ -125,7 +125,7 @@ public class ModEntityTypes {
                     .build("firework_star"));
 
     public static final Supplier<EntityType<ItemProjectile>> ITEM_PROJECTILE =
-            ENTITY_TYPES.register("item_projectile", () -> EntityType.Builder.<ItemProjectile>of(ItemProjectile::new, MobCategory.MISC)
+            register("item_projectile", () -> EntityType.Builder.<ItemProjectile>of(ItemProjectile::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F)
                     .eyeHeight(0.125F)
                     .clientTrackingRange(6)

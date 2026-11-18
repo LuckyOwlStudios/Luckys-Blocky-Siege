@@ -7,6 +7,7 @@ import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.entity.custom.bullet.FireworkStarProjectile;
 import net.luckystudios.entity.custom.item_projectile.ItemProjectile;
 import net.luckystudios.init.ModSoundEvents;
+import net.luckystudios.init.ModTags;
 import net.minecraft.core.*;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
