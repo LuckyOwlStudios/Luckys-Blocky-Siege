@@ -34,6 +34,13 @@ public abstract class AbstractCannonBallRenderer<T extends AbstractCannonBall> e
     public void render(T entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
 
+        // Boat/minecart-style wobble that gets stronger with every hit
+        float wobble = entity.getWobbleTicks() - partialTicks;
+        if (wobble > 0.0F) {
+            float strength = entity.getHitCount() * 8.0F;
+            poseStack.mulPose(Axis.XP.rotationDegrees(Mth.sin(wobble) * wobble * strength / 10.0F * entity.getWobbleDirection()));
+        }
+
         // Interpolated yaw and pitch, same as Fabric
         float yaw = Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F;
         float pitch = Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()) + 90.0F;
