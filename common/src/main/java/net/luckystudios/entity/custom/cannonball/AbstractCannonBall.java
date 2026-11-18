@@ -163,8 +163,15 @@ public abstract class AbstractCannonBall extends AbstractNewProjectile {
     @Override
     public boolean hurt(DamageSource source, float amount) {
         if (!this.inGround || this.isRemoved() || this.isInvulnerableTo(source)) return false;
-        if (!(source.getDirectEntity() instanceof Player)) return false;
+        if (!(source.getDirectEntity() instanceof Player player)) return false;
         if (this.level().isClientSide) return true;
+
+        // Creative players break it instantly, with no drop (like boats and minecarts)
+        if (player.getAbilities().instabuild) {
+            this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.NETHERITE_BLOCK_BREAK, this.getSoundSource(), 1.0F, 0.8F);
+            this.discard();
+            return true;
+        }
 
         int hits = this.getHitCount() + 1;
         this.lastHitTick = this.tickCount;
