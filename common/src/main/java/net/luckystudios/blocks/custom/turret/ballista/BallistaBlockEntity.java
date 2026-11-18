@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BallistaBlockEntity extends BlockEntity implements MenuProvider {
     public static final int INVENTORY_SIZE = 10;
+    public static final int CROSSBOW_SLOT = 9;
 
     // Slots 0-8 hold ammo, slot 9 holds the crossbow.
     public final SimpleContainer inventory = new SimpleContainer(INVENTORY_SIZE) {
