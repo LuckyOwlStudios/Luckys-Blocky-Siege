@@ -1,6 +1,7 @@
 package net.luckystudios.neoforge;
 
 import net.luckystudios.BlockySiege;
+import net.luckystudios.entity.custom.block_projectile.behavior.BlockProjectileBehaviorManager;
 import net.luckystudios.networking.ModNetworking;
 import net.luckystudios.networking.PacketContext;
 import net.luckystudios.neoforge.platform.NeoForgeRegistryHelper;
@@ -15,6 +16,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
@@ -40,6 +42,7 @@ public class BlockySiegeNeoForge {
         modEventBus.addListener(BlockySiegeNeoForge::registerAttributes);
         modEventBus.addListener(BlockySiegeNeoForge::registerCapabilities);
         NeoForge.EVENT_BUS.addListener(BlockySiegeNeoForge::addTrades);
+        NeoForge.EVENT_BUS.addListener((AddReloadListenerEvent event) -> event.addListener(BlockProjectileBehaviorManager.INSTANCE));
     }
 
     private static void registerCapabilities(RegisterCapabilitiesEvent event) {

@@ -2,6 +2,7 @@ package net.luckystudios;
 
 import com.mojang.logging.LogUtils;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaEntity;
+import net.luckystudios.entity.custom.block_projectile.behavior.BlockProjectileBehavior;
 import net.luckystudios.init.*;
 import net.luckystudios.professions.ModVillagerProfessions;
 import net.minecraft.resources.ResourceLocation;
@@ -22,6 +23,7 @@ public class BlockySiege {
 
     public static void init() {
         // Loading these classes registers their contents. The order matters on Fabric, which registers immediately.
+        BlockProjectileBehavior.bootstrap();
         ModBlocks.init();
         ModItems.init();
         ModCreativeModeTabs.init();

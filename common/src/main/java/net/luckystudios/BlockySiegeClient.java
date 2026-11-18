@@ -1,6 +1,7 @@
 package net.luckystudios;
 
 import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonModel;
+import net.luckystudios.entity.custom.block_projectile.BlockProjectileRenderer;
 import net.luckystudios.blocks.custom.shooting.spewer.SpewerCannonRenderer;
 import net.luckystudios.blocks.custom.shooting.volley.VolleyBlockRenderer;
 import net.luckystudios.blocks.custom.shooting.volley.VolleyRackModel;
@@ -109,6 +110,7 @@ public class BlockySiegeClient {
 
     public static void registerEntityRenderers(EntityRendererRegistrar event) {
         event.register(ModEntityTypes.SEAT.get(), NoopRenderer::new);
+        event.register(ModEntityTypes.BLOCK_PROJECTILE.get(), BlockProjectileRenderer::new);
         event.register(ModEntityTypes.CANNONBALL.get(), CannonBallRenderer::new);
         event.register(ModEntityTypes.EXPLOSIVE_KEG.get(), ExplosiveKegRenderer::new);
         event.register(ModEntityTypes.FIRE_BOMB.get(), FireBombRenderer::new);

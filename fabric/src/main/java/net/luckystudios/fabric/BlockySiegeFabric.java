@@ -6,7 +6,17 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.object.builder.v1.trade.TradeOfferHelper;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.luckystudios.BlockySiege;
+import net.luckystudios.entity.custom.block_projectile.behavior.BlockProjectileBehaviorManager;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import net.luckystudios.entity.custom.seat.Seat;
 import net.luckystudios.networking.ModNetworking;
 import net.luckystudios.networking.PacketContext;
@@ -32,6 +42,17 @@ public class BlockySiegeFabric implements ModInitializer {
 
         BlockySiege.registerEntityAttributes(FabricDefaultAttributeRegistry::register);
         registerTrades();
+        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(new IdentifiableResourceReloadListener() {
+            @Override
+            public ResourceLocation getFabricId() {
+                return BlockySiege.id("block_projectile_behaviors");
+            }
+
+            @Override
+            public CompletableFuture<Void> reload(PreparationBarrier barrier, ResourceManager manager, ProfilerFiller prepProfiler, ProfilerFiller applyProfiler, Executor backgroundExecutor, Executor gameExecutor) {
+                return BlockProjectileBehaviorManager.INSTANCE.reload(barrier, manager, prepProfiler, applyProfiler, backgroundExecutor, gameExecutor);
+            }
+        });
         registerNetworking();
 
         // Players controlling a mounted weapon cannot use items
