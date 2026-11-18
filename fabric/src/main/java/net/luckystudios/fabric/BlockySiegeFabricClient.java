@@ -18,7 +18,8 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -33,6 +34,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+
+import java.util.function.Function;
 
 public class BlockySiegeFabricClient implements ClientModInitializer {
 
@@ -59,15 +62,15 @@ public class BlockySiegeFabricClient implements ClientModInitializer {
 
         BlockySiegeClient.registerScreens(new BlockySiegeClient.MenuScreenRegistrar() {
             @Override
-            public <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(MenuType<? extends M> type, MenuScreens.ScreenConstructor<M, U> constructor) {
-                MenuScreens.register(type, constructor);
+            public <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(MenuType<? extends M> type, BlockySiegeClient.ScreenFactory<M, U> factory) {
+                MenuScreens.register(type, factory::create);
             }
         });
 
         BlockySiegeClient.registerParticleFactories(new BlockySiegeClient.ParticleProviderRegistrar() {
             @Override
-            public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleEngine.SpriteParticleRegistration<T> registration) {
-                ParticleFactoryRegistry.getInstance().register(type, registration::create);
+            public <T extends ParticleOptions> void register(ParticleType<T> type, Function<SpriteSet, ParticleProvider<T>> factory) {
+                ParticleFactoryRegistry.getInstance().register(type, factory::apply);
             }
         });
 

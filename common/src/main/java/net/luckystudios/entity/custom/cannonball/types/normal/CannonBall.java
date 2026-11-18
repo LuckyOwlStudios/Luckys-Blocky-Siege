@@ -39,12 +39,12 @@ public class CannonBall extends AbstractCannonBall {
     }
 
     public CannonBall(Level level, double x, double y, double z, boolean spectral) {
-        super(ModEntityTypes.CANNONBALL.get(), x, y, z, level, ModBlocks.CANNONBALL.toStack());
+        super(ModEntityTypes.CANNONBALL.get(), x, y, z, level, new ItemStack(ModBlocks.CANNONBALL.get()));
         this.setGlowingTag(spectral);
     }
 
     public CannonBall(Level level, LivingEntity owner) {
-        super(ModEntityTypes.CANNONBALL.get(), owner, level, ModBlocks.CANNONBALL.toStack());
+        super(ModEntityTypes.CANNONBALL.get(), owner, level, new ItemStack(ModBlocks.CANNONBALL.get()));
     }
 
     @Override

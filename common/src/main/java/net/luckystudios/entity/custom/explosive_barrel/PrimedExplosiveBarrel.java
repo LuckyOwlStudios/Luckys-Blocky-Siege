@@ -24,7 +24,7 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.Vec3;
 
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 import java.util.Random;
 
@@ -49,7 +49,7 @@ public class PrimedExplosiveBarrel extends Entity implements TraceableEntity {
                     : super.getBlockExplosionResistance(p_353090_, p_353088_, p_353091_, p_353093_, p_353095_);
         }
     };
-    @javax.annotation.Nullable
+    @org.jetbrains.annotations.Nullable
     private LivingEntity owner;
     private boolean usedPortal;
 
@@ -58,7 +58,7 @@ public class PrimedExplosiveBarrel extends Entity implements TraceableEntity {
         this.blocksBuilding = true;
     }
 
-    public PrimedExplosiveBarrel(Level level, double x, double y, double z, @javax.annotation.Nullable LivingEntity owner) {
+    public PrimedExplosiveBarrel(Level level, double x, double y, double z, @org.jetbrains.annotations.Nullable LivingEntity owner) {
         this(ModEntityTypes.PRIMED_EXPLOSIVE_BARREL.get(), level);
         this.setPos(x, y, z);
         double d0 = level.random.nextDouble() * (float) (Math.PI * 2);
@@ -246,7 +246,7 @@ public class PrimedExplosiveBarrel extends Entity implements TraceableEntity {
         }
     }
 
-    @javax.annotation.Nullable
+    @org.jetbrains.annotations.Nullable
     public LivingEntity getOwner() {
         return this.owner;
     }

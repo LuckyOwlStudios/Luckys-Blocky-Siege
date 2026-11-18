@@ -40,11 +40,11 @@ public class FireBomb extends SpreadingBomb {
     }
 
     public FireBomb(Level level, double x, double y, double z) {
-        super(ModEntityTypes.FIRE_BOMB.get(), level, x, y, z, ModBlocks.FIRE_BOMB.toStack());
+        super(ModEntityTypes.FIRE_BOMB.get(), level, x, y, z, new ItemStack(ModBlocks.FIRE_BOMB.get()));
     }
 
     public FireBomb(Level level, LivingEntity owner) {
-        super(ModEntityTypes.FIRE_BOMB.get(), level, owner, ModBlocks.FIRE_BOMB.toStack());
+        super(ModEntityTypes.FIRE_BOMB.get(), level, owner, new ItemStack(ModBlocks.FIRE_BOMB.get()));
     }
 
 

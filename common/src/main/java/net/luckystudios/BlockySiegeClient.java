@@ -36,12 +36,14 @@ import net.luckystudios.init.ModMenuTypes;
 import net.luckystudios.particles.FlameTrailParticle;
 import net.luckystudios.particles.WaterParticle;
 import net.luckystudios.util.ModModelLayers;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
-import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.NoopRenderer;
@@ -56,6 +58,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -71,12 +74,18 @@ public class BlockySiegeClient {
         <T extends BlockEntity> void register(BlockEntityType<? extends T> type, BlockEntityRendererProvider<T> provider);
     }
 
+    /** Same shape as vanilla's MenuScreens.ScreenConstructor, which is not public in vanilla. */
+    @FunctionalInterface
+    public interface ScreenFactory<M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> {
+        U create(M menu, Inventory inventory, Component title);
+    }
+
     public interface MenuScreenRegistrar {
-        <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(MenuType<? extends M> type, MenuScreens.ScreenConstructor<M, U> constructor);
+        <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(MenuType<? extends M> type, ScreenFactory<M, U> factory);
     }
 
     public interface ParticleProviderRegistrar {
-        <T extends ParticleOptions> void register(ParticleType<T> type, ParticleEngine.SpriteParticleRegistration<T> registration);
+        <T extends ParticleOptions> void register(ParticleType<T> type, Function<SpriteSet, ParticleProvider<T>> factory);
     }
 
     public static void registerLayerDefinitions(BiConsumer<ModelLayerLocation, Supplier<LayerDefinition>> event) {

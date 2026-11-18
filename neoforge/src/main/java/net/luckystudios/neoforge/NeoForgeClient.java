@@ -4,10 +4,10 @@ import net.luckystudios.BlockySiege;
 import net.luckystudios.BlockySiegeClient;
 import net.luckystudios.events.mounted_weapon_events.MountedCannonClientBusEvents;
 import net.luckystudios.keybinds.ModKeyMappings;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
-import net.minecraft.client.particle.ParticleEngine;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.core.particles.ParticleOptions;
@@ -32,12 +32,14 @@ import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 import net.neoforged.neoforge.client.event.RenderHandEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
+import java.util.function.Function;
+
 /**
  * NeoForge client hooks. All the actual client logic lives in the common project.
  */
 public class NeoForgeClient {
 
-    @EventBusSubscriber(modid = BlockySiege.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = BlockySiege.MOD_ID, value = Dist.CLIENT)
     public static class ModBusEvents {
 
         @SubscribeEvent
@@ -65,8 +67,8 @@ public class NeoForgeClient {
         public static void registerScreens(RegisterMenuScreensEvent event) {
             BlockySiegeClient.registerScreens(new BlockySiegeClient.MenuScreenRegistrar() {
                 @Override
-                public <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(MenuType<? extends M> type, MenuScreens.ScreenConstructor<M, U> constructor) {
-                    event.register(type, constructor);
+                public <M extends AbstractContainerMenu, U extends Screen & MenuAccess<M>> void register(MenuType<? extends M> type, BlockySiegeClient.ScreenFactory<M, U> factory) {
+                    event.register(type, factory::create);
                 }
             });
         }
@@ -75,8 +77,8 @@ public class NeoForgeClient {
         public static void registerParticleFactories(RegisterParticleProvidersEvent event) {
             BlockySiegeClient.registerParticleFactories(new BlockySiegeClient.ParticleProviderRegistrar() {
                 @Override
-                public <T extends ParticleOptions> void register(ParticleType<T> type, ParticleEngine.SpriteParticleRegistration<T> registration) {
-                    event.registerSpriteSet(type, registration);
+                public <T extends ParticleOptions> void register(ParticleType<T> type, Function<SpriteSet, ParticleProvider<T>> factory) {
+                    event.registerSpriteSet(type, factory::apply);
                 }
             });
         }
@@ -87,7 +89,7 @@ public class NeoForgeClient {
         }
     }
 
-    @EventBusSubscriber(modid = BlockySiege.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.GAME)
+    @EventBusSubscriber(modid = BlockySiege.MOD_ID, value = Dist.CLIENT)
     public static class GameBusEvents {
 
         @SubscribeEvent

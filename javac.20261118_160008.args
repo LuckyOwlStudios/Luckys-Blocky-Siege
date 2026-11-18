@@ -1,0 +1,6 @@
+-proc:none
+-d
+/tmp/claude-0/syn/out
+-Xmaxerrs
+10000
+@/tmp/claude-0/syn/files

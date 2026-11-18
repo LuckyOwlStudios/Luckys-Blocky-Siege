@@ -34,11 +34,11 @@ public class ExplosiveKeg extends AbstractCannonBall {
     }
 
     public ExplosiveKeg(Level level, double x, double y, double z) {
-        super(ModEntityTypes.EXPLOSIVE_KEG.get(), x, y, z, level, ModBlocks.EXPLOSIVE_BARREL.toStack());
+        super(ModEntityTypes.EXPLOSIVE_KEG.get(), x, y, z, level, new ItemStack(ModBlocks.EXPLOSIVE_BARREL.get()));
     }
 
     public ExplosiveKeg(Level level, LivingEntity owner) {
-        super(ModEntityTypes.EXPLOSIVE_KEG.get(), owner, level, ModBlocks.EXPLOSIVE_BARREL.toStack());
+        super(ModEntityTypes.EXPLOSIVE_KEG.get(), owner, level, new ItemStack(ModBlocks.EXPLOSIVE_BARREL.get()));
     }
 
     @Override

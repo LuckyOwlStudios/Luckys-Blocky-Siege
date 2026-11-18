@@ -53,11 +53,11 @@ public class FrostBomb extends SpreadingBomb {
     }
 
     public FrostBomb(Level level, double x, double y, double z) {
-        super(ModEntityTypes.FROST_BOMB.get(), level, x, y, z, ModBlocks.FROST_BOMB.toStack());
+        super(ModEntityTypes.FROST_BOMB.get(), level, x, y, z, new ItemStack(ModBlocks.FROST_BOMB.get()));
     }
 
     public FrostBomb(Level level, LivingEntity owner) {
-        super(ModEntityTypes.FROST_BOMB.get(), level, owner, ModBlocks.FROST_BOMB.toStack());
+        super(ModEntityTypes.FROST_BOMB.get(), level, owner, new ItemStack(ModBlocks.FROST_BOMB.get()));
     }
 
     @Override

@@ -40,11 +40,11 @@ public class WindBomb extends AbstractCannonBall {
     }
 
     public WindBomb(Level level, double x, double y, double z) {
-        super(ModEntityTypes.WIND_BOMB.get(), x, y, z, level, ModBlocks.WIND_BOMB.toStack());
+        super(ModEntityTypes.WIND_BOMB.get(), x, y, z, level, new ItemStack(ModBlocks.WIND_BOMB.get()));
     }
 
     public WindBomb(Level level, LivingEntity owner) {
-        super(ModEntityTypes.WIND_BOMB.get(), owner, level, ModBlocks.WIND_BOMB.toStack());
+        super(ModEntityTypes.WIND_BOMB.get(), owner, level, new ItemStack(ModBlocks.WIND_BOMB.get()));
     }
 
     @Override

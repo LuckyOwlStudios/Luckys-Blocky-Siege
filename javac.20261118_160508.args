@@ -1,0 +1,4 @@
+-proc:none
+-d
+/tmp/claude-0/syn/out
+@/tmp/claude-0/syn/files
