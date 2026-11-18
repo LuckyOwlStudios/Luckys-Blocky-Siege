@@ -91,7 +91,8 @@ public class SpectralCannonBall extends AbstractCannonBall {
             return;
         }
 
-        if (this.isInWater() || this.isInLava()) {
+        // Already detonated once (e.g. rolled/fell into the crater): just come to rest
+        if (this.exploded || this.isInWater() || this.isInLava()) {
             super.onHitBlock(result);
             return;
         }
@@ -101,6 +102,7 @@ public class SpectralCannonBall extends AbstractCannonBall {
             penetrateBlock(hitPos, hitState, result);
         } else {
             // Create explosion and stop the projectile
+            this.exploded = true;
             createExplosion(hitPos, currentSpeed);
             super.onHitBlock(result);
         }
