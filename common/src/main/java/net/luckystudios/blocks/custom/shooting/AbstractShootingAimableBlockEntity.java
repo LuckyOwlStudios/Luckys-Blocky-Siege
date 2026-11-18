@@ -186,11 +186,6 @@ public abstract class AbstractShootingAimableBlockEntity extends RandomizableCon
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
-        super.handleUpdateTag(tag, lookupProvider);
-    }
-
-    @Override
     protected NonNullList<ItemStack> getItems() {
         return this.items;
     }

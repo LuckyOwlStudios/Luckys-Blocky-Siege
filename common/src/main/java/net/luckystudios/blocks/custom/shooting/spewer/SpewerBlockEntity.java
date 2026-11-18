@@ -19,6 +19,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PotionItem;
@@ -105,7 +106,8 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
                     }
                     spewerCannonBlockEntity.fluidTank.fill(new FluidStack(bucketItem.content, 1000), FluidTank.FluidAction.EXECUTE);
                     spewerCannonBlockEntity.removeItem(0, 1);
-                    spewerCannonBlockEntity.setItem(0, bucketItem.getCraftingRemainingItem(itemStack));
+                    Item remainder = bucketItem.getCraftingRemainingItem();
+                    spewerCannonBlockEntity.setItem(0, remainder == null ? ItemStack.EMPTY : new ItemStack(remainder));
                 }
             }
         }

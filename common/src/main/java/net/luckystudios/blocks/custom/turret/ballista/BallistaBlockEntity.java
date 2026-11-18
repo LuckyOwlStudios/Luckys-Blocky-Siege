@@ -79,9 +79,4 @@ public class BallistaBlockEntity extends BlockEntity implements MenuProvider {
     public CompoundTag getUpdateTag(HolderLookup.Provider lookupProvider) {
         return this.saveWithFullMetadata(lookupProvider);
     }
-
-    @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
-        super.handleUpdateTag(tag, lookupProvider);
-    }
 }

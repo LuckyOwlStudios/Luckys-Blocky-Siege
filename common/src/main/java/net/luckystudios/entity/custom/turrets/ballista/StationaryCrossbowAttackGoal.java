@@ -5,6 +5,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ChargedProjectiles;
 
@@ -74,7 +75,7 @@ public class StationaryCrossbowAttackGoal<T extends BallistaEntity> extends Goal
             this.ballista.getLookControl().setLookAt(livingentity, 30.0F, 30.0F);
             if (this.crossbowState == StationaryCrossbowAttackGoal.CrossbowState.UNCHARGED) {
                 if (!flag2) {
-                    this.ballista.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.ballista, (item) -> item instanceof CrossbowItem));
+                    this.ballista.startUsingItem(ProjectileUtil.getWeaponHoldingHand(this.ballista, Items.CROSSBOW));
                     this.crossbowState = StationaryCrossbowAttackGoal.CrossbowState.CHARGING;
                     this.ballista.setChargingCrossbow(true);
                 }

@@ -152,7 +152,7 @@ public abstract class AbstractNewProjectile extends Projectile {
             }
         }
 
-        if (this.isInWaterOrRain() || blockstate.is(Blocks.POWDER_SNOW) || this.isInFluidType((fluidType, height) -> this.canFluidExtinguish(fluidType))) {
+        if (this.isInWaterOrRain() || blockstate.is(Blocks.POWDER_SNOW)) {
             this.clearFire();
         }
 

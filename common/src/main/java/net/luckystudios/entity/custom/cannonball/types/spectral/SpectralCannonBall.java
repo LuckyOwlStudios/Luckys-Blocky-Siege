@@ -238,8 +238,8 @@ public class SpectralCannonBall extends AbstractCannonBall {
         public Optional<Float> getBlockExplosionResistance(Explosion explosion, BlockGetter level, BlockPos pos, BlockState state, FluidState fluid) {
             if (state.isAir()) return Optional.empty();
 
-            float blockRes = state.getExplosionResistance(level, pos, explosion);
-            float fluidRes = fluid.getExplosionResistance(level, pos, explosion);
+            float blockRes = state.getBlock().getExplosionResistance();
+            float fluidRes = fluid.getExplosionResistance();
             float resistance = Math.max(blockRes, fluidRes);
 
             // Significantly reduce resistance for better destruction
@@ -271,8 +271,8 @@ public class SpectralCannonBall extends AbstractCannonBall {
         public Optional<Float> getBlockExplosionResistance(Explosion explosion, BlockGetter level, BlockPos pos, BlockState state, FluidState fluid) {
             if (state.isAir()) return Optional.empty();
 
-            float blockRes = state.getExplosionResistance(level, pos, explosion);
-            float fluidRes = fluid.getExplosionResistance(level, pos, explosion);
+            float blockRes = state.getBlock().getExplosionResistance();
+            float fluidRes = fluid.getExplosionResistance();
             float resistance = Math.max(blockRes, fluidRes);
 
             return Optional.of(resistance * 0.3F); // Less destructive than final explosion

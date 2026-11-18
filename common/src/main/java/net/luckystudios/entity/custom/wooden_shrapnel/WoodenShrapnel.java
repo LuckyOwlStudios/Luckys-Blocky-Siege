@@ -76,7 +76,7 @@ public class WoodenShrapnel extends ThrowableItemProjectile {
     }
 
     private void rockHit() {
-        this.level().playSound(this, this.blockPosition(), Blocks.BARREL.defaultBlockState().getSoundType(this.level(), this.blockPosition(), null).getBreakSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
+        this.level().playSound(this, this.blockPosition(), Blocks.BARREL.defaultBlockState().getSoundType().getBreakSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
         this.level().broadcastEntityEvent(this, (byte)3);
     }
 }

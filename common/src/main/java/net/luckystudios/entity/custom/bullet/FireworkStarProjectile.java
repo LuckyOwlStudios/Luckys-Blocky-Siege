@@ -1,5 +1,6 @@
 package net.luckystudios.entity.custom.bullet;
 
+import net.minecraft.core.registries.Registries;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.luckystudios.entity.custom.ImprovedProjectileEntity;
 import net.luckystudios.init.ModEntityTypes;
@@ -119,7 +120,7 @@ public class FireworkStarProjectile extends ImprovedProjectileEntity {
         super.onHitEntity(result);
         if (!this.level().isClientSide()) {
             Entity entity = result.getEntity();
-            entity.hurt(new DamageSource(level().holderOrThrow(ModDamageTypes.BULLET)), 6);
+            entity.hurt(new DamageSource(level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(ModDamageTypes.BULLET)), 6);
         }
         this.discard();
     }
