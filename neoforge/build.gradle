@@ -34,8 +34,8 @@ neoForge {
             data()
             // ./gradlew :neoforge:runData writes into common/src/generated/resources so both loaders ship the output.
             programArguments.addAll '--mod', project.mod_id, '--all',
-                    '--output', project(':common').file('src/generated/resources/').getAbsolutePath(),
-                    '--existing', project(':common').file('src/main/resources/').getAbsolutePath()
+                    '--output', rootProject.file('common/src/generated/resources/').getAbsolutePath(),
+                    '--existing', rootProject.file('common/src/main/resources/').getAbsolutePath()
         }
     }
     mods {
