@@ -123,6 +123,7 @@ public class BlockySiegeClient {
         event.register(ModEntityTypes.POTION_BLOB.get(), PotionBlobRenderer::new);
         event.register(ModEntityTypes.ICE_SHARD.get(), NoopRenderer::new);
         event.register(ModEntityTypes.FIREWORK_STAR.get(), ThrownItemRenderer::new);
+        event.register(ModEntityTypes.ITEM_PROJECTILE.get(), ThrownItemRenderer::new);
         event.register(ModEntityTypes.FALLING_FIREWORK.get(), ThrownItemRenderer::new);
         event.register(ModEntityTypes.BALLISTA.get(), BallistaRenderer::new);
         event.register(ModEntityTypes.SLOOP.get(), SloopRenderer::new);

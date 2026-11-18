@@ -38,7 +38,7 @@ public final class FluidStack {
         this(fluid, amount, DataComponentPatch.EMPTY);
     }
 
-    private FluidStack(Fluid fluid, int amount, DataComponentPatch patch) {
+    public FluidStack(Fluid fluid, int amount, DataComponentPatch patch) {
         this.fluid = fluid;
         this.amount = amount;
         this.components = PatchedDataComponentMap.fromPatch(DataComponentMap.EMPTY, patch);
