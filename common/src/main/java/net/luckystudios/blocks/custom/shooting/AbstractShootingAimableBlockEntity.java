@@ -203,5 +203,25 @@ public abstract class AbstractShootingAimableBlockEntity extends RandomizableCon
 
     public abstract boolean canShoot();
 
+    // Ticks left in which a controlling player is still holding the fire key
+    private int holdFireTicks = 0;
+
+    /** Whether holding the fire key keeps this weapon firing at its redstone rate. */
+    public boolean supportsHoldFire() {
+        return false;
+    }
+
+    /** Called when the controlling player reports that they are holding the fire key. */
+    public void holdFire() {
+        this.holdFireTicks = 3;
+    }
+
+    /** True while the fire key is held. Call once per tick: it counts the hold down. */
+    protected boolean tickHoldFire() {
+        if (holdFireTicks <= 0) return false;
+        holdFireTicks--;
+        return true;
+    }
+
     public abstract float barrelOffsetDistance();
 }
