@@ -4,6 +4,7 @@ import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntit
 import net.luckystudios.init.ModEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -105,6 +106,23 @@ public class Seat extends Entity {
         // Lie the player down while they control the weapon
         if (passenger instanceof Player player) {
             player.setPose(Pose.SLEEPING);
+        }
+        // Face the way the turret is already aiming so mounting doesn't snap it to the player's view
+        if (this.level().getBlockEntity(this.blockPosition()) instanceof AbstractShootingAimableBlockEntity aimable) {
+            float yaw = aimable.yaw;
+            // Inverse of the mapping in tick(): turret pitch = -playerPitch + pitchOffset
+            float pitch = Mth.clamp(aimable.pitchOffset() - aimable.pitch, -90.0F, 90.0F);
+            passenger.setYRot(yaw);
+            passenger.setXRot(pitch);
+            passenger.setYHeadRot(yaw);
+            passenger.yRotO = yaw;
+            passenger.xRotO = pitch;
+            if (passenger instanceof LivingEntity living) {
+                living.yHeadRotO = yaw;
+                living.yBodyRot = yaw;
+                living.yBodyRotO = yaw;
+            }
+            this.setRot(yaw, pitch * 0.5F);
         }
     }
 
