@@ -41,6 +41,9 @@ import java.util.Random;
 
 public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
+    // Blocks per tick. Vanilla throwables have gravity and drag, so 2.0 fell short; 4.0 gives cannon-like range
+    private static final float MUZZLE_VELOCITY = 4.0F;
+
     public int cooldown, maxCooldown;
     public int barrelIndex; // Used to get which barrel we are currently at in the firing process
     private int shotsRemaining; // How many shots are remaining
@@ -176,16 +179,16 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
         ItemStack itemStack = multiCannonBlockEntity.getProjectile();
         if (itemStack.getItem() instanceof ProjectileItem projectileItem) {
             Projectile projectile = projectileItem.asProjectile(level, spawnPos, itemStack, Direction.getNearest(direction));
-            projectile.shoot(direction.x, direction.y, direction.z, 2.0F, 1.0F);
+            projectile.shoot(direction.x, direction.y, direction.z, MUZZLE_VELOCITY, 1.0F);
             level.addFreshEntity(projectile);
         } else if (itemStack.getItem() instanceof FireworkStarItem) {
             FireworkStarProjectile fireworkStarProjectile = new FireworkStarProjectile(level, spawnPos.x, spawnPos.y, spawnPos.z, itemStack);
-            fireworkStarProjectile.shoot(direction.x, direction.y, direction.z, 4.0F, 1.0F);
+            fireworkStarProjectile.shoot(direction.x, direction.y, direction.z, MUZZLE_VELOCITY, 1.0F);
             level.addFreshEntity(fireworkStarProjectile);
         } else if (!itemStack.isEmpty()) {
             // Any other item flies as a generic projectile and drops itself when it lands
             ItemProjectile itemProjectile = new ItemProjectile(level, spawnPos.x, spawnPos.y, spawnPos.z, itemStack);
-            itemProjectile.shoot(direction.x, direction.y, direction.z, 2.0F, 1.0F);
+            itemProjectile.shoot(direction.x, direction.y, direction.z, MUZZLE_VELOCITY, 1.0F);
             level.addFreshEntity(itemProjectile);
         }
         // Consume
