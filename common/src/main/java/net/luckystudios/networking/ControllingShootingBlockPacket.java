@@ -6,6 +6,8 @@ import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntit
 import net.luckystudios.blocks.custom.shooting.AbstractShootingBlock;
 import net.luckystudios.blocks.custom.shooting.cannon.CannonBlockEntity;
 import net.luckystudios.blocks.custom.shooting.multi_cannon.MultiCannonBlockEntity;
+import net.luckystudios.blocks.custom.shooting.spewer.SpewerBlockEntity;
+import net.luckystudios.entity.custom.seat.Seat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -29,6 +31,7 @@ public class ControllingShootingBlockPacket implements CustomPacketPayload {
     public static final int DECREASE_POWER = 1;
     public static final int INCREASE_POWER = 2;
     public static final int FIRE_CANNON = 3;
+    public static final int HOLD_FIRE = 4;
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ControllingShootingBlockPacket> STREAM_CODEC = StreamCodec.of((RegistryFriendlyByteBuf buffer, ControllingShootingBlockPacket message) -> {
         buffer.writeBlockPos(message.blockPos);
@@ -83,6 +86,14 @@ public class ControllingShootingBlockPacket implements CustomPacketPayload {
             }
             case DECREASE_POWER, INCREASE_POWER -> {
 
+            }
+            case HOLD_FIRE -> {
+                // Continuous fire while the fire key is held, only for the spewer and only from its seat
+                if (level.isClientSide()) return;
+                if (!(player.getVehicle() instanceof Seat seat) || !seat.blockPosition().equals(pos)) return;
+                if (level.getBlockEntity(pos) instanceof SpewerBlockEntity spewer) {
+                    spewer.holdFire();
+                }
             }
             case FIRE_CANNON -> {
                 if (level.getBlockEntity(pos) instanceof AbstractShootingAimableBlockEntity abstractShootingAimableBlockEntity) {
