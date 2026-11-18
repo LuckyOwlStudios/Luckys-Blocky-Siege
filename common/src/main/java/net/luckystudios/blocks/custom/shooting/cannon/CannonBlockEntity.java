@@ -281,10 +281,6 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         return this.saveWithFullMetadata(lookupProvider);
     }
 
-    @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider lookupProvider) {
-        super.handleUpdateTag(tag, lookupProvider);
-    }
 
     @Override
     public float maxPitch() {
