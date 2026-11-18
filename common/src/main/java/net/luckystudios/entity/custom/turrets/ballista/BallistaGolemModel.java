@@ -83,7 +83,8 @@ public class BallistaGolemModel<T extends BallistaEntity> extends HierarchicalMo
     private static final float LIMB_OFFSET = 12.0F;
     private static final float RELAXED_ANGLE = 0.333F;
     private static final float RELAXED_DEPTH = STRING_LENGTH * Mth.cos(RELAXED_ANGLE);
-    private static final float DRAW_DISTANCE = 6.0F;
+    // Negative: the strings are drawn towards the front of the turret.
+    private static final float DRAW_DISTANCE = -6.0F;
 
     private void setStringPose(BallistaEntity entity) {
         boolean visible = entity.isCrossbowInstalled();

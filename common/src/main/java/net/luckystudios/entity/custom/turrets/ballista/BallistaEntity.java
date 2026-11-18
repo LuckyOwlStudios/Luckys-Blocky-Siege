@@ -33,6 +33,7 @@ import net.minecraft.world.entity.monster.CrossbowAttackMob;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.util.Mth;
+import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -202,7 +203,11 @@ public class BallistaEntity extends AbstractTurret implements CrossbowAttackMob 
                 .orElse(false);
     }
 
-    /** Ammo slots that hold something the given weapon can fire. */
+    /**
+     * Ammo slots that hold something the given weapon can fire: whatever the crossbow itself supports
+     * (arrows, tipped/spectral arrows, fireworks, modded ammo), plus any arrow item even if a mod forgot
+     * to tag it, since crossbows build those through ArrowItem#createArrow.
+     */
     private List<ItemStack> findProjectiles(ItemStack weapon) {
         List<ItemStack> candidates = new ArrayList<>();
         if (!(weapon.getItem() instanceof ProjectileWeaponItem weaponItem)) {
@@ -212,7 +217,7 @@ public class BallistaEntity extends AbstractTurret implements CrossbowAttackMob 
         getBallistaBlockEntity().ifPresent(be -> {
             for (int i = 0; i < BallistaBlockEntity.CROSSBOW_SLOT; i++) {
                 ItemStack stack = be.inventory.getItem(i);
-                if (!stack.isEmpty() && supported.test(stack)) {
+                if (!stack.isEmpty() && (supported.test(stack) || stack.getItem() instanceof ArrowItem)) {
                     candidates.add(stack);
                 }
             }
