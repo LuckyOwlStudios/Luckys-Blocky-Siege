@@ -34,7 +34,7 @@ public class ModEntityTypes {
                     .build("seat"));
 
     public static final Supplier<EntityType<BlockProjectile>> BLOCK_PROJECTILE =
-            ENTITY_TYPES.register("block_projectile", () -> EntityType.Builder.<BlockProjectile>of(BlockProjectile::new, MobCategory.MISC)
+            register("block_projectile", () -> EntityType.Builder.<BlockProjectile>of(BlockProjectile::new, MobCategory.MISC)
                     .sized(0.5F, 0.5F)
                     .eyeHeight(0.25F)
                     .clientTrackingRange(6)
