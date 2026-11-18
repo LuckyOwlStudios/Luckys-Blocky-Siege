@@ -2,6 +2,7 @@ package net.luckystudios.init;
 
 import net.luckystudios.BlockySiege;
 import net.luckystudios.entity.custom.FallingFireworkRocketEntity;
+import net.luckystudios.entity.custom.block_projectile.BlockProjectile;
 import net.luckystudios.entity.custom.cannonball.types.spectral.SpectralCannonBall;
 import net.luckystudios.entity.custom.ember.Ember;
 import net.luckystudios.entity.custom.liquid_projectile.SnowProjectile;
@@ -34,6 +35,14 @@ public class ModEntityTypes {
                     .sized(1.0F, 1.0F)
                     .clientTrackingRange(4)
                     .build("seat"));
+
+    public static final Supplier<EntityType<BlockProjectile>> BLOCK_PROJECTILE =
+            ENTITY_TYPES.register("block_projectile", () -> EntityType.Builder.<BlockProjectile>of(BlockProjectile::new, MobCategory.MISC)
+                    .sized(0.5F, 0.5F)
+                    .eyeHeight(0.25F)
+                    .clientTrackingRange(6)
+                    .updateInterval(1)
+                    .build("block_projectile"));
 
     public static final Supplier<EntityType<CannonBall>> CANNONBALL =
             ENTITY_TYPES.register("cannonball", () -> EntityType.Builder.<CannonBall>of(CannonBall::new, MobCategory.MISC)

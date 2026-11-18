@@ -1,0 +1,13 @@
+{
+  "blocks": [
+    "minecraft:melon"
+  ],
+  "type": "blockysiege:break_into_drops",
+  "drops": [
+    {
+      "item": "minecraft:melon_slice",
+      "min": 3,
+      "max": 7
+    }
+  ]
+}

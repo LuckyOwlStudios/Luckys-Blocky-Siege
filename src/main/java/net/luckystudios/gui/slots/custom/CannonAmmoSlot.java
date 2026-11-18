@@ -1,7 +1,7 @@
 package net.luckystudios.gui.slots.custom;
 
 import net.luckystudios.gui.slots.ModSlot;
-import net.luckystudios.init.ModTags;
+import net.luckystudios.blocks.custom.shooting.cannon.CannonBlockEntity;
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -14,6 +14,6 @@ public class CannonAmmoSlot extends ModSlot {
 
     @Override
     public boolean mayPlace(ItemStack stack) {
-        return stack.is(ModTags.CANNON_AMMO);
+        return CannonBlockEntity.isValidAmmo(stack);
     }
 }

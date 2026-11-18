@@ -1,5 +1,6 @@
 package net.luckystudios;
 
+import net.luckystudios.entity.custom.block_projectile.behavior.BlockProjectileBehavior;
 import net.luckystudios.init.*;
 import net.luckystudios.networking.*;
 import net.luckystudios.professions.ModVillagerProfessions;
@@ -49,6 +50,7 @@ public class BlockySiege
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public BlockySiege(IEventBus modEventBus, ModContainer modContainer)
     {
+        BlockProjectileBehavior.bootstrap();
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
         // Register ourselves for server and other game events we are interested in.

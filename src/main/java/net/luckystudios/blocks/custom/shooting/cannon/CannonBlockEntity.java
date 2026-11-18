@@ -3,6 +3,7 @@ package net.luckystudios.blocks.custom.shooting.cannon;
 import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
 import net.luckystudios.blocks.util.enums.FiringState;
 import net.luckystudios.blocks.util.interfaces.DamageableBlock;
+import net.luckystudios.entity.custom.block_projectile.BlockProjectile;
 import net.luckystudios.gui.cannons.CannonBlockMenu;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.init.ModParticleTypes;
@@ -217,8 +218,13 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         ItemStack itemStack = this.getFuse();
         boolean hasFuse = itemStack.is(Tags.Items.GUNPOWDERS);
         ItemStack itemStack2 = this.getProjectile();
-        boolean hasAmmo = itemStack2.is(ModTags.CANNON_AMMO);
+        boolean hasAmmo = isValidAmmo(itemStack2);
         return hasFuse && hasAmmo && this.cooldown <= 0;
+    }
+
+    /** The cannon fires its dedicated ammo, and any other block as a placeable block projectile. */
+    public static boolean isValidAmmo(ItemStack stack) {
+        return stack.is(ModTags.CANNON_AMMO) || stack.getItem() instanceof BlockItem;
     }
 
     private static Projectile getCannonBall(Level level, Vec3 spawnPos, CannonBlockEntity cannonBlockEntity, Vec3 direction) {
@@ -236,6 +242,11 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         // Fallback: check if the item itself is a ProjectileItem
         if (projectileStack.getItem() instanceof ProjectileItem projectileItem) {
             return projectileItem.asProjectile(level, spawnPos, projectileStack, Direction.getNearest(direction));
+        }
+
+        // Any other block is fired as a block projectile that tries to place itself on impact
+        if (projectileStack.getItem() instanceof BlockItem) {
+            return new BlockProjectile(level, spawnPos.x, spawnPos.y, spawnPos.z, projectileStack);
         }
 
         return null;

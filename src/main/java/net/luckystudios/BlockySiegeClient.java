@@ -23,6 +23,7 @@ import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.init.ModEntityTypes;
 import net.luckystudios.blocks.custom.shooting.cannon.CannonRenderer;
 import net.luckystudios.entity.custom.cannonball.CannonBallModel;
+import net.luckystudios.entity.custom.block_projectile.BlockProjectileRenderer;
 import net.luckystudios.entity.custom.cannonball.types.explosive_barrel.ExplosiveKegRenderer;
 import net.luckystudios.entity.custom.cannonball.types.spreading.fire_bomb.FireBombRenderer;
 import net.luckystudios.entity.custom.cannonball.types.spreading.frost_bomb.FrostBombRenderer;
@@ -79,6 +80,7 @@ public class BlockySiegeClient {
 
         // Entities
         event.registerEntityRenderer(ModEntityTypes.SEAT.get(), NoopRenderer::new);
+        event.registerEntityRenderer(ModEntityTypes.BLOCK_PROJECTILE.get(), BlockProjectileRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.CANNONBALL.get(), CannonBallRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.EXPLOSIVE_KEG.get(), ExplosiveKegRenderer::new);
         event.registerEntityRenderer(ModEntityTypes.FIRE_BOMB.get(), FireBombRenderer::new);

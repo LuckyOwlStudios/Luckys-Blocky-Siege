@@ -1,0 +1,14 @@
+{
+  "required_mod": "farmersdelight",
+  "blocks": [
+    "farmersdelight:rice_bag"
+  ],
+  "type": "blockysiege:break_into_drops",
+  "drops": [
+    {
+      "item": "farmersdelight:rice",
+      "min": 9,
+      "max": 9
+    }
+  ]
+}
