@@ -35,6 +35,13 @@ import java.util.Map;
 @Mod(BlockySiege.MOD_ID)
 public class BlockySiege
 {
+    private void registerCapabilities(net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent event) {
+        // Lets pipes, tanks and modded buckets interact with the spewer's fluid tank
+        event.registerBlockEntity(net.neoforged.neoforge.capabilities.Capabilities.FluidHandler.BLOCK,
+                ModBlockEntityTypes.SPEWER_BLOCK_ENTITY.get(),
+                (be, side) -> be.getFluidTank());
+    }
+
     // Define mod id in a common place for everything to reference
     public static final String MOD_ID = "blockysiege";
     // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "blockysiege" namespace
@@ -51,6 +58,7 @@ public class BlockySiege
     {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::registerCapabilities);
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (BlockySiege) to respond directly to events.
         // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.

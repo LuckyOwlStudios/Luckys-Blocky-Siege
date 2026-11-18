@@ -6,7 +6,6 @@ import net.luckystudios.entity.custom.potion_blob.PotionBlob;
 import net.luckystudios.entity.custom.water_drop.WaterBlob;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.gui.spewer_cannon.SpewerCannonBlockBlockMenu;
-import net.luckystudios.init.ModTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
@@ -18,7 +17,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PotionItem;
@@ -28,7 +26,11 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.SoundActions;
+import net.neoforged.neoforge.fluids.FluidActionResult;
 import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.FluidUtil;
 import net.neoforged.neoforge.fluids.capability.IFluidHandler;
 import net.neoforged.neoforge.fluids.capability.templates.FluidTank;
 import org.jetbrains.annotations.NotNull;
@@ -92,40 +94,65 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
         }
     }
 
-    private static void handleInv(Level level, BlockPos pos, SpewerBlockEntity spewerCannonBlockEntity) {
-        ItemStack itemStack = spewerCannonBlockEntity.getLiquidStack();
-        if (spewerCannonBlockEntity.fluidTank.isEmpty()) {
-            if (itemStack.is(ModTags.SPEWER_AMMO)) {
-                if (itemStack.getItem() instanceof BucketItem bucketItem) {
-                    if (itemStack.is(Items.LAVA_BUCKET)) {
-                        level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
-                                SoundEvents.BUCKET_FILL_LAVA, SoundSource.BLOCKS, 1.0f, 1.0f);
-                    } else {
-                        level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
-                                SoundEvents.BUCKET_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
-                    }
-                    spewerCannonBlockEntity.fluidTank.fill(new FluidStack(bucketItem.content, 1000), IFluidHandler.FluidAction.EXECUTE);
-                    spewerCannonBlockEntity.removeItem(0, 1);
-                    spewerCannonBlockEntity.setItem(0, bucketItem.getCraftingRemainingItem(itemStack));
-                }
-            }
-        }
-        if (itemStack.getItem() instanceof PotionItem && spewerCannonBlockEntity.fluidTank.getFluidAmount() <= 666) {
-            // Get the potion contents from the item
-            PotionContents potionContents = itemStack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+    private static void handleInv(Level level, BlockPos pos, SpewerBlockEntity spewer) {
+        if (level.isClientSide()) return;
+        ItemStack itemStack = spewer.getLiquidStack();
+        if (itemStack.isEmpty() || itemStack.getCount() != 1) return;
+        FluidTank tank = spewer.fluidTank;
 
-            if (!potionContents.equals(PotionContents.EMPTY)) {
-                int amount = spewerCannonBlockEntity.fluidTank.getFluidAmount() == 666 ? 334: 333;
-                FluidStack stack = new FluidStack(Fluids.WATER, amount);
-                stack.set(DataComponents.POTION_CONTENTS, potionContents);
-                spewerCannonBlockEntity.fluidTank.fill(stack, IFluidHandler.FluidAction.EXECUTE);
-                // Don't forget to consume the potion item
-                spewerCannonBlockEntity.removeItem(0, 1);
-                spewerCannonBlockEntity.setItem(0, new ItemStack(Items.GLASS_BOTTLE));
-                level.playSound(null, pos.getX(), pos.getY(), pos.getZ(),
-                        SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 1.0f, 1.0f);
-            }
+        // Potions and bottles
+        if (itemStack.getItem() instanceof PotionItem) {
+            if (tank.getFluidAmount() > 666) return;
+            PotionContents potionContents = itemStack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY);
+            if (potionContents.equals(PotionContents.EMPTY)) return;
+            FluidStack stack = new FluidStack(Fluids.WATER, tank.getFluidAmount() == 666 ? 334 : 333);
+            stack.set(DataComponents.POTION_CONTENTS, potionContents);
+            if (tank.fill(stack, IFluidHandler.FluidAction.SIMULATE) != stack.getAmount()) return;
+            tank.fill(stack, IFluidHandler.FluidAction.EXECUTE);
+            spewer.setItem(0, new ItemStack(Items.GLASS_BOTTLE));
+            level.playSound(null, pos, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 1.0f, 1.0f);
+            return;
         }
+        if (itemStack.is(Items.GLASS_BOTTLE)) {
+            FluidStack inTank = tank.getFluid();
+            PotionContents contents = inTank.get(DataComponents.POTION_CONTENTS);
+            if (contents == null || tank.getFluidAmount() < 333) return;
+            int amount = tank.getFluidAmount() <= 334 ? tank.getFluidAmount() : 333;
+            tank.drain(amount, IFluidHandler.FluidAction.EXECUTE);
+            ItemStack potion = new ItemStack(Items.POTION);
+            potion.set(DataComponents.POTION_CONTENTS, contents);
+            spewer.setItem(0, potion);
+            level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
+            return;
+        }
+
+        // Any fluid container item (vanilla or modded)
+        if (itemStack.getCapability(Capabilities.FluidHandler.ITEM) == null) return;
+
+        // Container holds fluid: pour it into the tank
+        FluidActionResult result = FluidUtil.tryEmptyContainer(itemStack, tank, tank.getCapacity(), null, true);
+        if (result.isSuccess()) {
+            spewer.setItem(0, result.getResult());
+            playFluidSound(level, pos, tank.getFluid(), true);
+            return;
+        }
+
+        // Container is empty (or has room): fill it from the tank
+        if (tank.isEmpty()) return;
+        FluidStack before = tank.getFluid().copy();
+        result = FluidUtil.tryFillContainer(itemStack, tank, tank.getCapacity(), null, true);
+        if (result.isSuccess()) {
+            spewer.setItem(0, result.getResult());
+            playFluidSound(level, pos, before, false);
+        }
+    }
+
+    private static void playFluidSound(Level level, BlockPos pos, FluidStack fluid, boolean emptyingIntoTank) {
+        if (fluid.isEmpty()) return;
+        SoundEvent sound = fluid.getFluidType().getSound(fluid,
+                emptyingIntoTank ? SoundActions.BUCKET_EMPTY : SoundActions.BUCKET_FILL);
+        if (sound == null) sound = SoundEvents.BUCKET_FILL;
+        level.playSound(null, pos, sound, SoundSource.BLOCKS, 1.0f, 1.0f);
     }
 
     public Vec3 getSpawnPos(BlockPos pos) {

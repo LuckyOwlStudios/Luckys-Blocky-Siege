@@ -1,6 +1,16 @@
 package net.luckystudios.gui.spewer_cannon;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.world.inventory.InventoryMenu;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import org.joml.Matrix4f;
 import net.luckystudios.BlockySiege;
 import net.luckystudios.blocks.custom.shooting.spewer.SpewerBlockEntity;
 import net.luckystudios.gui.ModCyclingSlotBackground;
@@ -35,25 +45,14 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
     private final BlockPos blockPos;
     private final SpewerBlockEntity spewerBlockEntity;
     private ImageButton targetButton;
-    private ImageButton infoButton;
     private final ModCyclingSlotBackground ammoIcon = new ModCyclingSlotBackground();
 
     // GUI Resources
     private static final ResourceLocation GUI_TEXTURE = BlockySiege.id("textures/gui/container/spewer_cannon_gui.png");
-    private static final ResourceLocation LAVA_FRAME_TEXTURE = BlockySiege.id("textures/gui/container/lava_frame.png");
-    private static final ResourceLocation LAVA_LIQUID_TEXTURE = BlockySiege.id("textures/gui/container/lava.png");
-    private static final ResourceLocation WATER_FRAME_TEXTURE = BlockySiege.id("textures/gui/container/water_frame.png");
-    private static final ResourceLocation WATER_LIQUID_TEXTURE = BlockySiege.id("textures/gui/container/water.png");
-    private static final ResourceLocation POTION_TANK_TEXTURE = BlockySiege.id("textures/gui/container/potion.png");
 
     private static final WidgetSprites TARGET_BUTTON_SPRITES = new WidgetSprites(
             BlockySiege.id("textures/gui/container/target.png"),
             BlockySiege.id("textures/gui/container/target_highlighted.png")
-    );
-
-    private static final WidgetSprites INFO_BUTTON_SPRITES = new WidgetSprites(
-            BlockySiege.id("textures/gui/container/info.png"),
-            BlockySiege.id("textures/gui/container/info_highlighted.png")
     );
 
     private static final List<ResourceLocation> SLOT_SPRITES = List.of(
@@ -70,7 +69,6 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
     private static final int SLOT_ICON_Y = 35;
     private static final int BUTTONS_X = 152;
     private static final int TARGET_BUTTON_Y = 10;
-    private static final int INFO_BUTTON_Y = 26;
 
     public SpewerCannonBlockScreen(SpewerCannonBlockBlockMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -96,19 +94,6 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
             }
         };
         this.addRenderableWidget(targetButton);
-        this.infoButton = new ImageButton(
-                this.leftPos + BUTTONS_X,
-                this.topPos + INFO_BUTTON_Y,
-                14, 14,
-                INFO_BUTTON_SPRITES,
-                button -> PacketDistributor.sendToServer(new SpewerCannonBlockScreenPacket(blockPos, 0, 0))
-        ) {
-            @Override
-            public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-                guiGraphics.blit(sprites.get(isActive(), isHoveredOrFocused()), getX(), getY(), 0, 0, width, height, width, height);
-            }
-        };
-        this.addRenderableWidget(infoButton);
     }
 
     @Override
@@ -134,142 +119,57 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
     }
 
     private void renderFluidTank(GuiGraphics guiGraphics, int guiX, int guiY) {
-        float fillPercentage = spewerBlockEntity.getFillPercentage();
-        if (fillPercentage <= 0) return;
-
-        int fillHeight = Mth.ceil(fillPercentage * TANK_HEIGHT);
-        int emptyHeight = TANK_HEIGHT - fillHeight;
-
         FluidStack fluidStack = spewerBlockEntity.getFluidTank().getFluid();
-        Fluid fluid = spewerBlockEntity.getFluid();
+        if (fluidStack.isEmpty()) return;
 
-        // Set up rendering state
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        int capacity = spewerBlockEntity.getFluidTank().getCapacity();
+        int fillHeight = Mth.clamp(Mth.ceil((float) fluidStack.getAmount() / capacity * TANK_HEIGHT), 1, TANK_HEIGHT);
+
+        // Any fluid (vanilla or modded) supplies its own still texture and tint through its client extensions
+        IClientFluidTypeExtensions ext = IClientFluidTypeExtensions.of(fluidStack.getFluid());
+        TextureAtlasSprite sprite = Minecraft.getInstance()
+                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+                .apply(ext.getStillTexture(fluidStack));
+
+        int tint = ext.getTintColor(fluidStack);
+        PotionContents potion = fluidStack.get(DataComponents.POTION_CONTENTS);
+        if (potion != null) tint = 0xFF000000 | potion.getColor();
+        float a = ((tint >> 24) & 0xFF) / 255.0F;
+        float r = ((tint >> 16) & 0xFF) / 255.0F;
+        float g = ((tint >> 8) & 0xFF) / 255.0F;
+        float b = (tint & 0xFF) / 255.0F;
+
+        // Tile the 16x16 sprite from the bottom of the tank upward
+        int left = guiX + TANK_X;
+        int bottom = guiY + TANK_Y + TANK_HEIGHT;
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-
-        // Determine texture and color
-        ResourceLocation texture = getTankTexture(fluidStack);
-        setFluidColor(fluidStack);
-
-        // Animation variables
-        long gameTime = spewerBlockEntity.getLevel().getGameTime();
-        float animationSpeed = spewerBlockEntity.getFluid() == Fluids.LAVA ? 0.25F : 0.5f; // Adjust speed as needed
-        float textureOffset = (gameTime * animationSpeed) % TANK_HEIGHT;
-
-        // Render animated fluid
-        renderAnimatedFluid(guiGraphics, texture,
-                guiX + TANK_X, guiY + TANK_Y + emptyHeight,
-                TANK_WIDTH, fillHeight, textureOffset);
-
-        // Reset color before rendering frame
-//        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-        // Render static frame overlay
-//        ResourceLocation frameTexture = getFrameTexture(fluid, fluidStack);
-//        renderStaticFrame(guiGraphics, frameTexture,
-//                guiX + TANK_X, guiY + TANK_Y + emptyHeight,
-//                TANK_WIDTH, fillHeight);
-
-        // Reset rendering state
+        for (int drawn = 0; drawn < fillHeight; drawn += 16) {
+            int h = Math.min(16, fillHeight - drawn);
+            for (int dx = 0; dx < TANK_WIDTH; dx += 16) {
+                int w = Math.min(16, TANK_WIDTH - dx);
+                blitSprite(guiGraphics, sprite, left + dx, bottom - drawn - h, w, h, r, g, b, a);
+            }
+        }
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.disableBlend();
     }
 
-//    private ResourceLocation getFrameTexture(Fluid fluid, FluidStack fluidStack) {
-//        if (fluid == Fluids.LAVA) {
-//            return LAVA_FRAME_TEXTURE;
-//        } else {
-//            // For both water and potions, use water frame
-//            // You could add a separate potion frame texture if desired
-//            return WATER_FRAME_TEXTURE;
-//        }
-//    }
-//
-//    private void renderStaticFrame(GuiGraphics guiGraphics, ResourceLocation frameTexture,
-//                                   int x, int y, int width, int height) {
-//        // Render frame at the same position and size as the liquid, but without animation
-//        int textureHeight = TANK_HEIGHT; // Frame texture height should match liquid texture height
-//
-//        // If the fill height is less than the full texture height, we need to clip the frame
-//        if (height < textureHeight) {
-//            // Calculate which part of the frame texture to show (bottom portion)
-//            int vOffset = textureHeight - height;
-//            guiGraphics.blit(frameTexture,
-//                    x, y,                      // screen position
-//                    0, vOffset,                // texture u,v (start from bottom part of texture)
-//                    width, height,             // render size
-//                    width, textureHeight);     // texture size
-//        } else {
-//            // Full height - render normally
-//            guiGraphics.blit(frameTexture,
-//                    x, y,
-//                    0, 0,
-//                    width, height,
-//                    width, textureHeight);
-//        }
-//    }
-
-    private void renderAnimatedFluid(GuiGraphics guiGraphics, ResourceLocation texture,
-                                     int x, int y, int width, int height, float offset) {
-
-        // Calculate how many times we need to repeat the texture
-        int textureHeight = TANK_HEIGHT; // Your texture height
-        int totalHeight = height + (int)Math.ceil(offset);
-
-        for (int i = 0; i < Math.ceil((float)totalHeight / textureHeight) + 1; i++) {
-            int renderY = y - (int)offset + (i * textureHeight);
-            int renderHeight = Math.min(textureHeight, Math.max(0, y + height - renderY));
-
-            if (renderHeight <= 0) continue;
-
-            // Calculate texture coordinates
-            int vOffset = 0;
-            if (renderY < y) {
-                vOffset = y - renderY;
-                renderHeight -= vOffset;
-                renderY = y;
-            }
-
-            if (renderY + renderHeight > y + height) {
-                renderHeight = (y + height) - renderY;
-            }
-
-            if (renderHeight > 0) {
-                guiGraphics.blit(texture,
-                        x, renderY,                    // screen position
-                        0, vOffset,                    // texture u,v
-                        width, renderHeight,           // render size
-                        width, textureHeight);         // texture size
-            }
-        }
-    }
-
-    private ResourceLocation getTankTexture(FluidStack fluidStack) {
-        if (fluidStack.getFluid() == Fluids.LAVA) {
-            return LAVA_LIQUID_TEXTURE;
-        } else if (fluidStack.has(DataComponents.POTION_CONTENTS)) {
-            return POTION_TANK_TEXTURE;
-        } else {
-            return WATER_LIQUID_TEXTURE;
-        }
-    }
-
-    private void setFluidColor(FluidStack fluidStack) {
-        if (fluidStack.getFluid() == Fluids.LAVA) {
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // No tinting for lava
-        } else {
-            PotionContents potionContents = fluidStack.get(DataComponents.POTION_CONTENTS);
-            if (potionContents != null) {
-                int color = potionContents.getColor();
-                float r = ((color >> 16) & 0xFF) / 255.0F;
-                float g = ((color >> 8) & 0xFF) / 255.0F;
-                float b = (color & 0xFF) / 255.0F;
-                RenderSystem.setShaderColor(r, g, b, 1.0F);
-            } else {
-                // Default water color
-                RenderSystem.setShaderColor(0.247F, 0.463F, 0.894F, 1.0F);
-            }
-        }
+    // Draws the top-left w x h part of a sprite, tinted. Cropping UVs keeps the texture undistorted.
+    private static void blitSprite(GuiGraphics guiGraphics, TextureAtlasSprite sprite, int x, int y, int w, int h,
+                                   float r, float g, float b, float a) {
+        float u0 = sprite.getU0();
+        float v0 = sprite.getV0();
+        float u1 = u0 + (sprite.getU1() - u0) * w / 16.0F;
+        float v1 = v0 + (sprite.getV1() - v0) * h / 16.0F;
+        RenderSystem.setShaderTexture(0, sprite.atlasLocation());
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        Matrix4f matrix = guiGraphics.pose().last().pose();
+        BufferBuilder buffer = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        buffer.addVertex(matrix, x, y + h, 0).setUv(u0, v1).setColor(r, g, b, a);
+        buffer.addVertex(matrix, x + w, y + h, 0).setUv(u1, v1).setColor(r, g, b, a);
+        buffer.addVertex(matrix, x + w, y, 0).setUv(u1, v0).setColor(r, g, b, a);
+        buffer.addVertex(matrix, x, y, 0).setUv(u0, v0).setColor(r, g, b, a);
+        BufferUploader.drawWithShader(buffer.buildOrThrow());
     }
 
     @Override
@@ -286,9 +186,6 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
         // Render tooltips
         if (targetButton.isHovered()) {
             guiGraphics.renderTooltip(font, Component.translatable("container.blockysiege.aim"), pMouseX, pMouseY);
-        }
-        if (infoButton.isHovered()) {
-            guiGraphics.renderTooltip(font, Component.translatable("container.blockysiege.info"), pMouseX, pMouseY);
         }
 
         renderTankTooltip(guiGraphics, pMouseX, pMouseY);
@@ -311,24 +208,9 @@ public class SpewerCannonBlockScreen extends AbstractContainerScreen<SpewerCanno
             }
 
             FluidStack fluidStack = spewerBlockEntity.getFluidTank().getFluid();
-            Fluid fluid = fluidStack.getFluid();
-            String fluidName = getFluidName(fluid, fluidStack);
-
-            Component tooltip = Component.literal(fluidName + ": " + fluidAmount + "mB");
+            Component tooltip = Component.empty().append(fluidStack.getHoverName()).append(": " + fluidAmount + "mB");
             guiGraphics.renderTooltip(font, tooltip, mouseX, mouseY);
         }
-    }
-
-    private String getFluidName(Fluid fluid, FluidStack fluidStack) {
-        if (fluid == Fluids.LAVA) {
-            return "Lava";
-        } else if (fluidStack.has(DataComponents.POTION_CONTENTS)) {
-            PotionContents potionContents = fluidStack.get(DataComponents.POTION_CONTENTS);
-            if (potionContents != null && potionContents.potion().isPresent()) {
-                return "Potion";
-            }
-        }
-        return "Water";
     }
 
     @Override
