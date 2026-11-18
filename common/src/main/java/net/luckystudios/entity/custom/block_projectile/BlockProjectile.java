@@ -133,7 +133,7 @@ public class BlockProjectile extends Projectile {
         if (!(this.stack.getItem() instanceof BlockItem blockItem)) return false;
         // Nudge the hit point back out of the surface so the placement context targets the face we struck
         BlockHitResult placeHit = new BlockHitResult(result.getLocation(), result.getDirection(), result.getBlockPos(), false);
-        BlockPlaceContext context = new BlockPlaceContext(new UseOnContext(level, null, InteractionHand.MAIN_HAND, this.stack.copy(), placeHit));
+        BlockPlaceContext context = new BlockPlaceContext(level, null, InteractionHand.MAIN_HAND, this.stack.copy(), placeHit) {};
         InteractionResult placed = blockItem.place(context);
         return placed.consumesAction();
     }
