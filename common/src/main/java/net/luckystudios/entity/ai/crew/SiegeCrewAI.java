@@ -661,7 +661,7 @@ public final class SiegeCrewAI {
             state.fireCooldown = cannon.maxCooldown + 40 + mob.getRandom().nextInt(30);
         } else if (weapon instanceof MultiCannonBlockEntity multiCannon) {
             if (!multiCannon.canShoot()) return;
-            int rounds = Math.min(4, Math.min(multiCannon.getFuse().getCount(), multiCannon.getProjectile().getCount()));
+            int rounds = Math.min(4, multiCannon.getAvailableRounds());
             multiCannon.setBulletCount(Math.max(1, rounds));
             block.triggerBlock(blockState, level, pos);
             mob.swing(InteractionHand.MAIN_HAND);
@@ -713,38 +713,28 @@ public final class SiegeCrewAI {
 
     private static boolean hasAmmo(AbstractShootingAimableBlockEntity weapon) {
         if (weapon instanceof CannonBlockEntity cannon) {
-            return cannon.getFuse().is(ModTags.GUNPOWDERS) && CannonBlockEntity.isValidAmmo(cannon.getProjectile());
+            return cannon.getShotFuse().is(ModTags.GUNPOWDERS) && CannonBlockEntity.isValidAmmo(cannon.getShotProjectile());
         }
         if (weapon instanceof MultiCannonBlockEntity multiCannon) {
-            return multiCannon.getFuse().is(ModTags.GUNPOWDERS) && !multiCannon.getProjectile().isEmpty();
+            return multiCannon.getAvailableRounds() > 0;
         }
         if (weapon instanceof SpewerBlockEntity spewer) {
-            return !spewer.getFluidTank().isEmpty();
-        }
-        return false;
-    }
-
-    /** Whether the crew can top the weapon up from their own supplies. They only fill empty slots. */
-    private static boolean canResupply(AbstractShootingAimableBlockEntity weapon) {
-        if (!BlockySiegeConfig.SIEGE_CREWS_BRING_AMMO.get()) return false;
-        if (weapon instanceof CannonBlockEntity cannon) {
-            ItemStack fuse = cannon.getFuse();
-            ItemStack ammo = cannon.getProjectile();
-            return (fuse.isEmpty() || fuse.is(ModTags.GUNPOWDERS)) && (ammo.isEmpty() || CannonBlockEntity.isValidAmmo(ammo));
-        }
-        if (weapon instanceof MultiCannonBlockEntity multiCannon) {
-            ItemStack fuse = multiCannon.getFuse();
-            return fuse.isEmpty() || fuse.is(ModTags.GUNPOWDERS);
-        }
-        if (weapon instanceof SpewerBlockEntity spewer) {
-            return spewer.getFluidTank().isEmpty() && spewer.getLiquidStack().isEmpty();
+            return !spewer.getShotFluid().isEmpty();
         }
         return false;
     }
 
     /**
-     * Loads the weapon from the crew's own supplies. Piglins bring Nether ammo (fire bombs, fire charges, lava);
-     * everyone else brings cannonballs, arrows and poison.
+     * Whether the crew can supply the weapon themselves. Crew ammo is virtual: the weapon fires it as if loaded,
+     * but it never goes into the weapon's slots or tank, so killing a crew never leaves free ammo behind.
+     */
+    private static boolean canResupply(AbstractShootingAimableBlockEntity weapon) {
+        return BlockySiegeConfig.SIEGE_CREWS_BRING_AMMO.get() && isCrewable(weapon);
+    }
+
+    /**
+     * Readies the next shot from the crew's own supplies. Piglins bring Nether ammo (fire bombs, fire charges,
+     * lava); everyone else brings cannonballs, arrows and poison.
      */
     private static void resupply(ServerLevel level, Mob mob, AbstractShootingAimableBlockEntity weapon) {
         boolean nether = mob instanceof AbstractPiglin;
@@ -752,15 +742,9 @@ public final class SiegeCrewAI {
         SoundEvent sound = SoundEvents.CHAIN_PLACE;
 
         if (weapon instanceof CannonBlockEntity cannon) {
-            if (cannon.getFuse().isEmpty()) cannon.setItem(0, new ItemStack(Items.GUNPOWDER, 4));
-            if (cannon.getProjectile().isEmpty()) {
-                cannon.setItem(1, new ItemStack(nether ? ModBlocks.FIRE_BOMB.get() : ModBlocks.CANNONBALL.get()));
-            }
+            cannon.setCrewAmmo(new ItemStack(nether ? ModBlocks.FIRE_BOMB.get() : ModBlocks.CANNONBALL.get()), 4);
         } else if (weapon instanceof MultiCannonBlockEntity multiCannon) {
-            if (multiCannon.getFuse().isEmpty()) multiCannon.setItem(0, new ItemStack(Items.GUNPOWDER, 8));
-            if (multiCannon.getProjectile().isEmpty()) {
-                multiCannon.setItem(1, new ItemStack(nether ? Items.FIRE_CHARGE : Items.ARROW, 8));
-            }
+            multiCannon.setCrewAmmo(new ItemStack(nether ? Items.FIRE_CHARGE : Items.ARROW), 8);
         } else if (weapon instanceof SpewerBlockEntity spewer) {
             FluidStack fluid;
             if (nether) {
@@ -771,21 +755,25 @@ public final class SiegeCrewAI {
                 fluid.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.POISON));
                 sound = SoundEvents.BREWING_STAND_BREW;
             }
-            spewer.getFluidTank().fill(fluid, FluidTank.FluidAction.EXECUTE);
+            spewer.setCrewFluid(fluid);
         }
-        weapon.setChanged();
         mob.swing(InteractionHand.MAIN_HAND);
         level.playSound(null, pos, sound, SoundSource.HOSTILE, 0.8F, 0.9F + mob.getRandom().nextFloat() * 0.2F);
     }
 
+    /** Takes back whatever virtual ammo the crew left in the weapon. */
+    private static void clearCrewAmmo(AbstractShootingAimableBlockEntity weapon) {
+        weapon.clearCrewAmmo();
+    }
+
     private static int availableCannonPower(CannonBlockEntity cannon) {
-        ItemStack fuse = cannon.getFuse();
+        ItemStack fuse = cannon.getShotFuse();
         if (fuse.is(ModTags.GUNPOWDERS)) return Mth.clamp(fuse.getCount(), 1, 4);
         return 4; // Empty, and about to be filled by the crew
     }
 
     private static WeaponBallistics.Profile cannonProfile(CannonBlockEntity cannon, int power) {
-        ItemStack ammo = cannon.getProjectile();
+        ItemStack ammo = cannon.getShotProjectile();
         // Cannon ammo flies like the mod's cannonballs; any other block is a slightly floatier block projectile
         double gravity = ammo.isEmpty() || ammo.is(ModTags.CANNON_AMMO) ? 0.05 : 0.04;
         return new WeaponBallistics.Profile(power, gravity, 0.99, cannon.barrelOffsetDistance());
@@ -793,7 +781,7 @@ public final class SiegeCrewAI {
 
     private static WeaponBallistics.Profile profile(AbstractShootingAimableBlockEntity weapon) {
         if (weapon instanceof MultiCannonBlockEntity multiCannon) {
-            ItemStack ammo = multiCannon.getProjectile();
+            ItemStack ammo = multiCannon.getShotProjectile();
             if (ammo.getItem() instanceof FireChargeItem) return new WeaponBallistics.Profile(4.0F, 0.0, 1.0, 1.0F);
             if (ammo.getItem() instanceof ArrowItem) return new WeaponBallistics.Profile(4.0F, 0.05, 0.99, 1.0F);
             return new WeaponBallistics.Profile(4.0F, 0.03, 0.99, 1.0F);
@@ -869,6 +857,7 @@ public final class SiegeCrewAI {
         BlockPos weapon = state.weapon;
         LivingEntity target = state.target;
         AbstractShootingAimableBlockEntity weaponEntity = weapon == null ? null : weaponAt(level, weapon);
+        if (state.phase == SiegeCrewState.Phase.MANNING && weaponEntity != null) clearCrewAmmo(weaponEntity);
         if (state.phase == SiegeCrewState.Phase.MANNING && mob.getVehicle() instanceof Seat) {
             dismount(level, mob, weapon, weaponEntity != null ? weaponEntity.yaw : mob.getYRot());
         }

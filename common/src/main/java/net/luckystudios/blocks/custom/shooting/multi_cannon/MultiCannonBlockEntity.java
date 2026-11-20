@@ -156,11 +156,47 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
     // Used to see if the gun can continue to shoot its other rounds in the burst
     private boolean canFire() {
-        ItemStack fuseStack = this.getFuse();
-        boolean hasFuse = fuseStack.is(ModTags.GUNPOWDERS);
-        ItemStack ammoStack = this.getProjectile();
-        boolean hasAmmo = !ammoStack.isEmpty();
-        return hasAmmo && hasFuse;
+        return this.hasLoadedAmmo() || this.usesCrewAmmo();
+    }
+
+    private boolean hasLoadedAmmo() {
+        return this.getFuse().is(ModTags.GUNPOWDERS) && !this.getProjectile().isEmpty();
+    }
+
+    // Rounds a mob crew brings. Fired like loaded ammo but never stored in the container, so they can't be taken
+    // out, and not saved: they only exist while a crew works the gun. Loaded ammo is always used first.
+    private ItemStack crewProjectile = ItemStack.EMPTY;
+    private int crewRounds = 0;
+
+    public void setCrewAmmo(ItemStack projectile, int rounds) {
+        this.crewProjectile = projectile.copyWithCount(1);
+        this.crewRounds = Math.max(0, rounds);
+    }
+
+    @Override
+    public boolean hasCrewAmmo() {
+        return this.crewRounds > 0;
+    }
+
+    @Override
+    public void clearCrewAmmo() {
+        this.crewProjectile = ItemStack.EMPTY;
+        this.crewRounds = 0;
+    }
+
+    private boolean usesCrewAmmo() {
+        return !this.hasLoadedAmmo() && this.crewRounds > 0 && !this.crewProjectile.isEmpty();
+    }
+
+    /** What the next round fires: loaded ammo, else the crew's. */
+    public ItemStack getShotProjectile() {
+        return this.usesCrewAmmo() ? this.crewProjectile : this.getProjectile();
+    }
+
+    /** How many rounds can be fired right now, from loaded ammo or else the crew's. */
+    public int getAvailableRounds() {
+        if (this.hasLoadedAmmo()) return Math.min(this.getFuse().getCount(), this.getProjectile().getCount());
+        return this.usesCrewAmmo() ? this.crewRounds : 0;
     }
 
     @Override
@@ -179,7 +215,8 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
         Vec3 spawnPos = getBarrelPositions(multiCannonBlockEntity).get(multiCannonBlockEntity.barrelIndex);
 
         // Create and launch the projectile
-        ItemStack itemStack = multiCannonBlockEntity.getProjectile();
+        boolean crewAmmo = multiCannonBlockEntity.usesCrewAmmo();
+        ItemStack itemStack = crewAmmo ? multiCannonBlockEntity.crewProjectile.copy() : multiCannonBlockEntity.getProjectile();
         Mob gunner = SiegeCrewAI.crewGunner(level, pos);
         if (itemStack.getItem() instanceof ProjectileItem projectileItem) {
             Projectile projectile = projectileItem.asProjectile(level, spawnPos, itemStack, Direction.getNearest(direction));
@@ -201,8 +238,12 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
             level.addFreshEntity(itemProjectile);
         }
         // Consume
-        multiCannonBlockEntity.removeItem(0, 1);
-        multiCannonBlockEntity.removeItem(1, 1);
+        if (crewAmmo) {
+            multiCannonBlockEntity.crewRounds--;
+        } else {
+            multiCannonBlockEntity.removeItem(0, 1);
+            multiCannonBlockEntity.removeItem(1, 1);
+        }
         multiCannonBlockEntity.barrelIndex += 1;
         if (multiCannonBlockEntity.barrelIndex > 3) {
             multiCannonBlockEntity.barrelIndex = 0; // Reset if out of bounds

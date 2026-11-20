@@ -1,5 +1,6 @@
 package net.luckystudios.blocks.custom.shooting;
 
+import net.luckystudios.entity.ai.crew.SiegeCrewAI;
 import net.luckystudios.entity.custom.seat.Seat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -35,6 +36,11 @@ public abstract class AbstractShootingAimableBlockEntity extends RandomizableCon
     }
 
     public static void extraTick(Level level, BlockPos pos, BlockState state, AbstractShootingAimableBlockEntity shootingAimableBlockEntity) {
+        // Virtual crew ammo only lasts while a mob crew is seated; once it's gone, nobody else gets to use it
+        if (!level.isClientSide && (level.getGameTime() + pos.asLong()) % 20 == 0 && shootingAimableBlockEntity.hasCrewAmmo()
+                && SiegeCrewAI.crewGunner(level, pos) == null) {
+            shootingAimableBlockEntity.clearCrewAmmo();
+        }
         if (level.isClientSide) {
             shootingAimableBlockEntity.displayOYaw = shootingAimableBlockEntity.displayYaw;
             shootingAimableBlockEntity.displayOPitch = shootingAimableBlockEntity.displayPitch;
@@ -193,6 +199,15 @@ public abstract class AbstractShootingAimableBlockEntity extends RandomizableCon
     @Override
     protected void setItems(NonNullList<ItemStack> itemsIn) {
         this.items = itemsIn;
+    }
+
+    /** Whether a mob crew has readied virtual ammo here (see SiegeCrewAI). */
+    public boolean hasCrewAmmo() {
+        return false;
+    }
+
+    /** Drops any virtual ammo a mob crew readied. It was never in the container, so nothing is lost. */
+    public void clearCrewAmmo() {
     }
 
     public abstract float maxPitch();
