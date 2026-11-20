@@ -12,6 +12,8 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Quaternionf;
 
 // Copied from the ArrowRenderer class in Minecraft
 // Also used WindChargeRenderer as a reference
@@ -28,11 +30,17 @@ public abstract class AbstractCannonBallRenderer<T extends AbstractCannonBall> e
         super(context);
         this.model = new CannonBallModel(context.bakeLayer(ModModelLayers.CANNON_BALL));
         this.trailModel = new TrailModel(context.bakeLayer(ModModelLayers.TRAIL));
+        this.shadowRadius = 0.25F;
     }
 
     @Override
     public void render(T entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
         poseStack.pushPose();
+        boolean ball = entity.usesBallPhysics();
+        if (ball) {
+            // Bouncing balls keep their hitbox on the ground, so draw the ball in the middle of it
+            poseStack.translate(0.0F, entity.getBbHeight() * 0.5F, 0.0F);
+        }
 
         // Boat/minecart-style wobble that gets stronger with every hit
         float wobble = entity.getWobbleTicks() - partialTicks;
@@ -45,18 +53,31 @@ public abstract class AbstractCannonBallRenderer<T extends AbstractCannonBall> e
         float yaw = Mth.lerp(partialTicks, entity.yRotO, entity.getYRot()) - 90.0F;
         float pitch = Mth.lerp(partialTicks, entity.xRotO, entity.getXRot()) + 90.0F;
 
-        // Apply yaw then pitch rotation
-        poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(pitch));
-
-        // Render the model
+        // Render the model: turned by its spin once it has bounced, otherwise facing the way it flies
+        poseStack.pushPose();
+        Quaternionf spin = ball ? entity.getSpin(partialTicks) : null;
+        if (spin != null) {
+            poseStack.mulPose(spin);
+        } else {
+            poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(pitch));
+        }
         float f = (float)entity.tickCount + partialTicks;
         VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(getTextureLocation(entity)));
         model.setupAnim(entity, 0.0F, 0.0F, entity.tickCount + partialTicks, 0.0F, 0.0F);
         model.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY);
+        poseStack.popPose();
 
-        if (entity instanceof AbstractCannonBall abstractCannonBall && !abstractCannonBall.isStuck) {
-            VertexConsumer vertexConsumer2 = buffer.getBuffer(RenderType.breezeWind(TRAIL_LOCATION, 0.0F, this.xOffset(f, abstractCannonBall) % 1.0F));
+        if (!entity.isStuck && entity.showsTrail()) {
+            if (ball) {
+                // Point the trail straight back along the way the ball is going, which can change at every bounce
+                Vec3 motion = entity.getDeltaMovement();
+                yaw = (float)(Mth.atan2(motion.x, motion.z) * Mth.RAD_TO_DEG) - 90.0F;
+                pitch = (float)(Mth.atan2(motion.y, motion.horizontalDistance()) * Mth.RAD_TO_DEG) + 90.0F;
+            }
+            poseStack.mulPose(Axis.YP.rotationDegrees(yaw));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(pitch));
+            VertexConsumer vertexConsumer2 = buffer.getBuffer(RenderType.breezeWind(TRAIL_LOCATION, 0.0F, this.xOffset(f, entity) % 1.0F));
             trailModel.setupAnim(entity, 0.0F, 0.0F, entity.tickCount + partialTicks, 0.0F, 0.0F);
             trailModel.renderToBuffer(poseStack, vertexConsumer2, packedLight, OverlayTexture.NO_OVERLAY);
         }
