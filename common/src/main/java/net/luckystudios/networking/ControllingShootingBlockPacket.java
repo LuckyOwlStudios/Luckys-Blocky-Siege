@@ -6,7 +6,6 @@ import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntit
 import net.luckystudios.blocks.custom.shooting.AbstractShootingBlock;
 import net.luckystudios.blocks.custom.shooting.cannon.CannonBlockEntity;
 import net.luckystudios.blocks.custom.shooting.multi_cannon.MultiCannonBlockEntity;
-import net.luckystudios.blocks.custom.shooting.spewer.SpewerBlockEntity;
 import net.luckystudios.entity.custom.seat.Seat;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -88,11 +87,11 @@ public class ControllingShootingBlockPacket implements CustomPacketPayload {
 
             }
             case HOLD_FIRE -> {
-                // Continuous fire while the fire key is held, only for the spewer and only from its seat
+                // Continuous fire while the fire key is held, only for weapons that support it and only from their seat
                 if (level.isClientSide()) return;
                 if (!(player.getVehicle() instanceof Seat seat) || !seat.blockPosition().equals(pos)) return;
-                if (level.getBlockEntity(pos) instanceof SpewerBlockEntity spewer) {
-                    spewer.holdFire();
+                if (level.getBlockEntity(pos) instanceof AbstractShootingAimableBlockEntity weapon && weapon.supportsHoldFire()) {
+                    weapon.holdFire();
                 }
             }
             case FIRE_CANNON -> {
