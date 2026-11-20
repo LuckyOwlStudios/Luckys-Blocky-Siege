@@ -99,6 +99,8 @@ public final class SiegeCrewAI {
     private static final double CANNON_MIN_RANGE = 6.0;
     /** How far out crews engage with cannons and burst cannons. Well past a mob's own 16 to 32 block senses. */
     private static final double CANNON_RANGE = 48.0;
+    /** Spewer crews open up from 18 blocks, a little inside the spewer's roughly 20-block reach. */
+    private static final double SPEWER_RANGE = 18.0;
     private static final int MAX_VERTICAL_SEARCH = 6;
 
     /** Which mob has claimed each weapon, so two crew don't run for the same one. */
@@ -797,13 +799,13 @@ public final class SiegeCrewAI {
             return new WeaponBallistics.Profile(4.0F, 0.03, 0.99, 1.0F);
         }
         // Spewer blobs
-        return new WeaponBallistics.Profile(0.5F, 0.03, 0.99, weapon.barrelOffsetDistance());
+        return new WeaponBallistics.Profile(SpewerBlockEntity.MUZZLE_VELOCITY, 0.03, 0.99, weapon.barrelOffsetDistance());
     }
 
     private static double maxRange(AbstractShootingAimableBlockEntity weapon) {
         if (weapon instanceof CannonBlockEntity) return CANNON_RANGE;
         if (weapon instanceof MultiCannonBlockEntity) return CANNON_RANGE;
-        return 12.0;
+        return SPEWER_RANGE;
     }
 
     // ------------------------------------------------------------------------------------------------------------

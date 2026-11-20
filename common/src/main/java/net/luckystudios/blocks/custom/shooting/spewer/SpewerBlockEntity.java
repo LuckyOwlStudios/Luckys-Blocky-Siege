@@ -36,6 +36,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
 
+    /** Blocks per tick. 0.9 throws a blob about 20 blocks at full elevation. */
+    public static final float MUZZLE_VELOCITY = 0.9F;
+    /** Spray inaccuracy, as passed to Projectile#shoot. */
+    public static final float SPREAD = 8.0F;
+
     // Copied from Mcreator! :)
     private final FluidTank fluidTank = new FluidTank(1000) {
         @Override
@@ -185,7 +190,7 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
                 projectile = new WaterBlob(level, spawnPos.x, spawnPos.y, spawnPos.z);
             }
         }
-        projectile.shoot(direction.x, direction.y, direction.z, 0.5F, 12.0F); // power * speed factor
+        projectile.shoot(direction.x, direction.y, direction.z, MUZZLE_VELOCITY, SPREAD);
         level.addFreshEntity(projectile);
         spewerCannonBlockEntity.fluidTank.drain(10, FluidTank.FluidAction.EXECUTE);
     }
