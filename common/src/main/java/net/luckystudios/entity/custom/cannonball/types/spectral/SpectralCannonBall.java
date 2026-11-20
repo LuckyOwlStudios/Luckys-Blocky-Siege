@@ -109,6 +109,11 @@ public class SpectralCannonBall extends AbstractCannonBall {
     }
 
     private boolean canPenetrateBlock(BlockState state, double speed) {
+        // Crew shots only punch through weak blocks
+        if (!this.canBreak(state)) {
+            return false;
+        }
+
         // Can't penetrate if too slow or hit too many blocks
         if (speed < MIN_PENETRATION_SPEED || blocksPenetrated >= MAX_PENETRATION_BLOCKS) {
             return false;
@@ -256,6 +261,7 @@ public class SpectralCannonBall extends AbstractCannonBall {
 
         @Override
         public boolean shouldBlockExplode(Explosion explosion, BlockGetter level, BlockPos pos, BlockState state, float explosionPower) {
+            if (explosion.getDirectSourceEntity() instanceof AbstractCannonBall ball && !ball.canBreak(state)) return false;
             return !state.is(Blocks.BEDROCK); // Everything except bedrock can be destroyed
         }
 
@@ -288,6 +294,7 @@ public class SpectralCannonBall extends AbstractCannonBall {
         @Override
         public boolean shouldBlockExplode(Explosion explosion, BlockGetter level, BlockPos pos, BlockState state, float explosionPower) {
             // Penetration explosions are more selective and weaker as power decreases
+            if (explosion.getDirectSourceEntity() instanceof AbstractCannonBall ball && !ball.canBreak(state)) return false;
             float hardness = state.getDestroySpeed(level, pos);
             SpectralCannonBall cannonBall = (SpectralCannonBall) explosion.getDirectSourceEntity();
 

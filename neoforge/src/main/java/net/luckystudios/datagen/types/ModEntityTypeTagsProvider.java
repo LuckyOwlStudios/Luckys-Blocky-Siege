@@ -29,6 +29,7 @@ public class ModEntityTypeTagsProvider extends EntityTypeTagsProvider {
         // Mobs that man cannons, burst cannons and spewers on their own
         tag(ModTags.SIEGE_CREW)
                 .add(EntityType.PILLAGER)
+                .add(EntityType.VINDICATOR)
                 .add(EntityType.PIGLIN)
         ;
     }

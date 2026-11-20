@@ -127,6 +127,15 @@ public final class SiegeCrewAI {
         };
     }
 
+    /** The mob crewing the weapon at this position, if any. Used to mark its shots as crew fire. */
+    @Nullable
+    public static Mob crewGunner(Level level, BlockPos pos) {
+        for (Seat seat : level.getEntitiesOfClass(Seat.class, new AABB(pos))) {
+            if (seat.getFirstPassenger() instanceof Mob mob) return mob;
+        }
+        return null;
+    }
+
     private static boolean canCrew(Mob mob) {
         if (!mob.isAlive() || mob.isBaby() || mob.isLeashed()) return false;
         // Piglins about to turn into zombified piglins are in no state to aim a cannon
@@ -413,17 +422,17 @@ public final class SiegeCrewAI {
             state.noAmmoTicks = 0;
         }
 
-        // Aim. A lit cannon fuse locks the barrel: the shot goes where it was laid.
+        // Aim. Crews keep tracking (and re-picking the charge) while a cannon's fuse burns, so the shot goes
+        // where the target will be when it actually fires.
         boolean fuseBurning = weapon instanceof CannonBlockEntity cannon && cannon.cooldown > 0;
         AimSolution aim = solveAim(weapon, target, state, false);
-        boolean aligned;
-        if (fuseBurning) {
-            aligned = false;
-        } else {
-            aligned = turnTowards(weapon, aim.yaw, aim.pitch);
-        }
+        boolean aligned = turnTowards(weapon, aim.yaw, aim.pitch);
+        if (fuseBurning) ((CannonBlockEntity) weapon).firePower = Mth.clamp(aim.cannonPower, 1, 4);
         holdPose(mob, weapon);
-        if (!fuseBurning) syncWeapon(level, state, weapon);
+        // Hold back syncs in the last moments of a fuse so a late packet can't reset the client's own countdown
+        // past zero, which is when the client plays the shot's sound and recoil
+        boolean aboutToFire = weapon instanceof CannonBlockEntity cannon && cannon.cooldown > 0 && cannon.cooldown <= 6;
+        if (!aboutToFire) syncWeapon(level, state, weapon);
 
         if (state.fireCooldown > 0) {
             state.fireCooldown--;
@@ -546,11 +555,6 @@ public final class SiegeCrewAI {
 
         if (weapon instanceof CannonBlockEntity cannon) {
             int maxPower = availableCannonPower(cannon);
-            if (cannon.cooldown > 0) {
-                // Charge already chosen; the fuse is lit
-                WeaponBallistics.Solution s = WeaponBallistics.solve(cannonProfile(cannon, cannon.firePower), horizontal, vertical, cannon.minPitch(), cannon.maxPitch(), tolerance);
-                return new AimSolution(yaw, s.pitch(), s.reachable(), cannon.firePower);
-            }
             AimSolution fallback = null;
             for (int power = 1; power <= maxPower; power++) {
                 WeaponBallistics.Solution s = WeaponBallistics.solve(cannonProfile(cannon, power), horizontal, vertical, cannon.minPitch(), cannon.maxPitch(), tolerance);
