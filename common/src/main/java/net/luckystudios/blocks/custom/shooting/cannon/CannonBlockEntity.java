@@ -19,11 +19,8 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.*;
@@ -127,10 +124,14 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         double offsetDistance = 1.25;
         Vec3 spawnPos = Vec3.atCenterOf(pos).add(direction.scale(offsetDistance));
 
-        SoundEvent cannonSound = getCannonSoundVariant(level, spawnPos);
         if (level.isClientSide()) {
             float soundVolume = 2f + cannonBlockEntity.firePower * 0.6f;
-            level.playLocalSound(pos, ModSoundEvents.CANNON_FIRE.get(), SoundSource.BLOCKS, soundVolume, 1, false);
+            // Close boom: normal range, so it fades out with distance.
+            level.playLocalSound(spawnPos.x, spawnPos.y, spawnPos.z, ModSoundEvents.CANNON_FIRE.get(), SoundSource.BLOCKS,
+                    soundVolume, 0.75f + level.random.nextFloat() * 0.2f, false);
+            // Distant rumble: huge volume so the sound range reaches far past the close boom's.
+            level.playLocalSound(spawnPos.x, spawnPos.y, spawnPos.z, ModSoundEvents.CANNON_FIRE_DISTANT.get(), SoundSource.BLOCKS,
+                    10000f, 0.5f + level.random.nextFloat() * 0.2f, false);
         }
 
         if (level instanceof ServerLevel serverLevel) {
@@ -249,17 +250,6 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         }
 
         return null;
-    }
-
-    private static SoundEvent getCannonSoundVariant(Level level, Vec3 position) {
-        Player nearestPlayer = level.getNearestPlayer(position.x, position.y, position.z, 12, false);
-        if (nearestPlayer != null) {
-            double distSq = nearestPlayer.distanceToSqr(position);
-            if (distSq >= 256.0) {
-                return SoundEvents.GENERIC_EXPLODE.value(); // <- you'll need to register this
-            }
-        }
-        return ModSoundEvents.CANNON_FIRE.get();
     }
 
     @Override
