@@ -3,7 +3,8 @@
   "package": "net.luckystudios.mixins",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "FireworkRocketEntityMixin"
+    "FireworkRocketEntityMixin",
+    "MobMixin"
   ],
   "injectors": {
     "defaultRequire": 1

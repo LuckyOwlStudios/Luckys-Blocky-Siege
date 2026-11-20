@@ -25,5 +25,11 @@ public class ModEntityTypeTagsProvider extends EntityTypeTagsProvider {
                 .add(EntityType.TRIDENT)
                 .add(ModEntityTypes.FIREWORK_STAR.get())
         ;
+
+        // Mobs that man cannons, burst cannons and spewers on their own
+        tag(ModTags.SIEGE_CREW)
+                .add(EntityType.PILLAGER)
+                .add(EntityType.PIGLIN)
+        ;
     }
 }

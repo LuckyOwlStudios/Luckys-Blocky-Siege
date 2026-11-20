@@ -11,6 +11,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -51,6 +52,8 @@ public class Seat extends Entity {
             this.discard();
             return;
         }
+        // Mob crews aim the weapon themselves (see SiegeCrewAI); only players steer it with their view
+        if (livingEntity instanceof Mob) return;
         float playerYaw = livingEntity.getYRot();
         float playerPitch = livingEntity.getXRot();
         float normalizedYaw = (playerYaw % 360 + 360) % 360;

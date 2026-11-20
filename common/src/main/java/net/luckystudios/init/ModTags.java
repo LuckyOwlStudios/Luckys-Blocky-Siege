@@ -23,6 +23,8 @@ public class ModTags {
     public static final TagKey<Item> BUCKETS_POWDER_SNOW = createCommonItemTag("buckets/powder_snow");
 
     public static final TagKey<EntityType<?>> STRONG_PROJECTILE = createEntityTag("strong_projectile");
+    /** Mobs that man siege weapons on their own. */
+    public static final TagKey<EntityType<?>> SIEGE_CREW = createEntityTag("siege_crew");
 
     public static final TagKey<BannerPattern> PATTERN_ITEM_FORT = createBannerTag("pattern_item/fort");
 
