@@ -31,7 +31,8 @@ public class ModBlockStateProvider extends BlockStateProvider {
         generateCannonBallBlockState(ModBlocks.FROST_BOMB.get(), mcLoc("block/ice"), "translucent");
         generateCannonBallBlockState(ModBlocks.WIND_BOMB.get(), modLoc("block/projectile/wind_bomb"), "translucent");
 
-        simpleBlockWithItem(ModBlocks.BALLISTA_BLOCK.get(), models().cubeBottomTop("ballista_block", modLoc("block/ballista_side"), modLoc("block/iron_ring"), modLoc("block/iron_ring")));
+        // The item uses a flat 2D texture (assets/.../models/item/ballista_block.json), not the block model.
+        simpleBlock(ModBlocks.BALLISTA_BLOCK.get(), models().cubeBottomTop("ballista_block", modLoc("block/ballista_side"), modLoc("block/iron_ring"), modLoc("block/iron_ring")));
     }
 
     private void generateCannonBallBlockState(Block block, ResourceLocation breakParticle, String renderType) {

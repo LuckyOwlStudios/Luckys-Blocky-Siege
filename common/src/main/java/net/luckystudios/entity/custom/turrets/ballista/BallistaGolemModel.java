@@ -73,9 +73,36 @@ public class BallistaGolemModel<T extends BallistaEntity> extends HierarchicalMo
     @Override
     public void setupAnim(T t, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         this.root().getAllParts().forEach(ModelPart::resetPose);
-        this.string_left.yRot = 62.5F;
-        this.string_right.yRot = -62.5F;
+        setStringPose(t);
         setTurretRotations(netHeadYaw, headPitch);
+    }
+
+    // Strings are anchored at the limb tips (x = +-12) and run back towards the stock.
+    // Relaxed they angle in slightly; fully drawn they meet in the middle, further back.
+    private static final float STRING_LENGTH = 20.0F;
+    private static final float LIMB_OFFSET = 12.0F;
+    private static final float RELAXED_ANGLE = 0.333F;
+    private static final float RELAXED_DEPTH = STRING_LENGTH * Mth.cos(RELAXED_ANGLE);
+    // Negative: the strings are drawn towards the front of the turret.
+    private static final float DRAW_DISTANCE = -6.0F;
+
+    private void setStringPose(BallistaEntity entity) {
+        boolean visible = entity.isCrossbowInstalled();
+        this.string_left.visible = visible;
+        this.string_right.visible = visible;
+        if (!visible) {
+            return;
+        }
+        float progress = Mth.clamp(entity.getChargeProgress(), 0.0F, 1.0F);
+        float depth = RELAXED_DEPTH + DRAW_DISTANCE * progress;
+        float drawnAngle = (float) Math.atan2(LIMB_OFFSET, RELAXED_DEPTH + DRAW_DISTANCE);
+        float angle = Mth.lerp(progress, RELAXED_ANGLE, drawnAngle);
+        float length = depth / Mth.cos(angle);
+        float scale = length / STRING_LENGTH;
+        this.string_left.yRot = -angle;
+        this.string_right.yRot = angle;
+        this.string_left.zScale = scale;
+        this.string_right.zScale = scale;
     }
 
     private void setTurretRotations(float netHeadYaw, float headPitch) {
@@ -91,13 +118,5 @@ public class BallistaGolemModel<T extends BallistaEntity> extends HierarchicalMo
 
         // Apply pitch rotation to the turret (vertical elevation)
         this.turret.xRot = pitchRad;
-    }
-
-    private void setStringAngles(BallistaEntity entity) {
-        int progress = entity.getChargeTime();
-        float maxRotation = 12.5F;
-        float angle = Mth.clamp(progress, 0.0F, maxRotation);
-        this.string_left.yRot = -angle * 0.017453292F; // Convert degrees to radians
-        this.string_right.yRot = -angle * 0.017453292F; // Convert degrees to radians
     }
 }

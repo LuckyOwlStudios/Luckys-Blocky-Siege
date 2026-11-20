@@ -48,7 +48,8 @@ public class VolleyRackBlockEntity extends AbstractShootingAimableBlockEntity {
             volleyBlockEntity.cooldown--;
         }
 
-        boolean has_redstone = level.hasNeighborSignal(pos) || level.hasNeighborSignal(pos.above());
+        boolean holding = volleyBlockEntity.tickHoldFire();
+        boolean has_redstone = holding || level.hasNeighborSignal(pos) || level.hasNeighborSignal(pos.above());
 
         // Only fire if redstone is on AND cooldown is 0
         if (has_redstone && volleyBlockEntity.cooldown <= 0) {
@@ -60,6 +61,11 @@ public class VolleyRackBlockEntity extends AbstractShootingAimableBlockEntity {
             volleyBlockEntity.fireVolley(level, volleyBlockEntity, slotIndex);
             volleyBlockEntity.cooldown = 3; // Change this to change the rate of fire!
         }
+    }
+
+    @Override
+    public boolean supportsHoldFire() {
+        return true;
     }
 
     public void fireVolley(Level level, VolleyRackBlockEntity volleyBlockEntity, int slotIndex) {
