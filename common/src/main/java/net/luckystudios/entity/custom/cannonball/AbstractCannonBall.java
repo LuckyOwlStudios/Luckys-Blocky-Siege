@@ -248,4 +248,10 @@ public abstract class AbstractCannonBall extends AbstractNewProjectile {
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(), impactSound(), this.getSoundSource(), 1.0F, 1.0F);
         }
     }
+
+    /** Bouncing cannonballs clank when they skim off something or hit something hard. */
+    @Override
+    protected SoundEvent ballClankSound() {
+        return this.impactSound();
+    }
 }

@@ -3,10 +3,12 @@ package net.luckystudios.entity.custom.cannonball.types.spectral;
 import net.luckystudios.BlockySiegeConfig;
 import net.luckystudios.entity.custom.cannonball.AbstractCannonBall;
 import net.luckystudios.entity.custom.cannonball.AbstractNewProjectile;
+import net.luckystudios.entity.custom.cannonball.BallPhysics;
 import net.luckystudios.init.ModBlocks;
 import net.luckystudios.init.ModEntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.Entity;
@@ -39,7 +41,8 @@ public class SpectralCannonBall extends AbstractCannonBall {
     }
 
     public SpectralCannonBall(Level level, double x, double y, double z, boolean spectral) {
-        super(ModEntityTypes.SPECTRAL_CANNONBALL.get(), x, y, z, level, new ItemStack(ModBlocks.SPECTRAL_CANNONBALL.get()));
+        // Weapons give the middle of the muzzle, and the ball's position is the bottom of its 0.5 high hitbox
+        super(ModEntityTypes.SPECTRAL_CANNONBALL.get(), x, y - 0.25, z, level, new ItemStack(ModBlocks.SPECTRAL_CANNONBALL.get()));
         this.setGlowingTag(spectral);
     }
 
@@ -60,6 +63,12 @@ public class SpectralCannonBall extends AbstractCannonBall {
     @Override
     protected SoundEvent impactSound() {
         return SoundEvents.ANVIL_LAND;
+    }
+
+    /** Cannonballs skim, bounce and roll instead of sticking in where they land. */
+    @Override
+    public boolean usesBallPhysics() {
+        return true;
     }
 
     @Override
@@ -85,14 +94,9 @@ public class SpectralCannonBall extends AbstractCannonBall {
         BlockState hitState = this.level().getBlockState(hitPos);
         double currentSpeed = this.getDeltaMovement().length();
 
-        if (this.level().isClientSide()) {
-            // Client-side particles and effects
-            spawnImpactParticles(hitPos);
-            return;
-        }
-
-        // Already detonated once (e.g. rolled/fell into the crater): just come to rest
-        if (this.exploded || this.isInWater() || this.isInLava()) {
+        // Shallow hits skim off, and a ball that has already gone off (or is under water) just bounces and rolls.
+        // The client only predicts the bounce: whether the ball blows up or punches through is up to the server.
+        if (this.skimsOff(result) || this.level().isClientSide() || this.exploded || this.isInWater() || this.isInLava()) {
             super.onHitBlock(result);
             return;
         }
@@ -101,9 +105,11 @@ public class SpectralCannonBall extends AbstractCannonBall {
         if (canPenetrateBlock(hitState, currentSpeed)) {
             penetrateBlock(hitPos, hitState, result);
         } else {
-            // Create explosion and stop the projectile
+            // Blow up, then carry on into the crater (or bounce off what's left of the block) at a fraction of the speed
             this.exploded = true;
             createExplosion(hitPos, currentSpeed);
+            spawnImpactParticles(hitPos);
+            this.setDeltaMovement(this.getDeltaMovement().scale(BallPhysics.DETONATION_CARRY));
             super.onHitBlock(result);
         }
     }
@@ -222,15 +228,10 @@ public class SpectralCannonBall extends AbstractCannonBall {
     }
 
     private void spawnImpactParticles(BlockPos pos) {
-        // Spawn custom impact particles on client side
-        for (int i = 0; i < 10; i++) {
-            this.level().addParticle(ParticleTypes.EXPLOSION,
-                    pos.getX() + 0.5 + (this.random.nextGaussian() * 0.3),
-                    pos.getY() + 0.5 + (this.random.nextGaussian() * 0.3),
-                    pos.getZ() + 0.5 + (this.random.nextGaussian() * 0.3),
-                    this.random.nextGaussian() * 0.1,
-                    this.random.nextGaussian() * 0.1,
-                    this.random.nextGaussian() * 0.1);
+        // Sent from the server where the ball went off, so everyone sees it once (not on every bounce)
+        if (this.level() instanceof ServerLevel serverLevel) {
+            serverLevel.sendParticles(ParticleTypes.EXPLOSION, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5,
+                    10, 0.3, 0.3, 0.3, 0.1);
         }
     }
 
