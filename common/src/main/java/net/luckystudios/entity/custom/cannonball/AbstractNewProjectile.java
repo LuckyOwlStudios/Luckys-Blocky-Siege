@@ -950,7 +950,7 @@ public abstract class AbstractNewProjectile extends Projectile {
             }
         }
         this.setPos(start.add(moved));
-        this.setOnGroundWithKnownMovement(grounded, moved);
+        this.setOnGround(grounded);
 
         // Bumping into a wall
         if (blockedX || blockedZ) {
