@@ -97,6 +97,8 @@ public final class SiegeCrewAI {
     private static final double MOUNT_DISTANCE = 2.2;
     private static final double BAIL_DISTANCE = 3.5;
     private static final double CANNON_MIN_RANGE = 6.0;
+    /** How far out crews engage with cannons and burst cannons. Well past a mob's own 16 to 32 block senses. */
+    private static final double CANNON_RANGE = 48.0;
     private static final int MAX_VERTICAL_SEARCH = 6;
 
     /** Which mob has claimed each weapon, so two crew don't run for the same one. */
@@ -161,6 +163,13 @@ public final class SiegeCrewAI {
         LivingEntity target = vanillaTarget(mob);
         if (target != null && !isValidTarget(mob, target)) target = null;
 
+        int searchRadius = Math.max(4, BlockySiegeConfig.SIEGE_CREW_SEARCH_RADIUS.get());
+        if (target == null) {
+            // A mob's own senses only reach 16 to 32 blocks. Near a weapon, the crew looks out from the weapon
+            // instead, so a cannon can open up on enemies far beyond that.
+            target = spotFromNearbyWeapons(level, mob, state, searchRadius);
+        }
+
         boolean guard = false;
         if (target == null) {
             if (mob.getRandom().nextInt(GUARD_CHANCE) != 0) return false;
@@ -170,7 +179,7 @@ public final class SiegeCrewAI {
             return false;
         }
 
-        int radius = guard ? GUARD_RADIUS : Math.max(4, BlockySiegeConfig.SIEGE_CREW_SEARCH_RADIUS.get());
+        int radius = guard ? GUARD_RADIUS : searchRadius;
         BlockPos weapon = findWeapon(level, mob, state, target, radius);
         if (weapon == null) return false;
 
@@ -183,15 +192,15 @@ public final class SiegeCrewAI {
         return tickApproach(level, mob, state);
     }
 
-    @Nullable
-    private static BlockPos findWeapon(ServerLevel level, Mob mob, SiegeCrewState state, @Nullable LivingEntity target, int radius) {
+    /** Free, usable weapons within the radius, nearest first. Cheap: no pathfinding. */
+    private static List<AbstractShootingAimableBlockEntity> nearbyWeapons(ServerLevel level, Mob mob, SiegeCrewState state, int radius) {
         BlockPos origin = mob.blockPosition();
         int chunkRadius = (radius >> 4) + 1;
         int originChunkX = origin.getX() >> 4;
         int originChunkZ = origin.getZ() >> 4;
         double radiusSqr = (double) radius * radius;
 
-        List<BlockPos> candidates = new ArrayList<>();
+        List<AbstractShootingAimableBlockEntity> weapons = new ArrayList<>();
         for (int cx = originChunkX - chunkRadius; cx <= originChunkX + chunkRadius; cx++) {
             for (int cz = originChunkZ - chunkRadius; cz <= originChunkZ + chunkRadius; cz++) {
                 LevelChunk chunk = level.getChunkSource().getChunkNow(cx, cz);
@@ -204,10 +213,32 @@ public final class SiegeCrewAI {
                     if (state.ignoredWeapons.containsKey(pos)) continue;
                     if (isOccupied(level, pos) || isClaimedByOther(level, pos, mob)) continue;
                     if (!hasAmmo(weapon) && !canResupply(weapon)) continue;
-                    if (target != null && !canEngage(weapon, target, true)) continue;
-                    candidates.add(pos.immutable());
+                    weapons.add(weapon);
                 }
             }
+        }
+        weapons.sort(Comparator.comparingDouble(weapon -> weapon.getBlockPos().distSqr(origin)));
+        return weapons;
+    }
+
+    /** Looks out from the nearest free weapons for an enemy one of them could hit. */
+    @Nullable
+    private static LivingEntity spotFromNearbyWeapons(ServerLevel level, Mob mob, SiegeCrewState state, int radius) {
+        List<AbstractShootingAimableBlockEntity> weapons = nearbyWeapons(level, mob, state, radius);
+        for (int i = 0; i < Math.min(2, weapons.size()); i++) {
+            LivingEntity spotted = findTarget(level, mob, weapons.get(i));
+            if (spotted != null) return spotted;
+        }
+        return null;
+    }
+
+    @Nullable
+    private static BlockPos findWeapon(ServerLevel level, Mob mob, SiegeCrewState state, @Nullable LivingEntity target, int radius) {
+        BlockPos origin = mob.blockPosition();
+        List<BlockPos> candidates = new ArrayList<>();
+        for (AbstractShootingAimableBlockEntity weapon : nearbyWeapons(level, mob, state, radius)) {
+            if (target != null && !canEngage(weapon, target, true)) continue;
+            candidates.add(weapon.getBlockPos().immutable());
         }
         if (candidates.isEmpty()) return null;
 
@@ -453,7 +484,7 @@ public final class SiegeCrewAI {
     private static LivingEntity findTarget(ServerLevel level, Mob mob, AbstractShootingAimableBlockEntity weapon) {
         Vec3 pivot = Vec3.atCenterOf(weapon.getBlockPos());
         double range = maxRange(weapon);
-        AABB area = new AABB(pivot, pivot).inflate(range, 16.0, range);
+        AABB area = new AABB(pivot, pivot).inflate(range, 24.0, range);
         List<LivingEntity> candidates = level.getEntitiesOfClass(LivingEntity.class, area,
                 entity -> isValidTarget(mob, entity) && isNaturalEnemy(mob, entity));
         candidates.sort(Comparator.comparingDouble(entity -> entity.distanceToSqr(pivot)));
@@ -766,8 +797,8 @@ public final class SiegeCrewAI {
     }
 
     private static double maxRange(AbstractShootingAimableBlockEntity weapon) {
-        if (weapon instanceof CannonBlockEntity) return 64.0;
-        if (weapon instanceof MultiCannonBlockEntity) return 48.0;
+        if (weapon instanceof CannonBlockEntity) return CANNON_RANGE;
+        if (weapon instanceof MultiCannonBlockEntity) return CANNON_RANGE;
         return 12.0;
     }
 
