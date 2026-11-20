@@ -127,6 +127,15 @@ public final class SiegeCrewAI {
         };
     }
 
+    /** The mob crewing the weapon at this position, if any. Used to mark its shots as crew fire. */
+    @Nullable
+    public static Mob crewGunner(Level level, BlockPos pos) {
+        for (Seat seat : level.getEntitiesOfClass(Seat.class, new AABB(pos))) {
+            if (seat.getFirstPassenger() instanceof Mob mob) return mob;
+        }
+        return null;
+    }
+
     private static boolean canCrew(Mob mob) {
         if (!mob.isAlive() || mob.isBaby() || mob.isLeashed()) return false;
         // Piglins about to turn into zombified piglins are in no state to aim a cannon

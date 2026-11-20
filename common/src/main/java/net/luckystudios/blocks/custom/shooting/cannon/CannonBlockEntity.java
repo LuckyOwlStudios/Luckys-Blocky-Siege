@@ -3,7 +3,10 @@ package net.luckystudios.blocks.custom.shooting.cannon;
 import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
 import net.luckystudios.blocks.util.enums.FiringState;
 import net.luckystudios.blocks.util.interfaces.DamageableBlock;
+import net.luckystudios.entity.ai.crew.SiegeCrewAI;
 import net.luckystudios.entity.custom.block_projectile.BlockProjectile;
+import net.luckystudios.entity.custom.cannonball.AbstractCannonBall;
+import net.minecraft.world.entity.Mob;
 import net.luckystudios.gui.cannons.CannonBlockMenu;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.init.ModParticleTypes;
@@ -174,6 +177,12 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         // Create and launch the projectile
         Projectile cannonBall = getCannonBall(level, spawnPos, cannonBlockEntity, direction);
         if (cannonBall == null) return;
+        // Shots from a mob crew belong to the gunner, and are tamer than a player's (see AbstractCannonBall#canBreak)
+        Mob gunner = SiegeCrewAI.crewGunner(level, pos);
+        if (gunner != null) {
+            cannonBall.setOwner(gunner);
+            if (cannonBall instanceof AbstractCannonBall crewBall) crewBall.setCrewFired(true);
+        }
         cannonBall.shoot(direction.x, direction.y, direction.z, actualPower, 0); // power * speed factor
         cannonBlockEntity.removeItem(0, actualPower);
         cannonBlockEntity.removeItem(1, 1);

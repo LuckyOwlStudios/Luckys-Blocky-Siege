@@ -1,6 +1,9 @@
 package net.luckystudios.blocks.custom.shooting.multi_cannon;
 
 import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
+import net.luckystudios.entity.ai.crew.SiegeCrewAI;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.luckystudios.blocks.util.interfaces.DamageableBlock;
 import net.luckystudios.gui.multi_cannon.MultiCannonBlockMenu;
 import net.luckystudios.init.ModBlockEntityTypes;
@@ -177,8 +180,14 @@ public class MultiCannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
         // Create and launch the projectile
         ItemStack itemStack = multiCannonBlockEntity.getProjectile();
+        Mob gunner = SiegeCrewAI.crewGunner(level, pos);
         if (itemStack.getItem() instanceof ProjectileItem projectileItem) {
             Projectile projectile = projectileItem.asProjectile(level, spawnPos, itemStack, Direction.getNearest(direction));
+            if (gunner != null) {
+                projectile.setOwner(gunner);
+                // Arrows from a mob crew can't be picked back up, so crews aren't a free arrow farm
+                if (projectile instanceof AbstractArrow arrow) arrow.pickup = AbstractArrow.Pickup.DISALLOWED;
+            }
             projectile.shoot(direction.x, direction.y, direction.z, MUZZLE_VELOCITY, 1.0F);
             level.addFreshEntity(projectile);
         } else if (itemStack.getItem() instanceof FireworkStarItem) {
