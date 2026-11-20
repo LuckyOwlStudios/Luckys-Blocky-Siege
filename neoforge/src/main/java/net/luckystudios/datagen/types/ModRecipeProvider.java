@@ -47,6 +47,18 @@ public class ModRecipeProvider extends RecipeProvider implements IConditionBuild
                 .unlockedBy("has_iron_block", has(Items.IRON_BLOCK))
                 .save(recipeOutput)
         ;
+        ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.BALLISTA_BLOCK.get())
+                .pattern("@C@")
+                .pattern("#I#")
+                .pattern("###")
+                .define('@', Items.IRON_INGOT)
+                .define('C', Items.CROSSBOW)
+                .define('I', Items.IRON_BLOCK)
+                .define('#', ItemTags.PLANKS)
+                .unlockedBy("has_crossbow", has(Items.CROSSBOW))
+                .unlockedBy(HAS_IRON, has(Items.IRON_INGOT))
+                .save(recipeOutput)
+        ;
         ShapedRecipeBuilder.shaped(RecipeCategory.MISC, ModBlocks.VOLLEY_RACK.get())
                 .pattern("@@@")
                 .pattern("@X@")

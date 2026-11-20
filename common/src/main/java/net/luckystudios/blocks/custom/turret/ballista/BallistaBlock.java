@@ -10,6 +10,7 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.Containers;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -74,6 +75,10 @@ public class BallistaBlock extends HorizontalDirectionalBlock implements EntityB
     protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
         // Only remove entity if the block is actually being broken (not just block state changing)
         if (!state.is(newState.getBlock())) {
+            // Drop the crossbow and ammo instead of deleting them
+            if (level.getBlockEntity(pos) instanceof BallistaBlockEntity ballistaBlockEntity) {
+                Containers.dropContents(level, pos, ballistaBlockEntity.inventory);
+            }
             // Find and remove the ballista entity above this block
             BlockPos abovePos = pos.above();
             List<BallistaEntity> ballistas = level.getEntitiesOfClass(BallistaEntity.class,

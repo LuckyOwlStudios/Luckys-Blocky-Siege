@@ -21,6 +21,7 @@ public class ModCreativeModeTabs {
                         output.accept(ModBlocks.MULTI_CANNON.get());
                         output.accept(ModBlocks.SPEWER_CANNON.get());
                         output.accept(ModBlocks.VOLLEY_RACK.get());
+                        output.accept(ModBlocks.BALLISTA_BLOCK.get());
                         output.accept(Items.GUNPOWDER);
                         output.accept(ModBlocks.CANNONBALL.get());
                         output.accept(ModBlocks.FIRE_BOMB.get());
