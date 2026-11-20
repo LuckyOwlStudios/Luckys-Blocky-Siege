@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 
 public class ModSoundEvents {
     public static final Supplier<SoundEvent> CANNON_FIRE = registerSoundEvent("cannon_fire");
+    public static final Supplier<SoundEvent> CANNON_FIRE_DISTANT = registerSoundEvent("cannon_fire_distant");
     public static final Supplier<SoundEvent> SHOOT = registerSoundEvent("shoot");
     public static final Supplier<SoundEvent> METAL_HIT = registerSoundEvent("hit_metal");
     public static final Supplier<SoundEvent> BOTTLE_POP_SMALL = registerSoundEvent("bottle_pop_small");

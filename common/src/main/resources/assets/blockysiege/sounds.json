@@ -5,6 +5,12 @@
       "blockysiege:cannon_fire_01"
     ]
   },
+  "cannon_fire_distant": {
+    "subtitle": "block.blockysiege.cannon",
+    "sounds": [
+      "blockysiege:cannon_fire_distant"
+    ]
+  },
   "shoot": {
   "subtitle": "block.blockysiege.shoot",
   "sounds": [
