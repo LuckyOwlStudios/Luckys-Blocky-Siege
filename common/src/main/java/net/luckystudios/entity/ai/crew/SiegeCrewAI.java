@@ -22,6 +22,7 @@ import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
@@ -156,6 +157,7 @@ public final class SiegeCrewAI {
         state.weapon = pos.immutable();
         state.guarding = state.target == null;
         claim(level, state.weapon, mob);
+        stashHands(mob, state);
     }
 
     // ------------------------------------------------------------------------------------------------------------
@@ -351,6 +353,7 @@ public final class SiegeCrewAI {
         // A moment to settle in before the first shot
         state.fireCooldown = 15 + mob.getRandom().nextInt(15);
         state.sweepCentre = weapon.yaw;
+        stashHands(mob, state);
         mob.playAmbientSound();
         holdPose(mob, weapon);
     }
@@ -862,6 +865,7 @@ public final class SiegeCrewAI {
             dismount(level, mob, weapon, weaponEntity != null ? weaponEntity.yaw : mob.getYRot());
         }
         unclaim(level, weapon, mob);
+        restoreHands(mob);
         mob.getNavigation().stop();
         state.reset();
         state.target = null;
@@ -873,6 +877,41 @@ public final class SiegeCrewAI {
                 mob.getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, target);
             }
         }
+    }
+
+    /** Puts the mob's held items away while it works a weapon, so its hands are free. */
+    private static void stashHands(Mob mob, SiegeCrewState state) {
+        ItemStack main = mob.getItemBySlot(EquipmentSlot.MAINHAND);
+        if (!main.isEmpty() && state.stashedMainHand.isEmpty()) {
+            state.stashedMainHand = main;
+            mob.setItemSlot(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+        }
+        ItemStack off = mob.getItemBySlot(EquipmentSlot.OFFHAND);
+        if (!off.isEmpty() && state.stashedOffHand.isEmpty()) {
+            state.stashedOffHand = off;
+            mob.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+        }
+        mob.setAggressive(false);
+    }
+
+    /**
+     * Hands back whatever {@link #stashHands} put away. Called when the crew gets off and, from a mixin, just
+     * before a mob dies, so its usual equipment drops still apply. Anything it picked up meanwhile is dropped
+     * rather than overwritten.
+     */
+    public static void restoreHands(Mob mob) {
+        SiegeCrewState state = ((SiegeCrewHolder) mob).blockysiege$getCrewState();
+        restoreHand(mob, EquipmentSlot.MAINHAND, state.stashedMainHand);
+        restoreHand(mob, EquipmentSlot.OFFHAND, state.stashedOffHand);
+        state.stashedMainHand = ItemStack.EMPTY;
+        state.stashedOffHand = ItemStack.EMPTY;
+    }
+
+    private static void restoreHand(Mob mob, EquipmentSlot slot, ItemStack stashed) {
+        if (stashed.isEmpty()) return;
+        ItemStack current = mob.getItemBySlot(slot);
+        if (!current.isEmpty() && !mob.level().isClientSide) mob.spawnAtLocation(current);
+        mob.setItemSlot(slot, stashed);
     }
 
     /** Gets off the seat and steps clear of the weapon instead of standing on top of it. */

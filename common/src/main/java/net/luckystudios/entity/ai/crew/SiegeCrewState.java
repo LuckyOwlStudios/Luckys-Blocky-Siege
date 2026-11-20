@@ -2,6 +2,7 @@ package net.luckystudios.entity.ai.crew;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,6 +51,13 @@ public class SiegeCrewState {
     /** Idle sweep direction while guarding: +1 or -1. */
     public float sweepDirection = 1.0F;
     public float sweepCentre = Float.NaN;
+
+    /**
+     * What the mob was holding before it sat down. Crews keep their hands free while they work a weapon; this is
+     * saved with the mob and handed back when it gets off, or put back before its drops are rolled if it dies.
+     */
+    public ItemStack stashedMainHand = ItemStack.EMPTY;
+    public ItemStack stashedOffHand = ItemStack.EMPTY;
 
     /** Weapons this mob recently failed to use, with the game time until which they are ignored. */
     public final Map<BlockPos, Long> ignoredWeapons = new HashMap<>();
