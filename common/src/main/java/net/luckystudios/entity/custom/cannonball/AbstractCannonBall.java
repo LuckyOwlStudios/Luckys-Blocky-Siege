@@ -91,10 +91,17 @@ public abstract class AbstractCannonBall extends AbstractNewProjectile {
     @Override
     public void tick() {
         // The client mirrors the server's "at rest" state instead of predicting its own landing.
+        final boolean serverStuck = this.entityData.get(DATA_STUCK);
         if (this.level().isClientSide) {
-            this.inGround = this.entityData.get(DATA_STUCK);
+            this.inGround = serverStuck;
         }
         super.tick();
+        if (this.level().isClientSide) {
+            // The client has no landing state of its own (lastState is never set there), so the parent's
+            // "should this start falling?" check can wrongly knock a resting ball out of its stuck state every
+            // tick. That made the trail streaks reappear and left the ball hanging. Always trust the server.
+            this.inGround = serverStuck;
+        }
         if (!this.level().isClientSide) {
             this.entityData.set(DATA_STUCK, this.inGround && !this.isNoPhysics());
             if (this.getHitCount() > 0 && this.tickCount - this.lastHitTick > HIT_RESET_TICKS) {
@@ -115,6 +122,9 @@ public abstract class AbstractCannonBall extends AbstractNewProjectile {
         // rest stuff
         this.tryCheckInsideBlocks();
 
+        if (level.isClientSide) {
+            this.isStuck = serverStuck && !this.isNoPhysics();
+        }
         if (!isStuck) {
             if (level.isClientSide) {
                 this.spawnTrailParticles();
@@ -124,7 +134,9 @@ public abstract class AbstractCannonBall extends AbstractNewProjectile {
         }
 
         // check if stuck
-        this.isStuck = this.inGround && !this.isNoPhysics();
+        if (!level.isClientSide) {
+            this.isStuck = this.inGround && !this.isNoPhysics();
+        }
         if (this.isStuck) {
             this.setGlowingTag(false);
             level.broadcastEntityEvent(this, (byte)0);
