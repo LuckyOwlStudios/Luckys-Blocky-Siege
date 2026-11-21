@@ -117,8 +117,9 @@ public class BallistaEntity extends AbstractTurret implements CrossbowAttackMob 
         this.goalSelector.addGoal(3, new LookAtPlayerGoal(this, Mob.class, (float) ATTACK_RANGE));
 
         // FIXED: Remove randomInterval for immediate targeting, set mustSee to false for longer range
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 1, false, false, null));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 1, false, false, (entity) -> entity instanceof Enemy));
+        // A ballista on a scoreboard team (it joins its placer's) leaves teammates alone; without a team it shoots any player
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, 1, false, false, (entity) -> !this.isAlliedTo(entity)));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Mob.class, 1, false, false, (entity) -> entity instanceof Enemy && !this.isAlliedTo(entity)));
     }
 
     @Override
