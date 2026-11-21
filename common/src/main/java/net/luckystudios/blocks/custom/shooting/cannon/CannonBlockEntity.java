@@ -68,17 +68,15 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
                 cannonBlockEntity.cooldown = -40; // Set to -5 to begin flash
             } else {
                 cannonBlockEntity.cooldown = -1; // Set to -1 to prevent firing again
+                resetFiringState(level, pos, cannonBlockEntity); // Nothing fired, so don't stay lit
             }
             return; // Exit after firing
         }
 
         if (cannonBlockEntity.cooldown < -1) {
             cannonBlockEntity.cooldown++;
-            if (cannonBlockEntity.cooldown > -55 && cannonBlockEntity.getBlockState().getValue(CannonBlock.FIRING_STATE) == FiringState.FIRED) {
-                level.setBlock(pos, cannonBlockEntity.getBlockState()
-                        .setValue(CannonBlock.FIRING_STATE, FiringState.OFF)
-                        .setValue(CannonBlock.LIT, false), 3);
-            }
+            // Any non-idle state (FIRED, or CHARGING when the shot fizzled or damaged the cannon) ends here
+            resetFiringState(level, pos, cannonBlockEntity);
             // Only render smoke particles on client side
             if (level.isClientSide) {
                 Vec3 direction = getAimVector(cannonBlockEntity);
@@ -87,7 +85,11 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
             }
         }
 
-        if (cannonBlockEntity.cooldown <= -1) return; // Return if already fired
+        if (cannonBlockEntity.cooldown <= -1) {
+            // Idle (cooldown isn't saved, so a cannon reloaded mid-fuse would otherwise stay lit forever)
+            if (cannonBlockEntity.cooldown == -1) resetFiringState(level, pos, cannonBlockEntity);
+            return; // Return if already fired
+        }
 
         ItemStack cannonBall = cannonBlockEntity.getShotProjectile();
 
@@ -115,6 +117,13 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
                 );
             }
         }
+    }
+
+    private static void resetFiringState(Level level, BlockPos pos, CannonBlockEntity cannon) {
+        if (level.isClientSide) return;
+        BlockState state = cannon.getBlockState();
+        if (state.getValue(CannonBlock.FIRING_STATE) == FiringState.OFF) return;
+        level.setBlock(pos, state.setValue(CannonBlock.FIRING_STATE, FiringState.OFF).setValue(CannonBlock.LIT, false), 3);
     }
 
     public static void fireCannon(Level level, BlockPos pos, CannonBlockEntity cannonBlockEntity) {
