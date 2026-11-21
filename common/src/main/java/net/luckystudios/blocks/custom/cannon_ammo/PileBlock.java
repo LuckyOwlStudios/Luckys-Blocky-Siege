@@ -44,10 +44,6 @@ public class PileBlock extends CarpetBlock {
             // Schedule the block to disappear after a randomized time
             int randomizedLifetime = BASE_LIFETIME + level.getRandom().nextInt(RANDOM_VARIANCE * 2 + 1) - RANDOM_VARIANCE;
             level.scheduleTick(pos, this, randomizedLifetime);
-
-            // Schedule warning particles 60 ticks (3 seconds) before disappearing
-            int warningTime = Math.max(1, randomizedLifetime - 60);
-            level.scheduleTick(pos, this, warningTime);
         }
     }
 
@@ -55,53 +51,10 @@ public class PileBlock extends CarpetBlock {
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         super.tick(state, level, pos, random);
 
-        // Check if this is the final tick (block should disappear)
-        if (level.getBlockTicks().hasScheduledTick(pos, this)) {
-            // Check if there are more ticks scheduled (meaning this is the warning tick)
-            boolean hasMoreTicks = level.getBlockTicks().willTickThisTick(pos, this);
-
-            if (!hasMoreTicks) {
-                // This is the final tick - remove the block
-                spawnFinalDisappearParticles(level, pos);
-                level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-            } else {
-                // This is a warning tick - spawn warning particles
-                spawnWarningParticles(level, pos, random);
-            }
-        }
-    }
-
-    private void spawnWarningParticles(ServerLevel level, BlockPos pos, RandomSource random) {
-        double x = pos.getX() + 0.5D;
-        double y = pos.getY() + 0.1D;
-        double z = pos.getZ() + 0.5D;
-
-        switch (pileType) {
-            case FIRE:
-                // Smoke particles rising up
-                for (int i = 0; i < 3; i++) {
-                    double offsetX = (random.nextFloat() - 0.5F) * 0.8F;
-                    double offsetZ = (random.nextFloat() - 0.5F) * 0.8F;
-                    level.sendParticles(ParticleTypes.SMOKE, x + offsetX, y, z + offsetZ, 1, 0, 0.1, 0, 0.01);
-                }
-                break;
-            case FROST:
-                // White ash particles dispersing
-                for (int i = 0; i < 4; i++) {
-                    double offsetX = (random.nextFloat() - 0.5F) * 0.8F;
-                    double offsetZ = (random.nextFloat() - 0.5F) * 0.8F;
-                    level.sendParticles(ParticleTypes.WHITE_ASH, x + offsetX, y, z + offsetZ, 1, 0, 0.05, 0, 0.02);
-                }
-                break;
-            case SCULK:
-                // Soul particles floating away
-                for (int i = 0; i < 2; i++) {
-                    double offsetX = (random.nextFloat() - 0.5F) * 0.8F;
-                    double offsetZ = (random.nextFloat() - 0.5F) * 0.8F;
-                    level.sendParticles(ParticleTypes.SOUL, x + offsetX, y + 0.3, z + offsetZ, 1, 0, 0.1, 0, 0.01);
-                }
-                break;
-        }
+        // Scheduled ticks are de-duplicated per block position, so only one tick is scheduled in
+        // onPlace. When it fires, the pile has reached the end of its lifetime and melts away.
+        spawnFinalDisappearParticles(level, pos);
+        level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
     }
 
     private void spawnFinalDisappearParticles(ServerLevel level, BlockPos pos) {
