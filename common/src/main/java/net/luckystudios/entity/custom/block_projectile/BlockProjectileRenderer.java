@@ -4,6 +4,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.TntMinecartRenderer;
+import net.luckystudios.init.ModBlocks;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -35,7 +38,12 @@ public class BlockProjectileRenderer extends EntityRenderer<BlockProjectile> {
         poseStack.mulPose(Axis.ZP.rotationDegrees(age * 9.0F));
         poseStack.scale(0.8F, 0.8F, 0.8F);
         poseStack.translate(-0.5F, -0.5F, -0.5F);
-        this.blockRenderer.renderSingleBlock(state, poseStack, buffer, packedLight, OverlayTexture.NO_OVERLAY);
+        if (state.is(Blocks.TNT) || state.is(ModBlocks.EXPLOSIVE_BARREL.get())) {
+            // Blink white like primed TNT
+            TntMinecartRenderer.renderWhiteSolidBlock(this.blockRenderer, state, poseStack, buffer, packedLight, entity.tickCount / 5 % 2 == 0);
+        } else {
+            this.blockRenderer.renderSingleBlock(state, poseStack, buffer, packedLight, OverlayTexture.NO_OVERLAY);
+        }
         poseStack.popPose();
 
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
