@@ -13,6 +13,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.scores.PlayerTeam;
 
 // This is the image
 public class BallistaScreen extends AbstractContainerScreen<BallistaMenu> {
@@ -88,7 +89,37 @@ public class BallistaScreen extends AbstractContainerScreen<BallistaMenu> {
         // Center the title at the top of the GUI
         int titleX = (this.imageWidth - this.font.width(this.title)) / 2;
         guiGraphics.drawString(this.font, this.title, titleX, this.titleLabelY - 32, 4210752, false);
+        renderTeamLabel(guiGraphics, titleX);
         guiGraphics.drawString(this.font, this.playerInventoryTitle, this.inventoryLabelX, this.inventoryLabelY, 4210752, false);
+    }
+
+    private static final int LABEL_COLOR = 4210752;
+
+    /** The ballista's scoreboard team, right-aligned in the title bar in the team's colour. */
+    private void renderTeamLabel(GuiGraphics guiGraphics, int titleX) {
+        PlayerTeam team = this.menu.blockEntity.findBallista()
+                .map(ballista -> ballista.getTeam() instanceof PlayerTeam playerTeam ? playerTeam : null)
+                .orElse(null);
+        String text;
+        int color = LABEL_COLOR;
+        if (team != null) {
+            text = team.getDisplayName().getString();
+            Integer teamColor = team.getColor().getColor();
+            if (teamColor != null) {
+                color = teamColor;
+            }
+        } else {
+            text = Component.translatable("gui.blockysiege.ballista.no_team").getString();
+        }
+        int right = this.imageWidth - 8;
+        int maxWidth = right - (titleX + this.font.width(this.title) + 6);
+        if (maxWidth <= 0) {
+            return;
+        }
+        if (this.font.width(text) > maxWidth) {
+            text = this.font.plainSubstrByWidth(text, maxWidth - this.font.width("...")) + "...";
+        }
+        guiGraphics.drawString(this.font, text, right - this.font.width(text), this.titleLabelY - 32, color, false);
     }
 
     @Override
