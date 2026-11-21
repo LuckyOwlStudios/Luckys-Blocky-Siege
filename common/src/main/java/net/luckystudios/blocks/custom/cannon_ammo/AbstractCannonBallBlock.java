@@ -5,7 +5,16 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ProjectileItem;
 import net.minecraft.world.item.TooltipFlag;
@@ -176,6 +185,37 @@ public abstract class AbstractCannonBallBlock extends Block implements SimpleWat
                 }
         }
         return ONE_AABB;
+    }
+
+    // Holding the same ammo keeps vanilla placement so you can still stack; anything else falls through to pickup.
+    @Override
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        if (stack.is(this.asItem()) && !player.isSecondaryUseActive()) {
+            return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+        }
+        return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+    }
+
+    /** Right-click picks up one piece of placed ammo and gives the item back (nothing is given in creative). */
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+        if (!level.isClientSide) {
+            int stack = state.getValue(STACK);
+            if (stack > 1) {
+                level.setBlock(pos, state.setValue(STACK, stack - 1), Block.UPDATE_ALL);
+            } else {
+                level.setBlock(pos, state.getValue(WATERLOGGED) ? Fluids.WATER.defaultFluidState().createLegacyBlock() : net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
+            }
+            if (!player.getAbilities().instabuild) {
+                ItemStack drop = new ItemStack(this.asItem());
+                if (!player.getInventory().add(drop)) {
+                    player.drop(drop, false);
+                }
+            }
+            level.playSound(null, pos, SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.4F, 1.0F);
+            level.gameEvent(player, GameEvent.BLOCK_DESTROY, pos);
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     @Override
