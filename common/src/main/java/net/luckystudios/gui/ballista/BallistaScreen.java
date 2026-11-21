@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -43,14 +44,40 @@ public class BallistaScreen extends AbstractContainerScreen<BallistaMenu> {
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
         guiGraphics.blit(GUI_TEXTURE, x, y - 31, 0, 0, 256, 256);
+        renderHealthBar(guiGraphics, x, y - 31);
         RenderSystem.disableBlend();
     }
 
+
+    // Health bar: the empty bar is part of the background at (BAR_X, BAR_Y); the filled sprite sits at (BAR_U, BAR_V).
+    private static final int BAR_X = 8;
+    private static final int BAR_Y = 24;
+    private static final int BAR_U = 8;
+    private static final int BAR_V = 200;
+    private static final int BAR_WIDTH = 160;
+    private static final int BAR_HEIGHT = 3;
+
+    private void renderHealthBar(GuiGraphics guiGraphics, int originX, int originY) {
+        int filled = Mth.ceil(BAR_WIDTH * this.menu.getHealthFraction());
+        if (filled > 0) {
+            guiGraphics.blit(GUI_TEXTURE, originX + BAR_X, originY + BAR_Y, BAR_U, BAR_V, filled, BAR_HEIGHT);
+        }
+    }
+
+    private boolean isHoveringHealthBar(int mouseX, int mouseY) {
+        int x = (width - imageWidth) / 2 + BAR_X;
+        int y = (height - imageHeight) / 2 - 31 + BAR_Y;
+        return mouseX >= x - 1 && mouseX < x + BAR_WIDTH + 1 && mouseY >= y - 1 && mouseY < y + BAR_HEIGHT + 1;
+    }
 
     @Override
     public void render(GuiGraphics guiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
         super.render(guiGraphics, pMouseX, pMouseY, pPartialTick);
         this.renderTooltip(guiGraphics, pMouseX, pMouseY);
+        if (isHoveringHealthBar(pMouseX, pMouseY)) {
+            String health = String.format("%.1f / %.1f", this.menu.getHealth(), this.menu.getMaxHealth());
+            guiGraphics.renderTooltip(this.font, Component.translatable("gui.blockysiege.ballista.health", health), pMouseX, pMouseY);
+        }
     }
 
     @Override

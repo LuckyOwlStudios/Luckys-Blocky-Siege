@@ -59,5 +59,6 @@
   "key.blockysiege.fire_cannon": "Fire Cannon",
 
   "gamerule.doSiegeWeaponCrews": "Siege weapon crews",
-  "gamerule.doSiegeWeaponCrews.description": "Pillagers, Vindicators and Piglins man nearby cannons, burst cannons and spewers"
+  "gamerule.doSiegeWeaponCrews.description": "Pillagers, Vindicators and Piglins man nearby cannons, burst cannons and spewers",
+  "gui.blockysiege.ballista.health": "Health: %s"
 }
