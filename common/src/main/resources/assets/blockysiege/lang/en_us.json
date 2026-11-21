@@ -56,5 +56,8 @@
   "tooltip.blockysiege.placeable": "Placeable",
 
   "death.attack.cannon": "%1$s was blasted by a cannon!",
-  "key.blockysiege.fire_cannon": "Fire Cannon"
+  "key.blockysiege.fire_cannon": "Fire Cannon",
+
+  "gamerule.doSiegeWeaponCrews": "Siege weapon crews",
+  "gamerule.doSiegeWeaponCrews.description": "Pillagers, Vindicators and Piglins man nearby cannons, burst cannons and spewers"
 }

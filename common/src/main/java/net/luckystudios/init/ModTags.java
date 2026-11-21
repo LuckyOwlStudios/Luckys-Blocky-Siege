@@ -22,7 +22,12 @@ public class ModTags {
     public static final TagKey<Item> BUCKETS_LAVA = createCommonItemTag("buckets/lava");
     public static final TagKey<Item> BUCKETS_POWDER_SNOW = createCommonItemTag("buckets/powder_snow");
 
+    /** Blocks a cannonball fired by a mob crew may break. Anything else is left standing. */
+    public static final TagKey<Block> CREW_CANNONBALL_BREAKABLE = createBlockTag("crew_cannonball_breakable");
+
     public static final TagKey<EntityType<?>> STRONG_PROJECTILE = createEntityTag("strong_projectile");
+    /** Mobs that man siege weapons on their own. */
+    public static final TagKey<EntityType<?>> SIEGE_CREW = createEntityTag("siege_crew");
 
     public static final TagKey<BannerPattern> PATTERN_ITEM_FORT = createBannerTag("pattern_item/fort");
 

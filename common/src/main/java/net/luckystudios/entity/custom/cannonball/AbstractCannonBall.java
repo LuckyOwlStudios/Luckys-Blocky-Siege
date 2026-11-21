@@ -1,6 +1,9 @@
 package net.luckystudios.entity.custom.cannonball;
 
+import net.luckystudios.init.ModTags;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -33,6 +36,11 @@ public abstract class AbstractCannonBall extends AbstractNewProjectile {
     protected int stuckTime = 0;
     /** True once the ball has detonated on its first impact, so resting/rolling balls don't explode again. */
     protected boolean exploded = false;
+
+    /** Fired by a mob crew: only breaks weak blocks, can't be picked up, and crumbles away after landing. */
+    protected boolean crewFired = false;
+    private int crewRestTicks = 0;
+    private static final int CREW_BALL_LIFETIME = 600;
 
     private int wobbleTicks = 0;
     private int wobbleDirection = 1;
@@ -75,12 +83,28 @@ public abstract class AbstractCannonBall extends AbstractNewProjectile {
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("exploded", this.exploded);
+        compound.putBoolean("crewFired", this.crewFired);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         this.exploded = compound.getBoolean("exploded");
+        this.crewFired = compound.getBoolean("crewFired");
+    }
+
+    public void setCrewFired(boolean crewFired) {
+        this.crewFired = crewFired;
+        if (crewFired) this.pickup = Pickup.DISALLOWED;
+    }
+
+    public boolean isCrewFired() {
+        return this.crewFired;
+    }
+
+    /** Whether this ball may break the given block: always for player shots, only weak blocks for crew shots. */
+    public boolean canBreak(BlockState state) {
+        return !this.crewFired || state.is(ModTags.CREW_CANNONBALL_BREAKABLE);
     }
 
     protected abstract float baseDamage();
@@ -146,9 +170,15 @@ public abstract class AbstractCannonBall extends AbstractNewProjectile {
 
     // --- Landed behaviour: sticks in the ground like a trident, but must be hit to pick it up ---
 
-    /** Landed cannonballs never despawn on their own. */
+    /** Landed cannonballs never despawn on their own, except crew shots, which crumble after half a minute. */
     @Override
     protected void tickDespawn() {
+        if (this.crewFired && !this.level().isClientSide && ++this.crewRestTicks >= CREW_BALL_LIFETIME) {
+            if (this.level() instanceof ServerLevel serverLevel) {
+                serverLevel.sendParticles(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.25, this.getZ(), 8, 0.2, 0.2, 0.2, 0.01);
+            }
+            this.discard();
+        }
     }
 
     /** Walking over a landed cannonball does nothing. */
@@ -189,7 +219,8 @@ public abstract class AbstractCannonBall extends AbstractNewProjectile {
         this.lastHitTick = this.tickCount;
         if (hits >= HITS_TO_DISLODGE) {
             this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.NETHERITE_BLOCK_BREAK, this.getSoundSource(), 1.0F, 0.8F);
-            this.spawnAtLocation(this.getPickupItem(), 0.1F);
+            // Crew shots break apart instead of dropping, so mob crews aren't a free ammo farm
+            if (!this.crewFired) this.spawnAtLocation(this.getPickupItem(), 0.1F);
             this.discard();
         } else {
             this.entityData.set(DATA_HIT_COUNT, hits);

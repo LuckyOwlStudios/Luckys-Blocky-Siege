@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:glass",
+    "minecraft:glass_pane",
+    "minecraft:cobweb",
+    "#minecraft:leaves",
+    "#minecraft:replaceable",
+    "#minecraft:flowers",
+    "#minecraft:impermeable",
+    { "id": "#c:glass_blocks", "required": false },
+    { "id": "#c:glass_panes", "required": false }
+  ]
+}

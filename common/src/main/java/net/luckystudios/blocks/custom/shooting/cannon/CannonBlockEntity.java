@@ -3,7 +3,10 @@ package net.luckystudios.blocks.custom.shooting.cannon;
 import net.luckystudios.blocks.custom.shooting.AbstractShootingAimableBlockEntity;
 import net.luckystudios.blocks.util.enums.FiringState;
 import net.luckystudios.blocks.util.interfaces.DamageableBlock;
+import net.luckystudios.entity.ai.crew.SiegeCrewAI;
 import net.luckystudios.entity.custom.block_projectile.BlockProjectile;
+import net.luckystudios.entity.custom.cannonball.AbstractCannonBall;
+import net.minecraft.world.entity.Mob;
 import net.luckystudios.gui.cannons.CannonBlockMenu;
 import net.luckystudios.init.ModBlockEntityTypes;
 import net.luckystudios.init.ModParticleTypes;
@@ -86,7 +89,7 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
         if (cannonBlockEntity.cooldown <= -1) return; // Return if already fired
 
-        ItemStack cannonBall = cannonBlockEntity.getProjectile();
+        ItemStack cannonBall = cannonBlockEntity.getShotProjectile();
 
         // Visual effects: flame & smoke while cooling down - CLIENT SIDE ONLY
         if (level.isClientSide && !isControllingThisBlock(cannonBlockEntity)) {
@@ -164,7 +167,7 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
         // Inventory slot 1 must contain gunpowder
         int requestedPower = cannonBlockEntity.getFirePower(); // desired firepower (1–4)
-        int availableGunpowder = cannonBlockEntity.getFuse().getCount();
+        int availableGunpowder = cannonBlockEntity.getShotFuse().getCount();
 
         // If there's no gunpowder, do nothing
         if (availableGunpowder <= 0) return;
@@ -175,9 +178,18 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         // Create and launch the projectile
         Projectile cannonBall = getCannonBall(level, spawnPos, cannonBlockEntity, direction);
         if (cannonBall == null) return;
+        // Shots from a mob crew belong to the gunner, and are tamer than a player's (see AbstractCannonBall#canBreak)
+        Mob gunner = SiegeCrewAI.crewGunner(level, pos);
+        if (gunner != null) {
+            cannonBall.setOwner(gunner);
+            if (cannonBall instanceof AbstractCannonBall crewBall) crewBall.setCrewFired(true);
+        }
         cannonBall.shoot(direction.x, direction.y, direction.z, actualPower, 0); // power * speed factor
-        cannonBlockEntity.removeItem(0, actualPower);
-        cannonBlockEntity.removeItem(1, 1);
+        // Spend loaded ammo first; crew ammo only fills what the slots lack
+        if (cannonBlockEntity.getFuse().is(ModTags.GUNPOWDERS)) cannonBlockEntity.removeItem(0, actualPower);
+        else cannonBlockEntity.crewPowder = 0;
+        if (isValidAmmo(cannonBlockEntity.getProjectile())) cannonBlockEntity.removeItem(1, 1);
+        else cannonBlockEntity.crewProjectile = ItemStack.EMPTY;
         level.addFreshEntity(cannonBall);
         Random random = new Random();
 
@@ -204,6 +216,41 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
         return this.getItem(1);
     }
 
+    // Ammo a mob crew brings. It is fired like loaded ammo but never stored in the container, so it can't be taken
+    // out, and it isn't saved: it only exists while a crew works the gun.
+    private ItemStack crewProjectile = ItemStack.EMPTY;
+    private int crewPowder = 0;
+
+    /** Gives the next shot crew ammo for whatever the slots are missing. */
+    public void setCrewAmmo(ItemStack projectile, int powder) {
+        this.crewProjectile = projectile.copyWithCount(1);
+        this.crewPowder = Math.max(0, Math.min(4, powder));
+    }
+
+    @Override
+    public boolean hasCrewAmmo() {
+        return !this.crewProjectile.isEmpty() || this.crewPowder > 0;
+    }
+
+    @Override
+    public void clearCrewAmmo() {
+        this.crewProjectile = ItemStack.EMPTY;
+        this.crewPowder = 0;
+    }
+
+    /** The gunpowder the next shot will use: loaded powder, else the crew's. */
+    public ItemStack getShotFuse() {
+        ItemStack fuse = this.getFuse();
+        if (fuse.is(ModTags.GUNPOWDERS) || this.crewPowder <= 0) return fuse;
+        return new ItemStack(Items.GUNPOWDER, this.crewPowder);
+    }
+
+    /** The ammo the next shot will fire: loaded ammo, else the crew's. */
+    public ItemStack getShotProjectile() {
+        ItemStack projectile = this.getProjectile();
+        return isValidAmmo(projectile) ? projectile : this.crewProjectile;
+    }
+
     public float getFiringProgress() {
         if (this.cooldown <= 0) {
             return 0.0f; // Not firing or ready to fire
@@ -215,9 +262,9 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
 
     @Override
     public boolean canShoot() {
-        ItemStack itemStack = this.getFuse();
+        ItemStack itemStack = this.getShotFuse();
         boolean hasFuse = itemStack.is(ModTags.GUNPOWDERS);
-        ItemStack itemStack2 = this.getProjectile();
+        ItemStack itemStack2 = this.getShotProjectile();
         boolean hasAmmo = isValidAmmo(itemStack2);
         return hasFuse && hasAmmo && this.cooldown <= 0;
     }
@@ -228,7 +275,7 @@ public class CannonBlockEntity extends AbstractShootingAimableBlockEntity {
     }
 
     private static Projectile getCannonBall(Level level, Vec3 spawnPos, CannonBlockEntity cannonBlockEntity, Vec3 direction) {
-        ItemStack projectileStack = cannonBlockEntity.getProjectile();
+        ItemStack projectileStack = cannonBlockEntity.getShotProjectile();
 
         // Check if the item is a BlockItem and if its block implements ProjectileItem
         // Needed due to Cannonballs being Blocks and not Items

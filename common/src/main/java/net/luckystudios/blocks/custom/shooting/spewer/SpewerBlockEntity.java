@@ -36,6 +36,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
 
+    /** Blocks per tick. 0.9 throws a blob about 20 blocks at full elevation. */
+    public static final float MUZZLE_VELOCITY = 0.9F;
+    /** Spray inaccuracy, as passed to Projectile#shoot. */
+    public static final float SPREAD = 8.0F;
+
     // Copied from Mcreator! :)
     private final FluidTank fluidTank = new FluidTank(1000) {
         @Override
@@ -71,7 +76,7 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
 
     @Override
     public boolean canShoot() {
-        return this.fireCooldown <= 0 && !this.fluidTank.isEmpty();
+        return this.fireCooldown <= 0 && !this.getShotFluid().isEmpty();
     }
 
     public static void tick(Level level, BlockPos pos, BlockState state, SpewerBlockEntity spewerCannonBlockEntity) {
@@ -155,6 +160,29 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
         level.playSound(null, pos, Services.PLATFORM.getFluidSound(fluid, emptyingIntoTank), SoundSource.BLOCKS, 1.0f, 1.0f);
     }
 
+    // Liquid a mob crew brings. Sprayed when the tank is empty, but never put in the tank, so it can't be bottled
+    // or bucketed out, and not saved: it only exists while a crew works the spewer.
+    private FluidStack crewFluid = FluidStack.EMPTY;
+
+    public void setCrewFluid(FluidStack fluid) {
+        this.crewFluid = fluid.copy();
+    }
+
+    @Override
+    public boolean hasCrewAmmo() {
+        return !this.crewFluid.isEmpty();
+    }
+
+    @Override
+    public void clearCrewAmmo() {
+        this.crewFluid = FluidStack.EMPTY;
+    }
+
+    /** What the next shot sprays: the tank's contents, else the crew's. */
+    public FluidStack getShotFluid() {
+        return this.fluidTank.isEmpty() ? this.crewFluid : this.fluidTank.getFluid();
+    }
+
     public Vec3 getSpawnPos(BlockPos pos) {
         return Vec3.atCenterOf(pos).add(getAimVector(this).scale(barrelOffsetDistance()));
     }
@@ -169,30 +197,36 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
         Vec3 spawnPos = Vec3.atCenterOf(pos).add(direction.scale(barrelOffsetDistance()));
 
         level.playSound(null, spawnPos.x, spawnPos.y, spawnPos.z,
-                getShootSound(), SoundSource.BLOCKS, 0.25f, 0.75f);
+                getShootSound(spewerCannonBlockEntity.getShotFluid()), SoundSource.BLOCKS, 0.25f, 0.75f);
 
         if (level.isClientSide()) return;
         // Create and launch the projectile
         Projectile projectile;
-        Fluid fluid = spewerCannonBlockEntity.getFluid();
+        FluidStack shot = spewerCannonBlockEntity.getShotFluid();
+        boolean fromTank = !spewerCannonBlockEntity.fluidTank.isEmpty();
+        Fluid fluid = shot.getFluid();
         if (fluid == Fluids.LAVA) {
             projectile = new Ember(level, spawnPos.x, spawnPos.y, spawnPos.z);
         } else {
-            PotionContents potionContents = spewerCannonBlockEntity.getEffects();
+            PotionContents potionContents = shot.get(DataComponents.POTION_CONTENTS);
             if (fluid == Fluids.WATER && potionContents != null) {
                 projectile = new PotionBlob(level, spawnPos.x, spawnPos.y, spawnPos.z, potionContents);
             } else {
                 projectile = new WaterBlob(level, spawnPos.x, spawnPos.y, spawnPos.z);
             }
         }
-        projectile.shoot(direction.x, direction.y, direction.z, 0.5F, 12.0F); // power * speed factor
+        projectile.shoot(direction.x, direction.y, direction.z, MUZZLE_VELOCITY, SPREAD);
         level.addFreshEntity(projectile);
-        spewerCannonBlockEntity.fluidTank.drain(10, FluidTank.FluidAction.EXECUTE);
+        if (fromTank) {
+            spewerCannonBlockEntity.fluidTank.drain(10, FluidTank.FluidAction.EXECUTE);
+        } else {
+            // Draining syncs the spewer to clients; crew liquid doesn't drain, so sync for the recoil animation here
+            level.sendBlockUpdated(pos, spewerCannonBlockEntity.getBlockState(), spewerCannonBlockEntity.getBlockState(), 2);
+        }
     }
 
-    private SoundEvent getShootSound() {
-        LIQUID_CONTENT liquidContent = this.getLiquidContent();
-        return switch (liquidContent) {
+    private static SoundEvent getShootSound(FluidStack shot) {
+        return switch (shot.getFluid().isSame(Fluids.LAVA) ? LIQUID_CONTENT.LAVA : LIQUID_CONTENT.WATER) {
             case LAVA -> SoundEvents.BLAZE_SHOOT;
             default -> SoundEvents.BUCKET_EMPTY;
         };

@@ -34,6 +34,7 @@ public class BlockySiege {
         ModParticleTypes.init();
         ModFluids.init();
         ModVillagerProfessions.init();
+        ModGameRules.init();
     }
 
     public static void registerEntityAttributes(BiConsumer<EntityType<? extends LivingEntity>, AttributeSupplier> consumer) {
