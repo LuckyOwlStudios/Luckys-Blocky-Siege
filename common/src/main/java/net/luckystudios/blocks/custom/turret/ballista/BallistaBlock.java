@@ -1,5 +1,7 @@
 package net.luckystudios.blocks.custom.turret.ballista;
 
+import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.entity.LivingEntity;
 import net.luckystudios.util.MenuHelper;
 import com.mojang.serialization.MapCodec;
 import net.luckystudios.entity.custom.turrets.ballista.BallistaEntity;
@@ -49,6 +51,18 @@ public class BallistaBlock extends HorizontalDirectionalBlock implements EntityB
             BallistaEntity ballista = new BallistaEntity(level, pos);
             ballista.setPos(pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5);
             level.addFreshEntity(ballista);
+        }
+    }
+
+    /** A ballista joins its placer's scoreboard team, so it spares teammates and targets everyone else. */
+    @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (level.isClientSide || placer == null) return;
+        PlayerTeam team = placer.getTeam();
+        if (team == null) return;
+        for (BallistaEntity ballista : level.getEntitiesOfClass(BallistaEntity.class, new AABB(pos.above()))) {
+            level.getScoreboard().addPlayerToTeam(ballista.getScoreboardName(), team);
         }
     }
 
