@@ -7,7 +7,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.util.Mth;
+import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -17,6 +20,10 @@ import org.jetbrains.annotations.NotNull;
 public class BallistaMenu extends AbstractContainerMenu {
     public final BallistaBlockEntity blockEntity;
     private final Level level;
+    // Health and max health of the ballista entity, in tenths, synced to the client for the health bar.
+    private final ContainerData healthData;
+    private static final int HEALTH = 0;
+    private static final int MAX_HEALTH = 1;
 
     public BallistaMenu(int containerId, Inventory inv, BlockPos pos) {
         this(containerId, inv, inv.player.level().getBlockEntity(pos));
@@ -26,6 +33,24 @@ public class BallistaMenu extends AbstractContainerMenu {
         super(ModMenuTypes.BALLISTA_BLOCK_MENU.get(), containerId);
         this.blockEntity = ((BallistaBlockEntity) blockEntity);
         this.level = inv.player.level();
+        this.healthData = this.level.isClientSide ? new SimpleContainerData(2) : new ContainerData() {
+            @Override
+            public int get(int index) {
+                return BallistaMenu.this.blockEntity.findBallista()
+                        .map(ballista -> Mth.ceil((index == HEALTH ? ballista.getHealth() : ballista.getMaxHealth()) * 10.0F))
+                        .orElse(0);
+            }
+
+            @Override
+            public void set(int index, int value) {
+            }
+
+            @Override
+            public int getCount() {
+                return 2;
+            }
+        };
+        this.addDataSlots(this.healthData);
 
         // Slots for the player
         addPlayerInventory(inv);
@@ -40,6 +65,23 @@ public class BallistaMenu extends AbstractContainerMenu {
                 this.addSlot(new ArrowSlotItemHandler(this.blockEntity.inventory, j + i * 3, 105 + j * 18, 8 + i * 18));
             }
         }
+    }
+
+    /** Current health as a fraction of max health, 0 to 1. */
+    public float getHealthFraction() {
+        int max = this.healthData.get(MAX_HEALTH);
+        if (max <= 0) {
+            return 0.0F;
+        }
+        return Mth.clamp(this.healthData.get(HEALTH) / (float) max, 0.0F, 1.0F);
+    }
+
+    public float getHealth() {
+        return this.healthData.get(HEALTH) / 10.0F;
+    }
+
+    public float getMaxHealth() {
+        return this.healthData.get(MAX_HEALTH) / 10.0F;
     }
 
     @Override
