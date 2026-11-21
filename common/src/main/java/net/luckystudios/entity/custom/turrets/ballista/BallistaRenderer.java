@@ -11,6 +11,7 @@ public class BallistaRenderer extends MobRenderer<BallistaEntity, BallistaGolemM
 
     public BallistaRenderer(EntityRendererProvider.Context pContext) {
         super(pContext, new BallistaGolemModel<>(pContext.bakeLayer(BallistaGolemModel.LAYER_LOCATION)), 0.5F);
+        this.addLayer(new BallistaCrackinessLayer(this));
     }
 
     @Override
