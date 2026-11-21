@@ -12,6 +12,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -46,6 +47,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Predicate;
 
 public class BallistaEntity extends AbstractTurret implements CrossbowAttackMob {
@@ -63,6 +65,33 @@ public class BallistaEntity extends AbstractTurret implements CrossbowAttackMob 
     public BallistaEntity(Level level, BlockPos pos) {
         super(ModEntityTypes.BALLISTA.get(), level, pos);
         this.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
+    }
+
+    /** The player who built this ballista, if any. Saved with the entity. */
+    @Nullable
+    private UUID placerUUID;
+
+    public void setPlacer(@Nullable LivingEntity placer) {
+        this.placerUUID = placer == null ? null : placer.getUUID();
+    }
+
+    @Nullable
+    public UUID getPlacerUUID() {
+        return this.placerUUID;
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag compound) {
+        super.addAdditionalSaveData(compound);
+        if (this.placerUUID != null) {
+            compound.putUUID("Placer", this.placerUUID);
+        }
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag compound) {
+        super.readAdditionalSaveData(compound);
+        this.placerUUID = compound.hasUUID("Placer") ? compound.getUUID("Placer") : null;
     }
 
     @Override

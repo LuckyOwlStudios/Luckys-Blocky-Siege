@@ -3,6 +3,7 @@
   "package": "net.luckystudios.mixins",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "CarvedPumpkinBlockMixin",
     "FireworkRocketEntityMixin",
     "LivingEntityMixin",
     "MobMixin"
