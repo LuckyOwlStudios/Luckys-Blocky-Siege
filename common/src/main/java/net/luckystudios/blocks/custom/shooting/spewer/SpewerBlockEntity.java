@@ -53,6 +53,8 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
     };
 
     private int fireCooldown = 0;
+    // The last container the spewer filled or emptied. Not handled again until it is swapped for something else.
+    private ItemStack settledStack = ItemStack.EMPTY;
     @Override
     public boolean supportsHoldFire() {
         return true;
@@ -106,7 +108,14 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
     private static void handleInv(Level level, BlockPos pos, SpewerBlockEntity spewer) {
         if (level.isClientSide()) return;
         ItemStack itemStack = spewer.getLiquidStack();
-        if (itemStack.isEmpty() || itemStack.getCount() != 1) return;
+        if (itemStack.isEmpty()) {
+            spewer.settledStack = ItemStack.EMPTY;
+            return;
+        }
+        if (itemStack.getCount() != 1) return;
+        // The container we just filled or emptied stays put until the player swaps it, otherwise a bucket we
+        // poured into the tank would be refilled from it again next tick, and so on forever.
+        if (ItemStack.matches(itemStack, spewer.settledStack)) return;
         FluidTank tank = spewer.fluidTank;
 
         // Potions and bottles
@@ -119,6 +128,7 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
             if (tank.fill(stack, FluidTank.FluidAction.SIMULATE) != stack.getAmount()) return;
             tank.fill(stack, FluidTank.FluidAction.EXECUTE);
             spewer.setItem(0, new ItemStack(Items.GLASS_BOTTLE));
+            spewer.settledStack = spewer.getLiquidStack().copy();
             level.playSound(null, pos, SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 1.0f, 1.0f);
             return;
         }
@@ -130,6 +140,7 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
             ItemStack potion = new ItemStack(Items.POTION);
             potion.set(DataComponents.POTION_CONTENTS, contents);
             spewer.setItem(0, potion);
+            spewer.settledStack = spewer.getLiquidStack().copy();
             level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0f, 1.0f);
             return;
         }
@@ -141,6 +152,7 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
         ItemStack result = Services.PLATFORM.emptyContainerInto(itemStack, tank);
         if (result != null) {
             spewer.setItem(0, result);
+            spewer.settledStack = spewer.getLiquidStack().copy();
             playFluidSound(level, pos, tank.getFluid(), true);
             return;
         }
@@ -151,6 +163,7 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
         result = Services.PLATFORM.fillContainerFrom(itemStack, tank);
         if (result != null) {
             spewer.setItem(0, result);
+            spewer.settledStack = spewer.getLiquidStack().copy();
             playFluidSound(level, pos, before, false);
         }
     }
@@ -273,6 +286,7 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
         // Needed for liquid
         if (tag.get("fluidTank") instanceof CompoundTag compoundTag)
             fluidTank.readFromNBT(registries, compoundTag);
+        settledStack = tag.contains("settledStack") ? ItemStack.parseOptional(registries, tag.getCompound("settledStack")) : ItemStack.EMPTY;
     }
 
     @Override
@@ -280,6 +294,7 @@ public class SpewerBlockEntity extends AbstractShootingAimableBlockEntity {
         super.saveAdditional(tag, registries);
         // Needed for liquid
         tag.put("fluidTank", fluidTank.writeToNBT(registries, new CompoundTag()));
+        if (!settledStack.isEmpty()) tag.put("settledStack", settledStack.save(registries));
     }
 
     public FluidTank getFluidTank() {
