@@ -88,6 +88,10 @@ public final class BallistaPattern {
         for (BallistaEntity ballista : spawned) {
             if (placer != null) {
                 ballista.setPlacer(placer);
+                // Same as placing the block by hand: the ballista joins the builder's scoreboard team.
+                if (placer.getTeam() instanceof net.minecraft.world.scores.PlayerTeam team) {
+                    level.getScoreboard().addPlayerToTeam(ballista.getScoreboardName(), team);
+                }
                 ballista.setYRot(placer.getYRot() + 180.0F);
                 ballista.yRotO = ballista.getYRot();
                 ballista.yBodyRot = ballista.getYRot();
