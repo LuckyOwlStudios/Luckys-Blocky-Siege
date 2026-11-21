@@ -43,13 +43,16 @@ public class BallistaScreen extends AbstractContainerScreen<BallistaMenu> {
         RenderSystem.defaultBlendFunc();
         int x = (width - imageWidth) / 2;
         int y = (height - imageHeight) / 2;
-        guiGraphics.blit(GUI_TEXTURE, x, y - 31, 0, 0, 256, 256);
+        // Only the panel (176x197); the filled health bar sprite lives further down the texture.
+        guiGraphics.blit(GUI_TEXTURE, x, y - 31, 0, 0, PANEL_WIDTH, PANEL_HEIGHT);
         renderHealthBar(guiGraphics, x, y - 31);
         RenderSystem.disableBlend();
     }
 
 
     // Health bar: the empty bar is part of the background at (BAR_X, BAR_Y); the filled sprite sits at (BAR_U, BAR_V).
+    private static final int PANEL_WIDTH = 176;
+    private static final int PANEL_HEIGHT = 197;
     private static final int BAR_X = 8;
     private static final int BAR_Y = 24;
     private static final int BAR_U = 8;
