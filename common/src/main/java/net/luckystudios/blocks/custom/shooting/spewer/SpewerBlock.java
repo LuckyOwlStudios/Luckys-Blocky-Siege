@@ -5,6 +5,7 @@ import com.mojang.serialization.MapCodec;
 import net.luckystudios.blocks.custom.shooting.AbstractShootingBlock;
 import net.luckystudios.blocks.util.interfaces.DamageableBlock;
 import net.luckystudios.init.ModBlockEntityTypes;
+import net.luckystudios.entity.custom.seat.Seat;
 import net.luckystudios.init.ModTags;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -99,7 +100,7 @@ public class SpewerBlock extends AbstractShootingBlock implements DamageableBloc
                         return ItemInteractionResult.SUCCESS;
                     }
                 }
-            } else if (!player.isCrouching()) {
+            } else if (!player.isCrouching() && !(player.getVehicle() instanceof Seat)) {
                 MenuHelper.openMenu(player, spewerCannonBlockEntity, pos);
                 return ItemInteractionResult.SUCCESS;
             }
