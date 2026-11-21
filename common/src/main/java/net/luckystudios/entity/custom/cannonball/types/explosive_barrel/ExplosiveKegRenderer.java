@@ -39,8 +39,8 @@ public class ExplosiveKegRenderer extends EntityRenderer<ExplosiveKeg> {
         poseStack.translate(-0.5F, -0.5F, 0.5F);
         poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
         BlockState state = ModBlocks.EXPLOSIVE_BARREL.get().defaultBlockState();
-        // Flash white when the keg is hit, like TNT does when its fuse is about to run out
-        boolean flash = wobble > 0.0F && entity.getWobbleTicks() / 2 % 2 == 0;
+        // Blink white like primed TNT
+        boolean flash = entity.tickCount / 5 % 2 == 0;
         TntMinecartRenderer.renderWhiteSolidBlock(this.blockRenderer, state, poseStack, buffer, packedLight, flash);
         poseStack.popPose();
         super.render(entity, entityYaw, partialTicks, poseStack, buffer, packedLight);
